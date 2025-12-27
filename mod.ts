@@ -1,1 +1,1 @@
-export { World } from "./src/better-world.ts";
+export { GridMode, World } from "./src/better-world.ts";
