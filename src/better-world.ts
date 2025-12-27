@@ -1,13 +1,3 @@
-/**
- * - Finite — Cells outside the array are treated as permanently dead.
- *   In this world, a glider that hits the bottom-right corner simply disintegrates.
- *   This is easy to implement, but philosophically a little brutal. The universe has edges, and they are lethal.
- * - Toroidal - The left edge connects to the right, the top connects to the bottom.
- *   In that case, yes: a spaceship exiting the bottom-right reappears at the top-left.
- *   This turns the universe into the surface of a donut.
- *   It’s mathematically tidy and popular for demos,
- *   but it introduces artificial interactions—your glider can collide with its own past if the grid is small.
- */
 export enum GridMode {
   Finite,
   Toroidal,
@@ -22,21 +12,50 @@ type WorldOptions = {
   mode?: GridMode;
 };
 
-export const isXInBounds = (x: number, worldWidth: number): boolean => {
-  return x >= -1 && x <= worldWidth;
+export const validateWorldSeed = (
+  seed: string,
+  width: number,
+  height: number,
+): void => {
+  // regexp to match valid characters: #, ., whitespace, and newlines
+  const validCharsRegexp = /^[#. \n]*$/;
+  if (!validCharsRegexp.test(seed)) {
+    throw new Error("Seed contains invalid characters");
+  }
 };
 
-export const isYInBounds = (y: number, worldHeight: number): boolean => {
-  return y >= -1 && y <= worldHeight;
+const isXOutsideBorder = (x: number, worldWidth: number): boolean => {
+  return x < -1 || x > worldWidth;
 };
 
-export const isCellInBounds = (
+const isYOutsideBorder = (y: number, worldHeight: number): boolean => {
+  return y < -1 || y > worldHeight;
+};
+
+const isCellOutsideBorder = (
   x: number,
   y: number,
   worldWidth: number,
   worldHeight: number,
 ): boolean => {
-  return isXInBounds(x, worldWidth) && isYInBounds(y, worldHeight);
+  return isXOutsideBorder(x, worldWidth) || isYOutsideBorder(y, worldHeight);
+};
+
+const isXOnBorder = (x: number, worldWidth: number): boolean => {
+  return x === -1 || x === worldWidth;
+};
+
+const isYOnBorder = (y: number, worldHeight: number): boolean => {
+  return y === -1 || y === worldHeight;
+};
+
+export const isCellOnBorder = (
+  x: number,
+  y: number,
+  worldWidth: number,
+  worldHeight: number,
+): boolean => {
+  return isXOnBorder(x, worldWidth) && isYOnBorder(y, worldHeight);
 };
 
 export const createCellKey = (x: number, y: number): string => {
@@ -46,6 +65,7 @@ export const createCellKey = (x: number, y: number): string => {
 export class World {
   width: number;
   height: number;
+  mode: GridMode;
   liveCells: Map<string, boolean>;
 
   constructor(
@@ -61,12 +81,44 @@ export class World {
 
     this.width = width;
     this.height = height;
+    this.mode = mode;
     this.liveCells = new Map();
   }
 
   getCell(x: number, y: number): boolean {
-    if (!isCellInBounds(x, y, this.width, this.height)) {
+    if (isCellOutsideBorder(x, y, this.width, this.height)) {
       throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+    }
+
+    if (isCellOnBorder(x, y, this.width, this.height)) {
+      if (this.mode === GridMode.Finite) {
+        return false;
+      }
+
+      if (this.mode === GridMode.Toroidal) {
+        let wrappedX: number;
+        let wrappedY: number;
+
+        if (x === -1) {
+          wrappedX = this.width - 1;
+        } else {
+          wrappedX = 0;
+        }
+
+        if (y === -1) {
+          wrappedY = this.height - 1;
+        } else {
+          wrappedY = 0;
+        }
+
+        const key = createCellKey(wrappedX, wrappedY);
+
+        if (this.liveCells.has(key)) {
+          return this.liveCells.get(key)!;
+        }
+
+        return false;
+      }
     }
 
     const key = createCellKey(x, y);
