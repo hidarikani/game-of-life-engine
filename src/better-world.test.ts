@@ -1,4 +1,5 @@
 import { assertThrows } from "@std/assert";
+import { GridMode } from "./constants.ts";
 import { World } from "./better-world.ts";
 
 Deno.test("World: width too small throws", () => {
@@ -56,5 +57,53 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
       Error,
       `Cell (0, ${height + 1}) is out of bounds`,
     );
+  });
+});
+
+Deno.test("World.getCell: toroidal border wrapping", async (t) => {
+  const seed = `
+  # . # 
+  . . . 
+  # . . 
+  `;
+
+  const world = new World({
+    width: 3,
+    height: 3,
+    mode: GridMode.Toroidal,
+    seed,
+  });
+
+  await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
+    const rightNeighborX = 3; // wraps to 0
+    const rightNeighborY = 2;
+    const isAlive = world.getCell(rightNeighborX, rightNeighborY);
+    if (!isAlive) {
+      throw new Error(
+        `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+      );
+    }
+  });
+
+  await t.step("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
+    const bottomNeighborX = 2;
+    const bottomNeighborY = 3; // wraps to 0
+    const isAlive = world.getCell(bottomNeighborX, bottomNeighborY);
+    if (!isAlive) {
+      throw new Error(
+        `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+      );
+    }
+  });
+
+  await t.step("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
+    const bottomRightNeighborX = 3; // wraps to 0
+    const bottomRightNeighborY = 3; // wraps to 0
+    const isAlive = world.getCell(bottomRightNeighborX, bottomRightNeighborY);
+    if (!isAlive) {
+      throw new Error(
+        `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
+      );
+    }
   });
 });

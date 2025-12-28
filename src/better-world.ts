@@ -1,8 +1,4 @@
-import {
-  GridMode,
-  MIN_WORLD_HEIGHT,
-  MIN_WORLD_WIDTH,
-} from "./constants.ts";
+import { GridMode, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "./constants.ts";
 
 import { createCellKey, parseWorldSeed } from "./seed/seed.ts";
 
@@ -37,23 +33,26 @@ export const isCellOnBorder = (
   worldWidth: number,
   worldHeight: number,
 ): boolean => {
-  return isXOnBorder(x, worldWidth) && isYOnBorder(y, worldHeight);
+  return isXOnBorder(x, worldWidth) || isYOnBorder(y, worldHeight);
 };
 
 type WorldOptions = {
   width: number;
   height: number;
   mode?: GridMode;
+  seed?: string;
 };
+
+type Generation = Map<string, boolean>;
 
 export class World {
   width: number;
   height: number;
   mode: GridMode;
-  liveCells: Map<string, boolean>;
+  generations: Generation[];
 
   constructor(
-    { width, height, mode = GridMode.Finite }: WorldOptions,
+    { width, height, mode = GridMode.Finite, seed }: WorldOptions,
   ) {
     if (width < MIN_WORLD_WIDTH) {
       throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
@@ -66,13 +65,31 @@ export class World {
     this.width = width;
     this.height = height;
     this.mode = mode;
-    this.liveCells = new Map();
+
+    this.generations = [];
+
+    if (seed === undefined) {
+      this.generations.push(new Map());
+    } else {
+      const firstGeneration = parseWorldSeed(seed, width, height);
+      this.generations.push(firstGeneration);
+    }
+  }
+
+  getGeneration(i: number): Generation {
+    return this.generations[i];
+  }
+
+  getPresentGeneration(): Generation {
+    return this.getGeneration(this.generations.length - 1);
   }
 
   getCell(x: number, y: number): boolean {
     if (isCellOutsideBorder(x, y, this.width, this.height)) {
       throw new Error(`Cell (${x}, ${y}) is out of bounds`);
     }
+
+    const presentGeneration = this.getPresentGeneration();
 
     if (isCellOnBorder(x, y, this.width, this.height)) {
       if (this.mode === GridMode.Finite) {
@@ -97,8 +114,8 @@ export class World {
 
         const key = createCellKey(wrappedX, wrappedY);
 
-        if (this.liveCells.has(key)) {
-          return this.liveCells.get(key)!;
+        if (presentGeneration.has(key)) {
+          return presentGeneration.get(key)!;
         }
 
         return false;
@@ -107,8 +124,8 @@ export class World {
 
     const key = createCellKey(x, y);
 
-    if (this.liveCells.has(key)) {
-      return this.liveCells.get(key)!;
+    if (presentGeneration.has(key)) {
+      return presentGeneration.get(key)!;
     }
 
     return false;
