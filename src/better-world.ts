@@ -1,28 +1,10 @@
-export enum GridMode {
-  Finite,
-  Toroidal,
-}
+import {
+  GridMode,
+  MIN_WORLD_HEIGHT,
+  MIN_WORLD_WIDTH,
+} from "./constants.ts";
 
-const MIN_WORLD_WIDTH = 3;
-const MIN_WORLD_HEIGHT = 3;
-
-type WorldOptions = {
-  width: number;
-  height: number;
-  mode?: GridMode;
-};
-
-export const validateWorldSeed = (
-  seed: string,
-  width: number,
-  height: number,
-): void => {
-  // regexp to match valid characters: #, ., whitespace, and newlines
-  const validCharsRegexp = /^[#. \n]*$/;
-  if (!validCharsRegexp.test(seed)) {
-    throw new Error("Seed contains invalid characters");
-  }
-};
+import { createCellKey, parseWorldSeed } from "./seed/seed.ts";
 
 const isXOutsideBorder = (x: number, worldWidth: number): boolean => {
   return x < -1 || x > worldWidth;
@@ -58,8 +40,10 @@ export const isCellOnBorder = (
   return isXOnBorder(x, worldWidth) && isYOnBorder(y, worldHeight);
 };
 
-export const createCellKey = (x: number, y: number): string => {
-  return `${x},${y}`;
+type WorldOptions = {
+  width: number;
+  height: number;
+  mode?: GridMode;
 };
 
 export class World {
