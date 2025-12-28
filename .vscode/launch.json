@@ -1,0 +1,21 @@
+// Inspired by https://stackoverflow.com/questions/73520007/how-to-debug-deno-tests-in-vscode
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "request": "launch",
+      "name": "Debug tests",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--watch"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal"
+    }
+  ]
+}
