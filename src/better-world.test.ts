@@ -1,5 +1,5 @@
-import { assertThrows } from "@std/assert";
-import { GridMode } from "./constants.ts";
+import { assertEquals, assertThrows } from "@std/assert";
+import { GRID_MODES } from "./constants.ts";
 import { World } from "./better-world.ts";
 
 Deno.test("World: width too small throws", () => {
@@ -70,7 +70,7 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   const world = new World({
     width: 3,
     height: 3,
-    mode: GridMode.Toroidal,
+    mode: GRID_MODES.TOROIDAL,
     seed,
   });
 
@@ -105,5 +105,138 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
         `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
       );
     }
+  });
+});
+
+Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
+  await t.step("live cell underpopulation 0 alive neighbors dies", () => {
+    const seed = `
+    . . .
+    . # .
+    . . .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell underpopulation 1 alive neighbor dies", () => {
+    const seed = `
+    . # .
+    . # .
+    . . .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell overpopulation (4 alive neighbors) dies", () => {
+    const seed = `
+    # # #
+    . # .
+    . # .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell overpopulation (5 alive neighbors) dies", () => {
+    const seed = `
+    # # #
+    . # #
+    . # .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell overpopulation (6 alive neighbors) dies", () => {
+    const seed = `
+    # # #
+    # # #
+    . # .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell overpopulation (7 alive neighbors) dies", () => {
+    const seed = `
+    # # #
+    # # #
+    # # .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell overpopulation (8 alive neighbors) dies", () => {
+    const seed = `
+    # # #
+    # # #
+    # # #
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
+  });
+  await t.step("live cell (2 alive neighbors) survives", () => {
+    const seed = `
+    # # .
+    . # .
+    . . .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
+  });
+  await t.step("live cell (3 alive neighbors) survives", () => {
+    const seed = `
+    # # .
+    . # #
+    . . .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
+  });
+  await t.step("dead cell (exactly 3 alive neighbors) becomes alive", () => {
+    const seed = `
+    # # .
+    . . #
+    . . .
+    `;
+    const world = new World({
+      width: 3,
+      height: 3,
+      seed,
+    });
+    assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
   });
 });

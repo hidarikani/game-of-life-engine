@@ -1,6 +1,8 @@
-import { GridMode, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "./constants.ts";
+import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "./constants.ts";
 
 import { createCellKey, parseWorldSeed } from "./seed/seed.ts";
+
+import type { Generation, GridMode, Point, WorldOptions } from "./types.ts";
 
 const isXOutsideBorder = (x: number, worldWidth: number): boolean => {
   return x < -1 || x > worldWidth;
@@ -36,15 +38,6 @@ export const isCellOnBorder = (
   return isXOnBorder(x, worldWidth) || isYOnBorder(y, worldHeight);
 };
 
-type WorldOptions = {
-  width: number;
-  height: number;
-  mode?: GridMode;
-  seed?: string;
-};
-
-type Generation = Map<string, boolean>;
-
 export class World {
   width: number;
   height: number;
@@ -52,7 +45,7 @@ export class World {
   generations: Generation[];
 
   constructor(
-    { width, height, mode = GridMode.Finite, seed }: WorldOptions,
+    { width, height, mode = GRID_MODES.FINITE, seed }: WorldOptions,
   ) {
     if (width < MIN_WORLD_WIDTH) {
       throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
@@ -92,11 +85,11 @@ export class World {
     const presentGeneration = this.getPresentGeneration();
 
     if (isCellOnBorder(x, y, this.width, this.height)) {
-      if (this.mode === GridMode.Finite) {
+      if (this.mode === GRID_MODES.FINITE) {
         return false;
       }
 
-      if (this.mode === GridMode.Toroidal) {
+      if (this.mode === GRID_MODES.TOROIDAL) {
         let wrappedX: number;
         let wrappedY: number;
 
@@ -129,5 +122,51 @@ export class World {
     }
 
     return false;
+  }
+
+  evolveCell({ x, y }: Point): boolean {
+    // declaration clockwise from top
+    const topPoint = { x, y: y - 1 };
+    const topRightPoint = { x: x + 1, y: y - 1 };
+    const rightPoint = { x: x + 1, y };
+    const bottomRightPoint = { x: x + 1, y: y + 1 };
+    const bottomPoint = { x, y: y + 1 };
+    const bottomLeftPoint = { x: x - 1, y: y + 1 };
+    const leftPoint = { x: x - 1, y };
+    const topLeftPoint = { x: x - 1, y: y - 1 };
+
+    const topAlive = this.getCell(topPoint.x, topPoint.y) ? 1 : 0;
+    const topRightAlive = this.getCell(topRightPoint.x, topRightPoint.y)
+      ? 1
+      : 0;
+    const rightAlive = this.getCell(rightPoint.x, rightPoint.y) ? 1 : 0;
+    const bottomRightAlive =
+      this.getCell(bottomRightPoint.x, bottomRightPoint.y) ? 1 : 0;
+    const bottomAlive = this.getCell(bottomPoint.x, bottomPoint.y) ? 1 : 0;
+    const bottomLeftAlive = this.getCell(bottomLeftPoint.x, bottomLeftPoint.y)
+      ? 1
+      : 0;
+    const leftAlive = this.getCell(leftPoint.x, leftPoint.y) ? 1 : 0;
+    const topLeftAlive = this.getCell(topLeftPoint.x, topLeftPoint.y) ? 1 : 0;
+    const totalAliveNeighbors = topAlive +
+      topRightAlive +
+      rightAlive +
+      bottomRightAlive +
+      bottomAlive +
+      bottomLeftAlive +
+      leftAlive +
+      topLeftAlive;
+
+    const centerAlive = this.getCell(x, y);
+
+    if (centerAlive) {
+      if (totalAliveNeighbors === 2 || totalAliveNeighbors === 3) {
+        return centerAlive;
+      }
+      return false;
+    }
+
+    if (totalAliveNeighbors === 3) return true;
+    return centerAlive;
   }
 }
