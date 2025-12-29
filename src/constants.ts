@@ -12,10 +12,10 @@ export const SEED_PATTERN = new RegExp(
   `^[${ALIVE_CHAR}${DEAD_CHAR}${SPACE_CHAR}${NEWLINE_CHAR}]*$`,
 );
 
-export const CELL_CHAR_TO_BOOL: Record<CellChars, boolean> = {
+export const CELL_CHAR_TO_BOOL = {
   [ALIVE_CHAR]: true,
   [DEAD_CHAR]: false,
-};
+} as const satisfies Record<CellChars, boolean>;
 
 export const GRID_MODES = {
   FINITE: "Finite",
