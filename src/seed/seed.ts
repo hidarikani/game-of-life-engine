@@ -1,4 +1,5 @@
-import { CELL_CHAR_TO_BOOL } from "../constants.ts";
+import type { CellChars } from "../types.ts";
+import { CELL_CHAR_TO_BOOL, SEED_PATTERN } from "../constants.ts";
 
 export const createCellKey = (x: number, y: number): string => {
   return `${x},${y}`;
@@ -9,12 +10,11 @@ export const parseWorldSeed = (
   width: number,
   height: number,
 ): Map<string, boolean> => {
-  const validCharsRegexp = /^[#. \n]*$/;
-  if (!validCharsRegexp.test(seed)) {
+  if (!SEED_PATTERN.test(seed)) {
     throw new Error("Seed contains invalid characters");
   }
   const rows = seed.trim().split("\n").map((row) =>
-    row.trim().split(" ").map((char) => CELL_CHAR_TO_BOOL[char])
+    row.trim().split(" ").map((char) => CELL_CHAR_TO_BOOL[char as CellChars])
   );
 
   if (rows.length !== height) {

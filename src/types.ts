@@ -3,6 +3,8 @@ export type Point = {
   y: number;
 };
 
+export type CellChars = "#" | ".";
+
 export type GridMode = "Finite" | "Toroidal";
 
 export type WorldOptions = {
