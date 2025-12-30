@@ -13,8 +13,7 @@ export type CellChars = "#" | ".";
 export type GridMode = "Finite" | "Toroidal";
 
 export type WorldOptions = {
-  width: number;
-  height: number;
+  gridSize: Rectangle;
   mode?: GridMode;
   seed?: string;
 };

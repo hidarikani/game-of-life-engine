@@ -1,70 +1,37 @@
+import type {
+  Generation,
+  GridMode,
+  Point,
+  Rectangle,
+  WorldOptions,
+} from "../types.ts";
 import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
-
 import { createCellKey, parseWorldSeed } from "../seed/seed.ts";
-
-import type { Generation, GridMode, Point, WorldOptions } from "../types.ts";
-
-const isXOutsideBorder = (x: number, worldWidth: number): boolean => {
-  return x < -1 || x > worldWidth;
-};
-
-const isYOutsideBorder = (y: number, worldHeight: number): boolean => {
-  return y < -1 || y > worldHeight;
-};
-
-const isCellOutsideBorder = (
-  x: number,
-  y: number,
-  worldWidth: number,
-  worldHeight: number,
-): boolean => {
-  return isXOutsideBorder(x, worldWidth) || isYOutsideBorder(y, worldHeight);
-};
-
-const isXOnBorder = (x: number, worldWidth: number): boolean => {
-  return x === -1 || x === worldWidth;
-};
-
-const isYOnBorder = (y: number, worldHeight: number): boolean => {
-  return y === -1 || y === worldHeight;
-};
-
-export const isCellOnBorder = (
-  x: number,
-  y: number,
-  worldWidth: number,
-  worldHeight: number,
-): boolean => {
-  return isXOnBorder(x, worldWidth) || isYOnBorder(y, worldHeight);
-};
+import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 
 export class World {
-  width: number;
-  height: number;
+  gridSize: Rectangle;
   mode: GridMode;
   generations: Generation[];
 
   constructor(
-    { width, height, mode = GRID_MODES.FINITE, seed }: WorldOptions,
+    { gridSize, mode = GRID_MODES.FINITE, seed }: WorldOptions,
   ) {
-    if (width < MIN_WORLD_WIDTH) {
+    if (gridSize.w < MIN_WORLD_WIDTH) {
       throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
     }
 
-    if (height < MIN_WORLD_HEIGHT) {
+    if (gridSize.h < MIN_WORLD_HEIGHT) {
       throw new Error(`Height must be at least ${MIN_WORLD_HEIGHT}`);
     }
-
-    this.width = width;
-    this.height = height;
+    this.gridSize = gridSize;
     this.mode = mode;
-
     this.generations = [];
 
     if (seed === undefined) {
       this.generations.push(new Map());
     } else {
-      const firstGeneration = parseWorldSeed(seed, width, height);
+      const firstGeneration = parseWorldSeed(seed, gridSize.w, gridSize.h);
       this.generations.push(firstGeneration);
     }
   }
@@ -78,13 +45,15 @@ export class World {
   }
 
   getCell(x: number, y: number): boolean {
-    if (isCellOutsideBorder(x, y, this.width, this.height)) {
+    if (
+      isPointOutsideBorder({ x, y }, { w: this.gridSize.w, h: this.gridSize.h })
+    ) {
       throw new Error(`Cell (${x}, ${y}) is out of bounds`);
     }
 
     const presentGeneration = this.getPresentGeneration();
 
-    if (isCellOnBorder(x, y, this.width, this.height)) {
+    if (isPointOnBorder({ x, y }, { w: this.gridSize.w, h: this.gridSize.h })) {
       if (this.mode === GRID_MODES.FINITE) {
         return false;
       }
@@ -94,13 +63,13 @@ export class World {
         let wrappedY: number;
 
         if (x === -1) {
-          wrappedX = this.width - 1;
+          wrappedX = this.gridSize.w - 1;
         } else {
           wrappedX = 0;
         }
 
         if (y === -1) {
-          wrappedY = this.height - 1;
+          wrappedY = this.gridSize.h - 1;
         } else {
           wrappedY = 0;
         }

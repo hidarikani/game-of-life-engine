@@ -3,9 +3,8 @@ import { GRID_MODES } from "../constants.ts";
 import { World } from "./world.ts";
 
 Deno.test("World: width too small throws", () => {
-  // MIN_WIDTH is 3; using 2 should throw
   assertThrows(
-    () => new World({ width: 2, height: 3 }),
+    () => new World({ gridSize: { w: 2, h: 3 } }),
     Error,
     "Width must be at least 3",
   );
@@ -14,7 +13,7 @@ Deno.test("World: width too small throws", () => {
 Deno.test("World: height too small throws", () => {
   // MIN_HEIGHT is 3; using 2 should throw
   assertThrows(
-    () => new World({ width: 3, height: 2 }),
+    () => new World({ gridSize: { w: 3, h: 2 } }),
     Error,
     "Height must be at least 3",
   );
@@ -22,7 +21,7 @@ Deno.test("World: height too small throws", () => {
 
 Deno.test("World.getCell: out of bounds throws", async (t) => {
   await t.step("left edge exceeded", () => {
-    const world = new World({ width: 5, height: 5 });
+    const world = new World({ gridSize: { w: 5, h: 5 } });
     assertThrows(
       () => world.getCell(-2, 0),
       Error,
@@ -32,7 +31,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
 
   await t.step("right edge exceeded", () => {
     const width = 5;
-    const world = new World({ width, height: 5 });
+    const world = new World({ gridSize: { w: width, h: 5 } });
     assertThrows(
       () => world.getCell(width + 1, 0),
       Error,
@@ -41,7 +40,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
   });
 
   await t.step("top edge exceeded", () => {
-    const world = new World({ width: 5, height: 5 });
+    const world = new World({ gridSize: { w: 5, h: 5 } });
     assertThrows(
       () => world.getCell(0, -2),
       Error,
@@ -51,7 +50,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
 
   await t.step("bottom edge exceeded", () => {
     const height = 5;
-    const world = new World({ width: 5, height });
+    const world = new World({ gridSize: { w: 5, h: height } });
     assertThrows(
       () => world.getCell(0, height + 1),
       Error,
@@ -68,8 +67,7 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   `;
 
   const world = new World({
-    width: 3,
-    height: 3,
+    gridSize: { w: 3, h: 3 },
     mode: GRID_MODES.TOROIDAL,
     seed,
   });
@@ -116,8 +114,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . . .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -129,8 +126,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . . .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -142,8 +138,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . # .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -155,8 +150,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . # .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -168,8 +162,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . # .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -181,8 +174,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     # # .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -194,8 +186,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     # # #
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), false);
@@ -207,8 +198,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . . .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
@@ -220,8 +210,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . . .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
@@ -233,8 +222,7 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
     . . .
     `;
     const world = new World({
-      width: 3,
-      height: 3,
+      gridSize: { w: 3, h: 3 },
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
