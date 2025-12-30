@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from "@std/assert";
-import { GRID_MODES } from "./constants.ts";
+import { GRID_MODES } from "../constants.ts";
 import { World } from "./world.ts";
 
 Deno.test("World: width too small throws", () => {

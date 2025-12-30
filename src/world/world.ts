@@ -1,8 +1,8 @@
-import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "./constants.ts";
+import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
 
-import { createCellKey, parseWorldSeed } from "./seed/seed.ts";
+import { createCellKey, parseWorldSeed } from "../seed/seed.ts";
 
-import type { Generation, GridMode, Point, WorldOptions } from "./types.ts";
+import type { Generation, GridMode, Point, WorldOptions } from "../types.ts";
 
 const isXOutsideBorder = (x: number, worldWidth: number): boolean => {
   return x < -1 || x > worldWidth;
