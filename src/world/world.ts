@@ -44,7 +44,7 @@ export class World {
     return this.getGeneration(this.generations.length - 1);
   }
 
-  getCell(x: number, y: number): boolean {
+  getCell({ x, y }: Point): boolean {
     if (
       isPointOutsideBorder({ x, y }, { w: this.gridSize.w, h: this.gridSize.h })
     ) {
@@ -95,28 +95,28 @@ export class World {
 
   evolveCell({ x, y }: Point): boolean {
     // declaration clockwise from top
-    const topPoint = { x, y: y - 1 };
-    const topRightPoint = { x: x + 1, y: y - 1 };
-    const rightPoint = { x: x + 1, y };
-    const bottomRightPoint = { x: x + 1, y: y + 1 };
-    const bottomPoint = { x, y: y + 1 };
-    const bottomLeftPoint = { x: x - 1, y: y + 1 };
-    const leftPoint = { x: x - 1, y };
-    const topLeftPoint = { x: x - 1, y: y - 1 };
+    const top = { x, y: y - 1 };
+    const topRight = { x: x + 1, y: y - 1 };
+    const right = { x: x + 1, y };
+    const bottomRight = { x: x + 1, y: y + 1 };
+    const bottom = { x, y: y + 1 };
+    const bottomLeft = { x: x - 1, y: y + 1 };
+    const left = { x: x - 1, y };
+    const topLeft = { x: x - 1, y: y - 1 };
 
-    const topAlive = this.getCell(topPoint.x, topPoint.y) ? 1 : 0;
-    const topRightAlive = this.getCell(topRightPoint.x, topRightPoint.y)
+    const topAlive = this.getCell({ x: top.x, y: top.y }) ? 1 : 0;
+    const topRightAlive = this.getCell({ x: topRight.x, y: topRight.y })
       ? 1
       : 0;
-    const rightAlive = this.getCell(rightPoint.x, rightPoint.y) ? 1 : 0;
+    const rightAlive = this.getCell({ x: right.x, y: right.y }) ? 1 : 0;
     const bottomRightAlive =
-      this.getCell(bottomRightPoint.x, bottomRightPoint.y) ? 1 : 0;
-    const bottomAlive = this.getCell(bottomPoint.x, bottomPoint.y) ? 1 : 0;
-    const bottomLeftAlive = this.getCell(bottomLeftPoint.x, bottomLeftPoint.y)
+      this.getCell({ x: bottomRight.x, y: bottomRight.y }) ? 1 : 0;
+    const bottomAlive = this.getCell({ x: bottom.x, y: bottom.y }) ? 1 : 0;
+    const bottomLeftAlive = this.getCell({ x: bottomLeft.x, y: bottomLeft.y })
       ? 1
       : 0;
-    const leftAlive = this.getCell(leftPoint.x, leftPoint.y) ? 1 : 0;
-    const topLeftAlive = this.getCell(topLeftPoint.x, topLeftPoint.y) ? 1 : 0;
+    const leftAlive = this.getCell({ x: left.x, y: left.y }) ? 1 : 0;
+    const topLeftAlive = this.getCell({ x: topLeft.x, y: topLeft.y }) ? 1 : 0;
     const totalAliveNeighbors = topAlive +
       topRightAlive +
       rightAlive +
@@ -126,7 +126,7 @@ export class World {
       leftAlive +
       topLeftAlive;
 
-    const centerAlive = this.getCell(x, y);
+    const centerAlive = this.getCell({ x, y });
 
     if (centerAlive) {
       if (totalAliveNeighbors === 2 || totalAliveNeighbors === 3) {

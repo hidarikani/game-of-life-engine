@@ -23,7 +23,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
   await t.step("left edge exceeded", () => {
     const world = new World({ gridSize: { w: 5, h: 5 } });
     assertThrows(
-      () => world.getCell(-2, 0),
+      () => world.getCell({ x: -2, y: 0 }),
       Error,
       "Cell (-2, 0) is out of bounds",
     );
@@ -33,7 +33,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
     const width = 5;
     const world = new World({ gridSize: { w: width, h: 5 } });
     assertThrows(
-      () => world.getCell(width + 1, 0),
+      () => world.getCell({ x: width + 1, y: 0 }),
       Error,
       `Cell (${width + 1}, 0) is out of bounds`,
     );
@@ -42,7 +42,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
   await t.step("top edge exceeded", () => {
     const world = new World({ gridSize: { w: 5, h: 5 } });
     assertThrows(
-      () => world.getCell(0, -2),
+      () => world.getCell({ x: 0, y: -2 }),
       Error,
       "Cell (0, -2) is out of bounds",
     );
@@ -52,7 +52,7 @@ Deno.test("World.getCell: out of bounds throws", async (t) => {
     const height = 5;
     const world = new World({ gridSize: { w: 5, h: height } });
     assertThrows(
-      () => world.getCell(0, height + 1),
+      () => world.getCell({ x: 0, y: height + 1 }),
       Error,
       `Cell (0, ${height + 1}) is out of bounds`,
     );
@@ -75,7 +75,7 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
     const rightNeighborX = 3; // wraps to 0
     const rightNeighborY = 2;
-    const isAlive = world.getCell(rightNeighborX, rightNeighborY);
+    const isAlive = world.getCell({ x: rightNeighborX, y: rightNeighborY });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -86,7 +86,7 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
     const bottomNeighborX = 2;
     const bottomNeighborY = 3; // wraps to 0
-    const isAlive = world.getCell(bottomNeighborX, bottomNeighborY);
+    const isAlive = world.getCell({ x: bottomNeighborX, y: bottomNeighborY });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -97,7 +97,7 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
     const bottomRightNeighborX = 3; // wraps to 0
     const bottomRightNeighborY = 3; // wraps to 0
-    const isAlive = world.getCell(bottomRightNeighborX, bottomRightNeighborY);
+    const isAlive = world.getCell({ x: bottomRightNeighborX, y: bottomRightNeighborY });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
