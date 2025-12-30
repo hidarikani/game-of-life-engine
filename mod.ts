@@ -1,1 +1,1 @@
-export { World } from "./src/better-world.ts";
+export { World } from "./src/world.ts";

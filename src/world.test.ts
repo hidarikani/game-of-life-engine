@@ -1,6 +1,6 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { GRID_MODES } from "./constants.ts";
-import { World } from "./better-world.ts";
+import { World } from "./world.ts";
 
 Deno.test("World: width too small throws", () => {
   // MIN_WIDTH is 3; using 2 should throw
