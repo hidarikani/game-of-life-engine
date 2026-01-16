@@ -1,11 +1,18 @@
-import type { CellChars } from "../types.ts";
-import { CELL_CHAR_TO_BOOL, SEED_PATTERN } from "../constants.ts";
+import type { CellChars, Generation, Rectangle } from "../types.ts";
+import {
+  ALIVE_CHAR,
+  CELL_CHAR_TO_BOOL,
+  DEAD_CHAR,
+  NEWLINE_CHAR,
+  SEED_PATTERN,
+  SEPARATOR_CHAR,
+} from "../constants.ts";
 
 export const createCellKey = (x: number, y: number): string => {
   return `${x},${y}`;
 };
 
-export const parseWorldSeed = (
+export const stringToGeneration = (
   seed: string,
   width: number,
   height: number,
@@ -27,7 +34,7 @@ export const parseWorldSeed = (
     }
   }
 
-  const aliveCells = new Map<string, boolean>();
+  const aliveCells: Generation = new Map();
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -40,4 +47,21 @@ export const parseWorldSeed = (
   }
 
   return aliveCells;
+};
+
+export const generationToString = (
+  generation: Generation,
+  size: Rectangle,
+): string => {
+  let res = "";
+  for (let y = 0; y < size.h; y++) {
+    const row: string[] = [];
+    for (let x = 0; x < size.w; x++) {
+      const key = createCellKey(x, y);
+      const isAlive = generation.get(key) ?? false;
+      row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
+    }
+    res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
+  }
+  return res.trim();
 };

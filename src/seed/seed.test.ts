@@ -1,17 +1,22 @@
-import { assertThrows } from "@std/assert";
-import { parseWorldSeed } from "./seed.ts";
+import type { CellChars, Generation, Rectangle } from "../types.ts";
+import { assertEquals, assertThrows } from "@std/assert";
+import {
+  createCellKey,
+  generationToString,
+  stringToGeneration,
+} from "./seed.ts";
 
-Deno.test("parseWorldSeed: valid seed passes", () => {
+Deno.test("stringToGeneration: valid seed passes", () => {
   const validSeed = `
   # . . #
   . # # .
   . . . #
   # # . .
   `;
-  parseWorldSeed(validSeed, 4, 4);
+  stringToGeneration(validSeed, 4, 4);
 });
 
-Deno.test("parseWorldSeed: invalid characters throw", async (t) => {
+Deno.test("stringToGeneration: invalid characters throw", async (t) => {
   await t.step("Seed containing `O` throws", () => {
     const invalidSeed = `
     # . . O
@@ -20,7 +25,7 @@ Deno.test("parseWorldSeed: invalid characters throw", async (t) => {
     # # . .
     `;
     assertThrows(
-      () => parseWorldSeed(invalidSeed, 4, 4),
+      () => stringToGeneration(invalidSeed, 4, 4),
       Error,
       "Seed contains invalid characters",
     );
@@ -33,14 +38,14 @@ Deno.test("parseWorldSeed: invalid characters throw", async (t) => {
     # # . .
     `;
     assertThrows(
-      () => parseWorldSeed(invalidSeed, 4, 4),
+      () => stringToGeneration(invalidSeed, 4, 4),
       Error,
       "Seed contains invalid characters",
     );
   });
 });
 
-Deno.test("parseWorldSeed: incorrect height throws", () => {
+Deno.test("stringToGeneration: incorrect height throws", () => {
   const invalidSeed = `
   # . . #
   . # # .
@@ -48,13 +53,13 @@ Deno.test("parseWorldSeed: incorrect height throws", () => {
   # # . .
   `;
   assertThrows(
-    () => parseWorldSeed(invalidSeed, 4, 5),
+    () => stringToGeneration(invalidSeed, 4, 5),
     Error,
     "Seed height does not match specified height",
   );
 });
 
-Deno.test("parseWorldSeed: incorrect width throws", () => {
+Deno.test("stringToGeneration: incorrect width throws", () => {
   const invalidSeed = `
   # . . #
   . # # .
@@ -62,20 +67,20 @@ Deno.test("parseWorldSeed: incorrect width throws", () => {
   # #   . 
   `;
   assertThrows(
-    () => parseWorldSeed(invalidSeed, 4, 4),
+    () => stringToGeneration(invalidSeed, 4, 4),
     Error,
     "Seed width does not match specified width",
   );
 });
 
-Deno.test("parseWorldSeed: alive cells are correctly identified", () => {
+Deno.test("stringToGeneration: alive cells are correctly identified", () => {
   const seed = `
   # . . #
   . # # .
   . . . #
   # # . .
   `;
-  const aliveCells = parseWorldSeed(seed, 4, 4);
+  const aliveCells = stringToGeneration(seed, 4, 4);
   const expectedAliveCellKeys = [
     "0,0",
     "3,0",
@@ -109,4 +114,26 @@ Deno.test("parseWorldSeed: alive cells are correctly identified", () => {
       throw new Error(`Unexpected alive cell at ${key} found`);
     }
   }
+});
+
+Deno.test("generationToString: empty generation returns all dead cells", () => {
+  const generation: Generation = new Map();
+  const size: Rectangle = { w: 3, h: 3 };
+  const result = generationToString(generation, size);
+  const expected = ". . .\n. . .\n. . .";
+  assertEquals(result, expected);
+});
+
+Deno.test("generationToString: reproduces original seed string", () => {
+  const seed = `
+  # . . #
+  . # # .
+  . . . #
+  # # . .
+  `;
+  const size = { w: 4, h: 4 };
+  const generation = stringToGeneration(seed, size.w, size.h);
+  const result = generationToString(generation, size);
+  const expected = "# . . #\n. # # .\n. . . #\n# # . .";
+  assertEquals(result, expected);
 });

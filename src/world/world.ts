@@ -6,7 +6,7 @@ import type {
   WorldOptions,
 } from "../types.ts";
 import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
-import { createCellKey, parseWorldSeed } from "../seed/seed.ts";
+import { createCellKey, stringToGeneration } from "../seed/seed.ts";
 import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 
 export class World {
@@ -31,7 +31,7 @@ export class World {
     if (seed === undefined) {
       this.generations.push(new Map());
     } else {
-      const firstGeneration = parseWorldSeed(seed, gridSize.w, gridSize.h);
+      const firstGeneration = stringToGeneration(seed, gridSize.w, gridSize.h);
       this.generations.push(firstGeneration);
     }
   }
