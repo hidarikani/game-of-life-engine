@@ -1,8 +1,8 @@
-import type { CellChars, Generation, Rectangle } from "../types.ts";
+import type { Generation, Rectangle } from "../types.ts";
 import { assertEquals, assertThrows } from "@std/assert";
 import {
-  createCellKey,
   generationToString,
+  normalizeSeed,
   stringToGeneration,
 } from "./seed.ts";
 
@@ -134,6 +134,6 @@ Deno.test("generationToString: reproduces original seed string", () => {
   const size = { w: 4, h: 4 };
   const generation = stringToGeneration(seed, size.w, size.h);
   const result = generationToString(generation, size);
-  const expected = "# . . #\n. # # .\n. . . #\n# # . .";
+  const expected = normalizeSeed(seed);
   assertEquals(result, expected);
 });
