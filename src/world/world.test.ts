@@ -1,6 +1,8 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { GRID_MODES } from "../constants.ts";
 import { World } from "./world.ts";
+import type { Rectangle } from "../types.ts";
+import { normalizeSeed } from "../seed/seed.ts";
 
 Deno.test("World: width too small throws", () => {
   assertThrows(
@@ -97,7 +99,10 @@ Deno.test("World.getCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
     const bottomRightNeighborX = 3; // wraps to 0
     const bottomRightNeighborY = 3; // wraps to 0
-    const isAlive = world.getCell({ x: bottomRightNeighborX, y: bottomRightNeighborY });
+    const isAlive = world.getCell({
+      x: bottomRightNeighborX,
+      y: bottomRightNeighborY,
+    });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -226,5 +231,32 @@ Deno.test("World.evolveCell: correctly evolves cell state", async (t) => {
       seed,
     });
     assertEquals(world.evolveCell({ x: 1, y: 1 }), true);
+  });
+});
+
+Deno.test("World.evolveGrid: correctly evolves grid state", async (t) => {
+  await t.step("Evolves blinker", () => {
+    const seed = `
+      . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
+      . . . . .
+    `;
+
+    const expected = `
+      . . . . .
+      . . . . .
+      . # # # .
+      . . . . .
+      . . . . .
+    `;
+
+    const gridSize: Rectangle = { w: 5, h: 5 };
+
+    const world = new World({ gridSize, seed });
+    world.evolveGrid();
+    const actual = world.toString();
+    assertEquals(actual, normalizeSeed(expected));
   });
 });

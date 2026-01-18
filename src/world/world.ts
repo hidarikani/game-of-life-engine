@@ -6,7 +6,11 @@ import type {
   WorldOptions,
 } from "../types.ts";
 import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
-import { createCellKey, stringToGeneration } from "../seed/seed.ts";
+import {
+  createCellKey,
+  generationToString,
+  stringToGeneration,
+} from "../seed/seed.ts";
 import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 
 export class World {
@@ -137,5 +141,25 @@ export class World {
 
     if (totalAliveNeighbors === 3) return true;
     return centerAlive;
+  }
+
+  evolveGrid(): void {
+    const newGeneration: Generation = new Map();
+
+    for (let y = 0; y < this.gridSize.h; y++) {
+      for (let x = 0; x < this.gridSize.w; x++) {
+        const nextCell = this.evolveCell({ x, y });
+        if (nextCell) {
+          const key = createCellKey(x, y);
+          newGeneration.set(key, true);
+        }
+      }
+    }
+    this.generations.push(newGeneration);
+  }
+
+  toString(): string {
+    const generation = this.getPresentGeneration();
+    return generationToString(generation, this.gridSize);
   }
 }
