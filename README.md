@@ -1,5 +1,14 @@
 # game-of-life-engine
 
+## Development
+
+Runs on [Deno][deno]. Tested with `deno --version` `2.5.x`.
+
+```zsh
+# run unit tests in watch mode
+deno run test:watch
+```
+
 ## Coordinates
 
 Instantiating a world with the following params:
@@ -44,3 +53,7 @@ behavior of border cells depends on `GridMode`.
   interactions—your glider can collide with its own past if the grid is small.
   For example when trying to access cell at `{ x: 9, y: 5}` it shall be
   translated to `{ x: 0, y: 0 }`.
+
+  ---
+
+  [deno]: https://deno.com/
