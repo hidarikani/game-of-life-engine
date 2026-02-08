@@ -1,8 +1,27 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { GRID_MODES } from "../constants.ts";
 import { World } from "./world.ts";
-import type { Rectangle } from "../types.ts";
+import type { GridMode, Rectangle, WorldOptions } from "../types.ts";
 import { normalizeSeed } from "../seed/seed.ts";
+
+Deno.test("World: using all options", () => {
+  const gridSize: Rectangle = { w: 5, h: 5 };
+  const mode: GridMode = GRID_MODES.TOROIDAL;
+  const seed = `
+      . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
+      . . . . .
+    `;
+  const worldOptions: WorldOptions = { gridSize, mode, seed };
+
+  const world = new World(worldOptions);
+
+  assertEquals(world.gridSize, gridSize);
+  assertEquals(world.mode, mode);
+  assertEquals(world.getPresentGeneration().size, 3); // 3 alive cells in the seed
+});
 
 Deno.test("World: width too small throws", () => {
   assertThrows(
