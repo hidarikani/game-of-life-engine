@@ -18,4 +18,6 @@ export type WorldOptions = {
   seed?: string;
 };
 
-export type Generation = Map<string, boolean>;
+export type CellKey = `${number},${number}`;
+
+export type Generation = Map<CellKey, boolean>;

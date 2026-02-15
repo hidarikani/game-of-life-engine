@@ -7,8 +7,8 @@ import type {
 } from "../types.ts";
 import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
 import {
-  createCellKey,
   generationToString,
+  pointToCellKey,
   stringToGeneration,
 } from "../seed/seed.ts";
 import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
@@ -38,6 +38,9 @@ export class World {
       const firstGeneration = stringToGeneration(seed, gridSize.w, gridSize.h);
       this.generations.push(firstGeneration);
     }
+  }
+
+  plant(topLeftCorner: Point, seed: Generation) {
   }
 
   getGeneration(i: number): Generation {
@@ -78,7 +81,7 @@ export class World {
           wrappedY = 0;
         }
 
-        const key = createCellKey(wrappedX, wrappedY);
+        const key = pointToCellKey({ x: wrappedX, y: wrappedY });
 
         if (presentGeneration.has(key)) {
           return presentGeneration.get(key)!;
@@ -88,7 +91,7 @@ export class World {
       }
     }
 
-    const key = createCellKey(x, y);
+    const key = pointToCellKey({ x, y });
 
     if (presentGeneration.has(key)) {
       return presentGeneration.get(key)!;
@@ -150,7 +153,7 @@ export class World {
       for (let x = 0; x < this.gridSize.w; x++) {
         const nextCell = this.evolveCell({ x, y });
         if (nextCell) {
-          const key = createCellKey(x, y);
+          const key = pointToCellKey({ x, y });
           newGeneration.set(key, true);
         }
       }

@@ -1,4 +1,10 @@
-import type { CellChars, Generation, Rectangle } from "../types.ts";
+import type {
+  CellChars,
+  CellKey,
+  Generation,
+  Point,
+  Rectangle,
+} from "../types.ts";
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
@@ -8,7 +14,7 @@ import {
   SEPARATOR_CHAR,
 } from "../constants.ts";
 
-export const createCellKey = (x: number, y: number): string => {
+export const pointToCellKey = ({ x, y }: Point): CellKey => {
   return `${x},${y}`;
 };
 
@@ -23,7 +29,7 @@ export const stringToGeneration = (
   seed: string,
   width: number,
   height: number,
-): Map<string, boolean> => {
+): Generation => {
   if (!SEED_PATTERN.test(seed)) {
     throw new Error("Seed contains invalid characters");
   }
@@ -52,7 +58,7 @@ export const stringToGeneration = (
     for (let x = 0; x < width; x++) {
       const cellState = rows[y][x];
       if (cellState) {
-        const key = createCellKey(x, y);
+        const key = pointToCellKey({x, y});
         aliveCells.set(key, true);
       }
     }
@@ -69,7 +75,7 @@ export const generationToString = (
   for (let y = 0; y < size.h; y++) {
     const row: string[] = [];
     for (let x = 0; x < size.w; x++) {
-      const key = createCellKey(x, y);
+      const key = pointToCellKey({x, y});
       const isAlive = generation.get(key) ?? false;
       row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
     }
