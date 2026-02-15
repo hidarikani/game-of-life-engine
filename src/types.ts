@@ -20,4 +20,4 @@ export type WorldOptions = {
 
 export type CellKey = `${number},${number}`;
 
-export type Generation = Map<CellKey, boolean>;
+export type LiveCells = Map<CellKey, boolean>;

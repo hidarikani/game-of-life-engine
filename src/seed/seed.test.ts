@@ -1,4 +1,4 @@
-import type { CellKey, Generation, Rectangle } from "../types.ts";
+import type { CellKey, LiveCells, Rectangle } from "../types.ts";
 import { assertEquals, assertThrows } from "@std/assert";
 import {
   generationToString,
@@ -117,7 +117,7 @@ Deno.test("stringToGeneration: alive cells are correctly identified", () => {
 });
 
 Deno.test("generationToString: empty generation returns all dead cells", () => {
-  const generation: Generation = new Map();
+  const generation: LiveCells = new Map();
   const size: Rectangle = { w: 3, h: 3 };
   const result = generationToString(generation, size);
   const expected = ". . .\n. . .\n. . .";

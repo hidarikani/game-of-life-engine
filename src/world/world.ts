@@ -1,5 +1,5 @@
 import type {
-  Generation,
+  LiveCells,
   GridMode,
   Point,
   Rectangle,
@@ -16,7 +16,7 @@ import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 export class World {
   gridSize: Rectangle;
   mode: GridMode;
-  generations: Generation[];
+  generations: LiveCells[];
 
   constructor(
     { gridSize, mode = GRID_MODES.FINITE, seed }: WorldOptions,
@@ -40,14 +40,14 @@ export class World {
     }
   }
 
-  plant(topLeftCorner: Point, seed: Generation) {
+  plant(topLeftCorner: Point, seed: LiveCells) {
   }
 
-  getGeneration(i: number): Generation {
+  getGeneration(i: number): LiveCells {
     return this.generations[i];
   }
 
-  getPresentGeneration(): Generation {
+  getPresentGeneration(): LiveCells {
     return this.getGeneration(this.generations.length - 1);
   }
 
@@ -147,7 +147,7 @@ export class World {
   }
 
   evolveGrid(): void {
-    const newGeneration: Generation = new Map();
+    const newGeneration: LiveCells = new Map();
 
     for (let y = 0; y < this.gridSize.h; y++) {
       for (let x = 0; x < this.gridSize.w; x++) {

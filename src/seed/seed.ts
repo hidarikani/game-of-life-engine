@@ -1,22 +1,28 @@
 import type {
   CellChars,
   CellKey,
-  Generation,
+  LiveCells,
   Point,
   Rectangle,
 } from "../types.ts";
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
+  CELL_KEY_SEPARATOR,
   DEAD_CHAR,
   NEWLINE_CHAR,
   SEED_PATTERN,
   SEPARATOR_CHAR,
 } from "../constants.ts";
 
-export const pointToCellKey = ({ x, y }: Point): CellKey => {
-  return `${x},${y}`;
-};
+export function pointToCellKey({ x, y }: Point): CellKey {
+  return `${x}${CELL_KEY_SEPARATOR}${y}`;
+}
+
+export function cellKeyToPoint(key: CellKey): Point {
+  const [x, y] = key.split(CELL_KEY_SEPARATOR).map(Number);
+  return { x, y };
+}
 
 export const normalizeSeed = (seed: string): string =>
   seed
@@ -29,7 +35,7 @@ export const stringToGeneration = (
   seed: string,
   width: number,
   height: number,
-): Generation => {
+): LiveCells => {
   if (!SEED_PATTERN.test(seed)) {
     throw new Error("Seed contains invalid characters");
   }
@@ -52,13 +58,13 @@ export const stringToGeneration = (
     }
   }
 
-  const aliveCells: Generation = new Map();
+  const aliveCells: LiveCells = new Map();
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const cellState = rows[y][x];
       if (cellState) {
-        const key = pointToCellKey({x, y});
+        const key = pointToCellKey({ x, y });
         aliveCells.set(key, true);
       }
     }
@@ -68,14 +74,14 @@ export const stringToGeneration = (
 };
 
 export const generationToString = (
-  generation: Generation,
+  generation: LiveCells,
   size: Rectangle,
 ): string => {
   let res = "";
   for (let y = 0; y < size.h; y++) {
     const row: string[] = [];
     for (let x = 0; x < size.w; x++) {
-      const key = pointToCellKey({x, y});
+      const key = pointToCellKey({ x, y });
       const isAlive = generation.get(key) ?? false;
       row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
     }

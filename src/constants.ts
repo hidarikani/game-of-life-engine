@@ -21,3 +21,5 @@ export const GRID_MODES = {
   FINITE: "Finite",
   TOROIDAL: "Toroidal",
 } as const;
+
+export const CELL_KEY_SEPARATOR = ',';
