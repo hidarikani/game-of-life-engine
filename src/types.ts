@@ -21,3 +21,7 @@ export type WorldOptions = {
 export type CellKey = `${number},${number}`;
 
 export type LiveCells = Map<CellKey, boolean>;
+
+export type ValidationResult =
+  | { valid: true }
+  | { valid: false; message: string };

@@ -1,4 +1,4 @@
-import type { LiveCells, Point } from "../types.ts";
+import type { LiveCells, Point, ValidationResult } from "../types.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
 
 export class Grid {
@@ -26,6 +26,28 @@ export class Grid {
       this.#liveCells = liveCells;
     } else {
       this.#liveCells = new Map();
+    }
+  }
+
+  contains(grid: Grid): ValidationResult {
+    if (
+      grid.#bottomRightCorner.x <= this.#bottomRightCorner.x &&
+      grid.#bottomRightCorner.y <= this.#bottomRightCorner.y
+    ) {
+      return { valid: true };
+    }
+
+    return {
+      valid: false,
+      message: `Grid with bounds (${grid.#bottomRightCorner.x}, ${grid.#bottomRightCorner.y}) does not fit within (${this.#bottomRightCorner.x}, ${this.#bottomRightCorner.y}).`,
+    };
+  }
+
+  place(grid: Grid): void {
+    const contains  = this.contains(grid)
+
+    if (!contains.valid) {
+      throw new Error(contains.message);
     }
   }
 }
