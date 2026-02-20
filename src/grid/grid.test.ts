@@ -85,23 +85,37 @@ Deno.test("Invalid constructor params", async (t) => {
   });
 });
 
-Deno.test("Grid.contains", async (t) => {
+Deno.test("Grid.contains returns true", async (t) => {
   await t.step("should return valid when grid contains a smaller grid", () => {
     const outer = new Grid({ x: 10, y: 10 });
     const inner = new Grid({ x: 5, y: 5 });
-    assertEquals(outer.contains(inner), { valid: true });
+    assertEquals(outer.contains(undefined, inner), { valid: true });
   });
 
   await t.step("should return valid when grids are the same size", () => {
     const a = new Grid({ x: 5, y: 5 });
     const b = new Grid({ x: 5, y: 5 });
-    assertEquals(a.contains(b), { valid: true });
+    assertEquals(a.contains(undefined, b), { valid: true });
   });
 
+  await t.step("should return valid when grid fits with offset", () => {
+    const outer = new Grid({ x: 10, y: 10 });
+    const inner = new Grid({ x: 5, y: 5 });
+    assertEquals(outer.contains({ x: 3, y: 3 }, inner), { valid: true });
+  });
+
+  await t.step("should return valid when offset keeps grid exactly at bounds", () => {
+    const outer = new Grid({ x: 10, y: 10 });
+    const inner = new Grid({ x: 5, y: 5 });
+    assertEquals(outer.contains({ x: 5, y: 5 }, inner), { valid: true });
+  });
+});
+
+Deno.test("Grid.contains returns false", async (t) => {
   await t.step("should return invalid when grid is larger", () => {
     const smaller = new Grid({ x: 5, y: 5 });
     const larger = new Grid({ x: 10, y: 10 });
-    assertEquals(smaller.contains(larger), {
+    assertEquals(smaller.contains(undefined, larger), {
       valid: false,
       message:
         "Grid with bounds (10, 10) does not fit within (5, 5).",
@@ -111,7 +125,7 @@ Deno.test("Grid.contains", async (t) => {
   await t.step("should return invalid when only x exceeds bounds", () => {
     const outer = new Grid({ x: 5, y: 10 });
     const inner = new Grid({ x: 6, y: 10 });
-    assertEquals(outer.contains(inner), {
+    assertEquals(outer.contains(undefined, inner), {
       valid: false,
       message:
         "Grid with bounds (6, 10) does not fit within (5, 10).",
@@ -121,10 +135,20 @@ Deno.test("Grid.contains", async (t) => {
   await t.step("should return invalid when only y exceeds bounds", () => {
     const outer = new Grid({ x: 10, y: 5 });
     const inner = new Grid({ x: 10, y: 6 });
-    assertEquals(outer.contains(inner), {
+    assertEquals(outer.contains(undefined, inner), {
       valid: false,
       message:
         "Grid with bounds (10, 6) does not fit within (10, 5).",
+    });
+  });
+
+  await t.step("should return invalid when offset pushes grid out of bounds", () => {
+    const outer = new Grid({ x: 10, y: 10 });
+    const inner = new Grid({ x: 5, y: 5 });
+    assertEquals(outer.contains({ x: 6, y: 6 }, inner), {
+      valid: false,
+      message:
+        "Grid with bounds (11, 11) does not fit within (10, 10).",
     });
   });
 });

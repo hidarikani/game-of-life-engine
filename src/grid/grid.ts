@@ -29,22 +29,29 @@ export class Grid {
     }
   }
 
-  contains(grid: Grid): ValidationResult {
+  contains(
+    topLeftCorner: Point = { x: 0, y: 0 },
+    grid: Grid,
+  ): ValidationResult {
+    const effectiveX = topLeftCorner.x + grid.#bottomRightCorner.x;
+    const effectiveY = topLeftCorner.y + grid.#bottomRightCorner.y;
+
     if (
-      grid.#bottomRightCorner.x <= this.#bottomRightCorner.x &&
-      grid.#bottomRightCorner.y <= this.#bottomRightCorner.y
+      effectiveX <= this.#bottomRightCorner.x &&
+      effectiveY <= this.#bottomRightCorner.y
     ) {
       return { valid: true };
     }
 
     return {
       valid: false,
-      message: `Grid with bounds (${grid.#bottomRightCorner.x}, ${grid.#bottomRightCorner.y}) does not fit within (${this.#bottomRightCorner.x}, ${this.#bottomRightCorner.y}).`,
+      message:
+        `Grid with bounds (${effectiveX}, ${effectiveY}) does not fit within (${this.#bottomRightCorner.x}, ${this.#bottomRightCorner.y}).`,
     };
   }
 
-  place(grid: Grid): void {
-    const contains  = this.contains(grid)
+  place(topLeftCorner: Point = { x: 0, y: 0 }, grid: Grid): void {
+    const contains = this.contains(topLeftCorner, grid);
 
     if (!contains.valid) {
       throw new Error(contains.message);
