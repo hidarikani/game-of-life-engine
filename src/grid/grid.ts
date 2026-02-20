@@ -1,4 +1,10 @@
-import type { IGrid, LiveCells, Point, ValidationResult } from "../types.ts";
+import type {
+  IGrid,
+  LiveCells,
+  Point,
+  PositionedIGrid,
+  ValidationResult,
+} from "../types.ts";
 import { cellKeyToPoint, pointToCellKey } from "../seed/seed.ts";
 
 export class Grid implements IGrid {
@@ -38,10 +44,7 @@ export class Grid implements IGrid {
   }
 
   contains(
-    { topLeftCorner = { x: 0, y: 0 }, grid }: {
-      topLeftCorner?: Point;
-      grid: IGrid;
-    },
+    { offset: topLeftCorner = { x: 0, y: 0 }, inner: grid }: PositionedIGrid,
   ): ValidationResult {
     const effectiveX = topLeftCorner.x + grid.bottomRightCorner.x;
     const effectiveY = topLeftCorner.y + grid.bottomRightCorner.y;
@@ -61,12 +64,9 @@ export class Grid implements IGrid {
   }
 
   place(
-    { topLeftCorner = { x: 0, y: 0 }, grid }: {
-      topLeftCorner?: Point;
-      grid: IGrid;
-    },
+    { offset: topLeftCorner = { x: 0, y: 0 }, inner: grid }: PositionedIGrid,
   ): void {
-    const contains = this.contains({ topLeftCorner, grid });
+    const contains = this.contains({ offset: topLeftCorner, inner: grid });
 
     if (!contains.valid) {
       throw new Error(contains.message);

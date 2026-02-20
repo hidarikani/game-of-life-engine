@@ -26,9 +26,11 @@ export type ValidationResult =
   | { valid: true }
   | { valid: false; message: string };
 
+export type PositionedIGrid = { offset?: Point; inner: IGrid };
+
 export interface IGrid {
   readonly bottomRightCorner: Point;
   readonly liveCells: LiveCells;
-  contains(params: { topLeftCorner?: Point; grid: IGrid }): ValidationResult;
-  place(params: { topLeftCorner?: Point; grid: IGrid }): void;
+  contains(params: PositionedIGrid): ValidationResult;
+  place(params: PositionedIGrid): void;
 }
