@@ -30,8 +30,7 @@ export class Grid {
   }
 
   contains(
-    topLeftCorner: Point = { x: 0, y: 0 },
-    grid: Grid,
+    { topLeftCorner = { x: 0, y: 0 }, grid }: { topLeftCorner?: Point; grid: Grid },
   ): ValidationResult {
     const effectiveX = topLeftCorner.x + grid.#bottomRightCorner.x;
     const effectiveY = topLeftCorner.y + grid.#bottomRightCorner.y;
@@ -50,8 +49,10 @@ export class Grid {
     };
   }
 
-  place(topLeftCorner: Point = { x: 0, y: 0 }, grid: Grid): void {
-    const contains = this.contains(topLeftCorner, grid);
+  place(
+    { topLeftCorner = { x: 0, y: 0 }, grid }: { topLeftCorner?: Point; grid: Grid },
+  ): void {
+    const contains = this.contains({ topLeftCorner, grid });
 
     if (!contains.valid) {
       throw new Error(contains.message);
