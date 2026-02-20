@@ -22,4 +22,9 @@ export const GRID_MODES = {
   TOROIDAL: "Toroidal",
 } as const;
 
-export const CELL_KEY_SEPARATOR = ',';
+export const CELL_KEY_SEPARATOR = ",";
+
+export const PLACEMENT_MODES = {
+  OVERWRITE: "Overwrite",
+  MERGE: "Merge",
+} as const;

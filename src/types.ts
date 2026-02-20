@@ -26,11 +26,15 @@ export type ValidationResult =
   | { valid: true }
   | { valid: false; message: string };
 
-export type PositionedIGrid = { offset?: Point; inner: IGrid };
-
 export interface IGrid {
   readonly bottomRightCorner: Point;
   readonly liveCells: LiveCells;
-  contains(params: PositionedIGrid): ValidationResult;
-  place(params: PositionedIGrid): void;
+  contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
+  place(params: {
+    inner: IGrid;
+    offset?: Point;
+    mode?: PlacementMode;
+  }): void;
 }
+
+export type PlacementMode = "Overwrite" | "Merge";

@@ -1,11 +1,12 @@
 import type {
   IGrid,
   LiveCells,
+  PlacementMode,
   Point,
-  PositionedIGrid,
   ValidationResult,
 } from "../types.ts";
 import { cellKeyToPoint, pointToCellKey } from "../seed/seed.ts";
+import { PLACEMENT_MODES } from "../constants.ts";
 
 export class Grid implements IGrid {
   #bottomRightCorner: Point;
@@ -44,10 +45,10 @@ export class Grid implements IGrid {
   }
 
   contains(
-    { offset: topLeftCorner = { x: 0, y: 0 }, inner: grid }: PositionedIGrid,
+    { inner: grid, offset = { x: 0, y: 0 } }: { inner: IGrid; offset?: Point },
   ): ValidationResult {
-    const effectiveX = topLeftCorner.x + grid.bottomRightCorner.x;
-    const effectiveY = topLeftCorner.y + grid.bottomRightCorner.y;
+    const effectiveX = offset.x + grid.bottomRightCorner.x;
+    const effectiveY = offset.y + grid.bottomRightCorner.y;
 
     if (
       effectiveX <= this.#bottomRightCorner.x &&
@@ -64,19 +65,32 @@ export class Grid implements IGrid {
   }
 
   place(
-    { offset: topLeftCorner = { x: 0, y: 0 }, inner: grid }: PositionedIGrid,
+    { offset = { x: 0, y: 0 }, inner: grid, mode = PLACEMENT_MODES.OVERWRITE }:
+      {
+        inner: IGrid;
+        offset?: Point;
+        mode?: PlacementMode;
+      },
   ): void {
-    const contains = this.contains({ offset: topLeftCorner, inner: grid });
+    const contains = this.contains({ offset, inner: grid });
 
     if (!contains.valid) {
       throw new Error(contains.message);
     }
 
+    if (mode === PLACEMENT_MODES.OVERWRITE) {
+      for (let x = offset.x; x <= offset.x + grid.bottomRightCorner.x; x++) {
+        for (let y = offset.y; y <= offset.y + grid.bottomRightCorner.y; y++) {
+          this.#liveCells.delete(pointToCellKey({ x, y }));
+        }
+      }
+    }
+
     for (const cellKey of grid.liveCells.keys()) {
       const point = cellKeyToPoint(cellKey);
       const offsetKey = pointToCellKey({
-        x: point.x + topLeftCorner.x,
-        y: point.y + topLeftCorner.y,
+        x: point.x + offset.x,
+        y: point.y + offset.y,
       });
       this.#liveCells.set(offsetKey, true);
     }
