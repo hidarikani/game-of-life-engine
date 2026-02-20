@@ -1,7 +1,7 @@
-import type { LiveCells, Point, ValidationResult } from "../types.ts";
-import { cellKeyToPoint } from "../seed/seed.ts";
+import type { IGrid, LiveCells, Point, ValidationResult } from "../types.ts";
+import { cellKeyToPoint, pointToCellKey } from "../seed/seed.ts";
 
-export class Grid {
+export class Grid implements IGrid {
   #bottomRightCorner: Point;
   #liveCells: LiveCells;
 
@@ -29,11 +29,22 @@ export class Grid {
     }
   }
 
+  get bottomRightCorner(): Point {
+    return this.#bottomRightCorner;
+  }
+
+  get liveCells(): LiveCells {
+    return this.#liveCells;
+  }
+
   contains(
-    { topLeftCorner = { x: 0, y: 0 }, grid }: { topLeftCorner?: Point; grid: Grid },
+    { topLeftCorner = { x: 0, y: 0 }, grid }: {
+      topLeftCorner?: Point;
+      grid: IGrid;
+    },
   ): ValidationResult {
-    const effectiveX = topLeftCorner.x + grid.#bottomRightCorner.x;
-    const effectiveY = topLeftCorner.y + grid.#bottomRightCorner.y;
+    const effectiveX = topLeftCorner.x + grid.bottomRightCorner.x;
+    const effectiveY = topLeftCorner.y + grid.bottomRightCorner.y;
 
     if (
       effectiveX <= this.#bottomRightCorner.x &&
@@ -50,12 +61,24 @@ export class Grid {
   }
 
   place(
-    { topLeftCorner = { x: 0, y: 0 }, grid }: { topLeftCorner?: Point; grid: Grid },
+    { topLeftCorner = { x: 0, y: 0 }, grid }: {
+      topLeftCorner?: Point;
+      grid: IGrid;
+    },
   ): void {
     const contains = this.contains({ topLeftCorner, grid });
 
     if (!contains.valid) {
       throw new Error(contains.message);
+    }
+
+    for (const cellKey of grid.liveCells.keys()) {
+      const point = cellKeyToPoint(cellKey);
+      const offsetKey = pointToCellKey({
+        x: point.x + topLeftCorner.x,
+        y: point.y + topLeftCorner.y,
+      });
+      this.#liveCells.set(offsetKey, true);
     }
   }
 }

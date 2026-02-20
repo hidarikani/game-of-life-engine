@@ -25,3 +25,10 @@ export type LiveCells = Map<CellKey, boolean>;
 export type ValidationResult =
   | { valid: true }
   | { valid: false; message: string };
+
+export interface IGrid {
+  readonly bottomRightCorner: Point;
+  readonly liveCells: LiveCells;
+  contains(params: { topLeftCorner?: Point; grid: IGrid }): ValidationResult;
+  place(params: { topLeftCorner?: Point; grid: IGrid }): void;
+}
