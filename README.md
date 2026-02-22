@@ -8,14 +8,14 @@ Install
 deno add jsr:@hidarikani/game-of-life-engine
 ```
 
-Import, create a `World` instance and compute one generation.
+Import, create an `Engine` instance and compute one generation.
 
 ```ts
 import {
   GridMode,
   Rectangle,
-  World,
-  WorldOptions,
+  Engine,
+  EngineOptions,
 } from "@hidarikani/game-of-life-engine";
 
 const gridSize: Rectangle = { w: 5, h: 5 };
@@ -27,21 +27,21 @@ const seed = `
       . . # . .
       . . . . .
     `;
-const worldOptions: WorldOptions = { gridSize, mode, seed };
+const engineOptions: EngineOptions = { gridSize, mode, seed };
 
-const worldFoo = new World(worldOptions);
-const worldBar = new World({ gridSize });
+const engineFoo = new Engine(engineOptions);
+const engineBar = new Engine({ gridSize });
 
-worldFoo.evolveGrid();
-const actual = world.toString();
+engineFoo.evolveGrid();
+const actual = engineFoo.toString();
 ```
 
 ## Coordinates
 
-Instantiating a world with the following params:
+Instantiating an engine with the following params:
 
 ```js
-const world = new World({ width: 8, height: 4 });
+const engine = new Engine({ width: 8, height: 4 });
 ```
 
 Will result in the following grid. Dead cells are represented by `.` and live
@@ -65,7 +65,7 @@ cells by `#`. The coordinates of the only live cell on the grid below is
 Y axis
 ```
 
-Notice 1 cell border around the world (`x = -1, x = 9, y = -1, y = 5`). The
+Notice 1 cell border around the grid (`x = -1, x = 9, y = -1, y = 5`). The
 behavior of border cells depends on `GridMode`.
 
 - `GridMode.Finite` — border cells are treated as permanently dead. In this
