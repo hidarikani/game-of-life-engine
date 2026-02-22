@@ -50,8 +50,19 @@ export class Grid implements IGrid {
     return this.#bottomRightCorner;
   }
 
-  get liveCells(): LiveCells {
-    return this.#liveCells;
+  get liveCells(): {key: Point, value: boolean}[] {
+    return Array.from(this.#liveCells, ([cellKey, value]) => ({
+      key: cellKeyToPoint(cellKey),
+      value,
+    }));
+  }
+
+  cell({ x, y }: Point): boolean {
+    return this.#liveCells.get(pointToCellKey({ x, y })) ?? false;
+  }
+
+  population(): number {
+    return this.#liveCells.size;
   }
 
   contains(
@@ -75,32 +86,30 @@ export class Grid implements IGrid {
   }
 
   place(
-    { offset = { x: 0, y: 0 }, inner: grid, mode = PLACEMENT_MODES.OVERWRITE }:
-      {
-        inner: IGrid;
-        offset?: Point;
-        mode?: PlacementMode;
-      },
+    { offset = { x: 0, y: 0 }, inner, mode = PLACEMENT_MODES.OVERWRITE }: {
+      inner: IGrid;
+      offset?: Point;
+      mode?: PlacementMode;
+    },
   ): void {
-    const contains = this.contains({ offset, inner: grid });
+    const contains = this.contains({ offset, inner: inner });
 
     if (!contains.valid) {
       throw new Error(contains.message);
     }
 
     if (mode === PLACEMENT_MODES.OVERWRITE) {
-      for (let x = offset.x; x <= offset.x + grid.bottomRightCorner.x; x++) {
-        for (let y = offset.y; y <= offset.y + grid.bottomRightCorner.y; y++) {
+      for (let x = offset.x; x <= offset.x + inner.bottomRightCorner.x; x++) {
+        for (let y = offset.y; y <= offset.y + inner.bottomRightCorner.y; y++) {
           this.#liveCells.delete(pointToCellKey({ x, y }));
         }
       }
     }
 
-    for (const cellKey of grid.liveCells.keys()) {
-      const point = cellKeyToPoint(cellKey);
+    for (const { key } of inner.liveCells) {
       const offsetKey = pointToCellKey({
-        x: point.x + offset.x,
-        y: point.y + offset.y,
+        x: key.x + offset.x,
+        y: key.y + offset.y,
       });
       this.#liveCells.set(offsetKey, true);
     }

@@ -28,7 +28,9 @@ export type ValidationResult =
 
 export interface IGrid {
   readonly bottomRightCorner: Point;
-  readonly liveCells: LiveCells;
+  readonly liveCells: {key: Point, value: boolean}[];
+  cell ({ x, y }: Point): boolean;
+  population(): number;
   contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
   place(params: {
     inner: IGrid;

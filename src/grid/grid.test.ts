@@ -99,17 +99,9 @@ Deno.test("Grid.fromString valid params", async (t) => {
     assertEquals(grid.bottomRightCorner, { x: 4, y: 4 });
   });
 
-  await t.step("should parse live cells correctly", () => {
+  await t.step("should parse cells correctly", () => {
     const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
     assertEquals(grid.toString(), normalizeSeed(validSeed));
-  });
-
-  await t.step("should parse dead cells correctly", () => {
-    const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 0 })), false);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 2, y: 0 })), false);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 1 })), false);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 1 })), false);
   });
 
   await t.step(
@@ -121,7 +113,7 @@ Deno.test("Grid.fromString valid params", async (t) => {
     . . .
     `;
       const grid = Grid.fromString({ x: 3, y: 3 }, deadSeed);
-      assertEquals(grid.liveCells.size, 0);
+      assertEquals(grid.population(), 0);
     },
   );
 
@@ -134,7 +126,7 @@ Deno.test("Grid.fromString valid params", async (t) => {
     # # #
     `;
       const grid = Grid.fromString({ x: 3, y: 3 }, aliveSeed);
-      assertEquals(grid.liveCells.size, 9);
+      assertEquals(grid.population(), 9);
     },
   );
 });
