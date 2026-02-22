@@ -145,7 +145,86 @@ Deno.test("Grid.fromString valid params", async (t) => {
 });
 
 Deno.test("Grid.fromString invalid params", async (t) => {
-  // TBD
+  await t.step("should throw when seed contains invalid character `O`", () => {
+    const invalidSeed = `
+    # . . O
+    . # # .
+    . . . #
+    # # . .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 4, y: 4 }, invalidSeed),
+      Error,
+      "Seed contains invalid characters",
+    );
+  });
+
+  await t.step("should throw when seed contains invalid character `,`", () => {
+    const invalidSeed = `
+    # . . ,
+    . # # .
+    . . . #
+    # # . .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 4, y: 4 }, invalidSeed),
+      Error,
+      "Seed contains invalid characters",
+    );
+  });
+
+  await t.step("should throw when width is below minimum", () => {
+    const seed = `
+    # .
+    . #
+    . .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 2, y: 3 }, seed),
+      Error,
+      "Width must be at least 3",
+    );
+  });
+
+  await t.step("should throw when height is below minimum", () => {
+    const seed = `
+    # . .
+    . # .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 3, y: 2 }, seed),
+      Error,
+      "Height must be at least 3",
+    );
+  });
+
+  await t.step("should throw when seed height does not match", () => {
+    const seed = `
+    # . . #
+    . # # .
+    . . . #
+    # # . .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 4, y: 5 }, seed),
+      Error,
+      "Seed height does not match specified height",
+    );
+  });
+
+  await t.step("should throw when seed width does not match", () => {
+    const seed = `
+    # . . #
+    . # # .
+    . . . #
+    # #   .
+    `;
+    assertThrows(
+      () => Grid.fromString({ x: 4, y: 4 }, seed),
+      Error,
+      "Seed width does not match specified width",
+    );
+  });
 });
 
 Deno.test("Grid.toString", async (t) => {
