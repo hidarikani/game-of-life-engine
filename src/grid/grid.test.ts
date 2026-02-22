@@ -112,25 +112,31 @@ Deno.test("Grid.fromString valid params", async (t) => {
     assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 1 })), false);
   });
 
-  await t.step("should create a grid with no live cells from all-dead seed", () => {
-    const deadSeed = `
+  await t.step(
+    "should create a grid with no live cells from all-dead seed",
+    () => {
+      const deadSeed = `
     . . .
     . . .
     . . .
     `;
-    const grid = Grid.fromString({ x: 3, y: 3 }, deadSeed);
-    assertEquals(grid.liveCells.size, 0);
-  });
+      const grid = Grid.fromString({ x: 3, y: 3 }, deadSeed);
+      assertEquals(grid.liveCells.size, 0);
+    },
+  );
 
-  await t.step("should create a grid with all live cells from all-alive seed", () => {
-    const aliveSeed = `
+  await t.step(
+    "should create a grid with all live cells from all-alive seed",
+    () => {
+      const aliveSeed = `
     # # #
     # # #
     # # #
     `;
-    const grid = Grid.fromString({ x: 3, y: 3 }, aliveSeed);
-    assertEquals(grid.liveCells.size, 9);
-  });
+      const grid = Grid.fromString({ x: 3, y: 3 }, aliveSeed);
+      assertEquals(grid.liveCells.size, 9);
+    },
+  );
 });
 
 Deno.test("Grid.fromString invalid params", async (t) => {
@@ -217,19 +223,22 @@ Deno.test("Grid.fromString invalid params", async (t) => {
 });
 
 Deno.test("Grid.toString", async (t) => {
-  await t.step("should return string representation of a grid with live and dead cells", () => {
-    const seed = `
+  await t.step(
+    "should return string representation of a grid with live and dead cells",
+    () => {
+      const seed = `
     # . . #
     . # # .
     . . . #
     # # . .
     `;
-    const grid = Grid.fromString({ x: 4, y: 4 }, seed);
-    assertEquals(
-      grid.toString(),
-      "# . . #\n. # # .\n. . . #\n# # . .",
-    );
-  });
+      const grid = Grid.fromString({ x: 4, y: 4 }, seed);
+      assertEquals(
+        grid.toString(),
+        "# . . #\n. # # .\n. . . #\n# # . .",
+      );
+    },
+  );
 
   await t.step("should roundtrip through fromString and toString", () => {
     const seed = `
@@ -346,13 +355,16 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
   await t.step(
     "should clear existing cells in the target region before placing",
     () => {
-      const outer = Grid.fromString({ x: 5, y: 5 }, `
+      const outer = Grid.fromString(
+        { x: 5, y: 5 },
+        `
         # . . . .
         . # . . .
         . . . . .
         . . . . .
         . . . . #
-      `);
+      `,
+      );
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
@@ -360,19 +372,24 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       outer.place({ inner });
 
-      assertEquals(outer.toString(), [
-        ". # . . .",
-        ". . . . .",
-        ". . . . .",
-        ". . . . .",
-        ". . . . #",
-      ].join("\n"));
+      assertEquals(
+        outer.toString(),
+        [
+          ". # . . .",
+          ". . . . .",
+          ". . . . .",
+          ". . . . .",
+          ". . . . #",
+        ].join("\n"),
+      );
     },
   );
   await t.step(
     "should overwrite with offset",
     () => {
-      const outer = Grid.fromString({ x: 10, y: 10 }, `
+      const outer = Grid.fromString(
+        { x: 10, y: 10 },
+        `
         # . . . . . . . . .
         . . . . . . . . . .
         . . . . . . . . . .
@@ -383,7 +400,8 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
         . . . . . . . . . .
         . . . . . . . . . .
         . . . . . . . . . #
-      `);
+      `,
+      );
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
@@ -392,79 +410,97 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       outer.place({ inner, offset: { x: 5, y: 5 } });
 
-      assertEquals(outer.toString(), [
-        "# . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . # # . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . .",
-        ". . . . . . . . . #",
-      ].join("\n"));
+      assertEquals(
+        outer.toString(),
+        [
+          "# . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . # # . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . .",
+          ". . . . . . . . . #",
+        ].join("\n"),
+      );
     },
   );
 });
 
 Deno.test("Grid.place with Merge mode", async (t) => {
   await t.step("should preserve existing cells in the target region", () => {
-    const outer = Grid.fromString({ x: 5, y: 5 }, `
-      # . . . .
-      . # . . .
+    const outer = Grid.fromString(
+      { x: 5, y: 5 },
+      `
       . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
       . . . . .
-      . . . . .
-    `);
+    `,
+    );
 
     const innerCells: LiveCells = new Map();
     innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
-    const inner = new Grid({ x: 2, y: 2 }, innerCells);
+    const inner = Grid.fromString(
+      { x: 5, y: 5 },
+      `
+      . . . . .
+      . . . . .
+      . # # # .
+      . . . . .
+      . . . . .
+    `,
+    );
 
     outer.place({ inner, mode: PLACEMENT_MODES.MERGE });
 
-    assertEquals(outer.toString(), [
-      "# . # . .",
-      ". # . . .",
-      ". . . . .",
-      ". . . . .",
-      ". . . . .",
-    ].join("\n"));
+    assertEquals(
+      outer.toString(),
+      [
+        ". . . . .",
+        ". . # . .",
+        ". # # # .",
+        ". . # . .",
+        ". . . . .",
+      ].join("\n"),
+    );
   });
 
   await t.step("should merge with offset", () => {
-    const outer = Grid.fromString({ x: 10, y: 10 }, `
-      # . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-      . . . . . . . . . .
-    `);
+    const outer = Grid.fromString(
+      { x: 5, y: 5 },
+      `
+      . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
+      . . . . .
+    `,
+    );
 
-    const innerCells: LiveCells = new Map();
-    innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-    innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-    const inner = new Grid({ x: 1, y: 0 }, innerCells);
+    const inner = Grid.fromString(
+      { x: 3, y: 3 },
+      `
+      . . .
+      # # #
+      . . .
+    `,
+    );
 
-    outer.place({ inner, offset: { x: 5, y: 5 }, mode: PLACEMENT_MODES.MERGE });
+    outer.place({ inner, offset: { x: 1, y: 1 }, mode: PLACEMENT_MODES.MERGE });
 
-    assertEquals(outer.toString(), [
-      "# . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . # # . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-      ". . . . . . . . . .",
-    ].join("\n"));
+    assertEquals(
+      outer.toString(),
+      [
+        ". . . . .",
+        ". . # . .",
+        ". # # # .",
+        ". . # . .",
+        ". . . . .",
+      ].join("\n"),
+    );
   });
 });
