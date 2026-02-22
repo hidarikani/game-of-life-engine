@@ -101,18 +101,7 @@ Deno.test("Grid.fromString valid params", async (t) => {
 
   await t.step("should parse live cells correctly", () => {
     const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
-    assertEquals(grid.liveCells.size, 7);
-    // Row 0: # . . #
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 0 })), true);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 0 })), true);
-    // Row 1: . # # .
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 1 })), true);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 2, y: 1 })), true);
-    // Row 2: . . . #
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 2 })), true);
-    // Row 3: # # . .
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 3 })), true);
-    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 3 })), true);
+    assertEquals(grid.toString(), "# . . #\n. # # .\n. . . #\n# # . .");
   });
 
   await t.step("should parse dead cells correctly", () => {
@@ -228,7 +217,30 @@ Deno.test("Grid.fromString invalid params", async (t) => {
 });
 
 Deno.test("Grid.toString", async (t) => {
-  // TBD
+  await t.step("should return string representation of a grid with live and dead cells", () => {
+    const seed = `
+    # . . #
+    . # # .
+    . . . #
+    # # . .
+    `;
+    const grid = Grid.fromString({ x: 4, y: 4 }, seed);
+    assertEquals(
+      grid.toString(),
+      "# . . #\n. # # .\n. . . #\n# # . .",
+    );
+  });
+
+  await t.step("should roundtrip through fromString and toString", () => {
+    const seed = `
+    . # . # .
+    # . # . #
+    . # . # .
+    `;
+    const grid = Grid.fromString({ x: 5, y: 3 }, seed);
+    const grid2 = Grid.fromString({ x: 5, y: 3 }, grid.toString());
+    assertEquals(grid.toString(), grid2.toString());
+  });
 });
 
 Deno.test("Grid.contains returns true", async (t) => {
@@ -334,11 +346,13 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
   await t.step(
     "should clear existing cells in the target region before placing",
     () => {
-      const outerCells: LiveCells = new Map();
-      outerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-      outerCells.set(pointToCellKey({ x: 1, y: 1 }), true);
-      outerCells.set(pointToCellKey({ x: 4, y: 4 }), true);
-      const outer = new Grid({ x: 5, y: 5 }, outerCells);
+      const outer = Grid.fromString({ x: 5, y: 5 }, `
+        # . . . .
+        . # . . .
+        . . . . .
+        . . . . .
+        . . . . #
+      `);
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
@@ -346,25 +360,30 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       outer.place({ inner });
 
-      // (0,0) and (1,1) were in the overwritten region and should be cleared
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 0, y: 0 })), false);
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 1, y: 1 })), false);
-      // (1,0) is placed from inner
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 1, y: 0 })), true);
-      // (4,4) is outside the target region and should remain
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 4, y: 4 })), true);
-      assertEquals(outer.liveCells.size, 2);
+      assertEquals(outer.toString(), [
+        ". # . . .",
+        ". . . . .",
+        ". . . . .",
+        ". . . . .",
+        ". . . . #",
+      ].join("\n"));
     },
   );
   await t.step(
     "should overwrite with offset",
     () => {
-      const outerCells: LiveCells = new Map();
-      outerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-      outerCells.set(pointToCellKey({ x: 5, y: 5 }), true);
-      outerCells.set(pointToCellKey({ x: 6, y: 6 }), true);
-      outerCells.set(pointToCellKey({ x: 9, y: 9 }), true);
-      const outer = new Grid({ x: 10, y: 10 }, outerCells);
+      const outer = Grid.fromString({ x: 10, y: 10 }, `
+        # . . . . . . . . .
+        . . . . . . . . . .
+        . . . . . . . . . .
+        . . . . . . . . . .
+        . . . . . . . . . .
+        . . . . . # . . . .
+        . . . . . . # . . .
+        . . . . . . . . . .
+        . . . . . . . . . .
+        . . . . . . . . . #
+      `);
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
@@ -373,26 +392,31 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       outer.place({ inner, offset: { x: 5, y: 5 } });
 
-      // (0,0) is outside the target region and should remain
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 0, y: 0 })), true);
-      // (6,6) was in the overwritten region and should be cleared
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 6, y: 6 })), false);
-      // (5,5) and (6,5) are placed from inner with offset
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 5, y: 5 })), true);
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 6, y: 5 })), true);
-      // (9,9) is outside the target region and should remain
-      assertEquals(outer.liveCells.has(pointToCellKey({ x: 9, y: 9 })), true);
-      assertEquals(outer.liveCells.size, 4);
+      assertEquals(outer.toString(), [
+        "# . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . # # . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . .",
+        ". . . . . . . . . #",
+      ].join("\n"));
     },
   );
 });
 
 Deno.test("Grid.place with Merge mode", async (t) => {
   await t.step("should preserve existing cells in the target region", () => {
-    const outerCells: LiveCells = new Map();
-    outerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-    outerCells.set(pointToCellKey({ x: 1, y: 1 }), true);
-    const outer = new Grid({ x: 5, y: 5 }, outerCells);
+    const outer = Grid.fromString({ x: 5, y: 5 }, `
+      # . . . .
+      . # . . .
+      . . . . .
+      . . . . .
+      . . . . .
+    `);
 
     const innerCells: LiveCells = new Map();
     innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
@@ -400,18 +424,28 @@ Deno.test("Grid.place with Merge mode", async (t) => {
 
     outer.place({ inner, mode: PLACEMENT_MODES.MERGE });
 
-    // Existing cells should still be present
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 0, y: 0 })), true);
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 1, y: 1 })), true);
-    // New cell should be added
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 2, y: 0 })), true);
-    assertEquals(outer.liveCells.size, 3);
+    assertEquals(outer.toString(), [
+      "# . # . .",
+      ". # . . .",
+      ". . . . .",
+      ". . . . .",
+      ". . . . .",
+    ].join("\n"));
   });
 
   await t.step("should merge with offset", () => {
-    const outerCells: LiveCells = new Map();
-    outerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-    const outer = new Grid({ x: 10, y: 10 }, outerCells);
+    const outer = Grid.fromString({ x: 10, y: 10 }, `
+      # . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+      . . . . . . . . . .
+    `);
 
     const innerCells: LiveCells = new Map();
     innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
@@ -420,9 +454,17 @@ Deno.test("Grid.place with Merge mode", async (t) => {
 
     outer.place({ inner, offset: { x: 5, y: 5 }, mode: PLACEMENT_MODES.MERGE });
 
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 0, y: 0 })), true);
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 5, y: 5 })), true);
-    assertEquals(outer.liveCells.has(pointToCellKey({ x: 6, y: 5 })), true);
-    assertEquals(outer.liveCells.size, 3);
+    assertEquals(outer.toString(), [
+      "# . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . # # . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+      ". . . . . . . . . .",
+    ].join("\n"));
   });
 });
