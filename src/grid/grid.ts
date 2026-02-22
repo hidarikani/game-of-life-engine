@@ -1,12 +1,22 @@
 import type {
+  CellChars,
   IGrid,
   LiveCells,
   PlacementMode,
   Point,
   ValidationResult,
 } from "../types.ts";
-import { cellKeyToPoint, pointToCellKey } from "../seed/seed.ts";
-import { PLACEMENT_MODES } from "../constants.ts";
+import { cellKeyToPoint, normalizeSeed, pointToCellKey } from "../seed/seed.ts";
+import {
+  ALIVE_CHAR,
+  CELL_CHAR_TO_BOOL,
+  DEAD_CHAR,
+  NEWLINE_CHAR,
+  PLACEMENT_MODES,
+  SEED_PATTERN,
+  SEPARATOR_CHAR,
+} from "../constants.ts";
+import { validateMinGridSize } from "../geometry/geometry.ts";
 
 export class Grid implements IGrid {
   #bottomRightCorner: Point;
@@ -94,5 +104,66 @@ export class Grid implements IGrid {
       });
       this.#liveCells.set(offsetKey, true);
     }
+  }
+
+  static fromString(
+    bottomRightCorner: Point,
+    seed: string,
+  ): IGrid {
+    if (!SEED_PATTERN.test(seed)) {
+      throw new Error("Seed contains invalid characters");
+    }
+
+    const minGridSizeResult = validateMinGridSize(bottomRightCorner);
+
+    if (!minGridSizeResult.valid) {
+      throw new Error(minGridSizeResult.message);
+    }
+
+    const normalizedSeed = normalizeSeed(seed);
+
+    const rows = normalizedSeed.split("\n").map((row) =>
+      row.split(SEPARATOR_CHAR).map((char) =>
+        CELL_CHAR_TO_BOOL[char as CellChars]
+      )
+    );
+
+    if (rows.length !== bottomRightCorner.y) {
+      throw new Error("Seed height does not match specified height");
+    }
+
+    for (const row of rows) {
+      if (row.length !== bottomRightCorner.x) {
+        throw new Error("Seed width does not match specified width");
+      }
+    }
+
+    const liveCells: LiveCells = new Map();
+
+    for (let y = 0; y < bottomRightCorner.y; y++) {
+      for (let x = 0; x < bottomRightCorner.x; x++) {
+        const cellState = rows[y][x];
+        if (cellState) {
+          const key = pointToCellKey({ x, y });
+          liveCells.set(key, true);
+        }
+      }
+    }
+
+    return new Grid(bottomRightCorner, liveCells);
+  }
+
+  toString(): string {
+    let res = "";
+    for (let y = 0; y < this.#bottomRightCorner.y; y++) {
+      const row: string[] = [];
+      for (let x = 0; x < this.#bottomRightCorner.x; x++) {
+        const key = pointToCellKey({ x, y });
+        const isAlive = this.#liveCells.get(key) ?? false;
+        row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
+      }
+      res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
+    }
+    return res.trim();
   }
 }

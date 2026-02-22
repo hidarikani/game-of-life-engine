@@ -35,6 +35,7 @@ export interface IGrid {
     offset?: Point;
     mode?: PlacementMode;
   }): void;
+  toString(): string;
 }
 
 export type PlacementMode = "Overwrite" | "Merge";

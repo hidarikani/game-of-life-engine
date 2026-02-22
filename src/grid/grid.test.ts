@@ -86,6 +86,72 @@ Deno.test("Invalid constructor params", async (t) => {
   });
 });
 
+Deno.test("Grid.fromString valid params", async (t) => {
+  const validSeed = `
+  # . . #
+  . # # .
+  . . . #
+  # # . .
+  `;
+
+  await t.step("should create a grid from a valid seed string", () => {
+    const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
+    assertEquals(grid.bottomRightCorner, { x: 4, y: 4 });
+  });
+
+  await t.step("should parse live cells correctly", () => {
+    const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
+    assertEquals(grid.liveCells.size, 7);
+    // Row 0: # . . #
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 0 })), true);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 0 })), true);
+    // Row 1: . # # .
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 1 })), true);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 2, y: 1 })), true);
+    // Row 2: . . . #
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 2 })), true);
+    // Row 3: # # . .
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 3 })), true);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 3 })), true);
+  });
+
+  await t.step("should parse dead cells correctly", () => {
+    const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 1, y: 0 })), false);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 2, y: 0 })), false);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 0, y: 1 })), false);
+    assertEquals(grid.liveCells.has(pointToCellKey({ x: 3, y: 1 })), false);
+  });
+
+  await t.step("should create a grid with no live cells from all-dead seed", () => {
+    const deadSeed = `
+    . . .
+    . . .
+    . . .
+    `;
+    const grid = Grid.fromString({ x: 3, y: 3 }, deadSeed);
+    assertEquals(grid.liveCells.size, 0);
+  });
+
+  await t.step("should create a grid with all live cells from all-alive seed", () => {
+    const aliveSeed = `
+    # # #
+    # # #
+    # # #
+    `;
+    const grid = Grid.fromString({ x: 3, y: 3 }, aliveSeed);
+    assertEquals(grid.liveCells.size, 9);
+  });
+});
+
+Deno.test("Grid.fromString invalid params", async (t) => {
+  // TBD
+});
+
+Deno.test("Grid.toString", async (t) => {
+  // TBD
+});
+
 Deno.test("Grid.contains returns true", async (t) => {
   await t.step("should return valid when grid contains a smaller grid", () => {
     const outer = new Grid({ x: 10, y: 10 });
