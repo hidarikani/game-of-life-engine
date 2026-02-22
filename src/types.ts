@@ -12,7 +12,7 @@ export type CellChars = "#" | ".";
 
 export type GridMode = "Finite" | "Toroidal";
 
-export type WorldOptions = {
+export type EngineOptions = {
   gridSize: Rectangle;
   mode?: GridMode;
   seed?: string;

@@ -3,7 +3,7 @@ import type {
   GridMode,
   Point,
   Rectangle,
-  WorldOptions,
+  EngineOptions,
 } from "../types.ts";
 import { GRID_MODES, MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
 import {
@@ -13,13 +13,13 @@ import {
 } from "../seed/seed.ts";
 import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 
-export class World {
+export class Engine {
   gridSize: Rectangle;
   mode: GridMode;
   generations: LiveCells[];
 
   constructor(
-    { gridSize, mode = GRID_MODES.FINITE, seed }: WorldOptions,
+    { gridSize, mode = GRID_MODES.FINITE, seed }: EngineOptions,
   ) {
     if (gridSize.w < MIN_WORLD_WIDTH) {
       throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
