@@ -1,5 +1,5 @@
 import { Grid } from "./grid.ts";
-import { pointToCellKey } from "../seed/seed.ts";
+import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
 import type { LiveCells, Point } from "../types.ts";
 import { assertEquals, assertThrows } from "@std/assert";
 import { PLACEMENT_MODES } from "../constants.ts";
@@ -101,7 +101,7 @@ Deno.test("Grid.fromString valid params", async (t) => {
 
   await t.step("should parse live cells correctly", () => {
     const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
-    assertEquals(grid.toString(), "# . . #\n. # # .\n. . . #\n# # . .");
+    assertEquals(grid.toString(), normalizeSeed(validSeed));
   });
 
   await t.step("should parse dead cells correctly", () => {
@@ -233,10 +233,7 @@ Deno.test("Grid.toString", async (t) => {
     # # . .
     `;
       const grid = Grid.fromString({ x: 4, y: 4 }, seed);
-      assertEquals(
-        grid.toString(),
-        "# . . #\n. # # .\n. . . #\n# # . .",
-      );
+      assertEquals(grid.toString(), normalizeSeed(seed));
     },
   );
 
@@ -374,13 +371,13 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       assertEquals(
         outer.toString(),
-        [
-          ". # . . .",
-          ". . . . .",
-          ". . . . .",
-          ". . . . .",
-          ". . . . #",
-        ].join("\n"),
+        normalizeSeed(`
+          . # . . .
+          . . . . .
+          . . . . .
+          . . . . .
+          . . . . #
+        `),
       );
     },
   );
@@ -412,18 +409,18 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       assertEquals(
         outer.toString(),
-        [
-          "# . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . # # . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . .",
-          ". . . . . . . . . #",
-        ].join("\n"),
+        normalizeSeed(`
+          # . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . # # . . .
+          . . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . . . . . .
+          . . . . . . . . . #
+        `),
       );
     },
   );
@@ -459,13 +456,13 @@ Deno.test("Grid.place with Merge mode", async (t) => {
 
     assertEquals(
       outer.toString(),
-      [
-        ". . . . .",
-        ". . # . .",
-        ". # # # .",
-        ". . # . .",
-        ". . . . .",
-      ].join("\n"),
+      normalizeSeed(`
+        . . . . .
+        . . # . .
+        . # # # .
+        . . # . .
+        . . . . .
+      `),
     );
   });
 
@@ -494,13 +491,13 @@ Deno.test("Grid.place with Merge mode", async (t) => {
 
     assertEquals(
       outer.toString(),
-      [
-        ". . . . .",
-        ". . # . .",
-        ". # # # .",
-        ". . # . .",
-        ". . . . .",
-      ].join("\n"),
+      normalizeSeed(`
+        . . . . .
+        . . # . .
+        . # # # .
+        . . # . .
+        . . . . .
+      `),
     );
   });
 });
