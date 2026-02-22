@@ -40,9 +40,6 @@ export class World {
     }
   }
 
-  plant(topLeftCorner: Point, seed: LiveCells) {
-  }
-
   getGeneration(i: number): LiveCells {
     return this.generations[i];
   }
