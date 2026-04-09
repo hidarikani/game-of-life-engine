@@ -1,5 +1,5 @@
 import { MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
-import type { Point, ValidationResult } from "../types.ts";
+import type { Point, Rectangle, ValidationResult } from "../types.ts";
 
 export const validateMinGridSize = (
   bottomRightCorner: Point,
@@ -23,7 +23,7 @@ const isYOutsideBorder = (y: number, worldHeight: number): boolean => {
 
 export const isPointOutsideBorder = (
   { x, y }: Point,
-  { x: w, y: h }: Point,
+  { w, h }: Rectangle,
 ): boolean => {
   return isXOutsideBorder(x, w) || isYOutsideBorder(y, h);
 };
@@ -38,7 +38,7 @@ const isYOnBorder = (y: number, worldHeight: number): boolean => {
 
 export const isPointOnBorder = (
   { x, y }: Point,
-  { x: w, y: h }: Point,
+  { w, h }: Rectangle,
 ): boolean => {
   return isXOnBorder(x, w) || isYOnBorder(y, h);
 };
