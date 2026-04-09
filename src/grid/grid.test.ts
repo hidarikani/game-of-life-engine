@@ -7,7 +7,7 @@ import { PLACEMENT_MODES } from "../constants.ts";
 Deno.test("Valid constructor params", async (t) => {
   await t.step("should instantiate dead Grid", () => {
     const bottomRightCorner: Point = { x: 10, y: 10 };
-    const grid = new Grid(bottomRightCorner);
+    const grid = new Grid({ bottomRightCorner });
     assertEquals(grid instanceof Grid, true);
   });
 
@@ -20,7 +20,7 @@ Deno.test("Valid constructor params", async (t) => {
     liveCells.set(pointToCellKey({ x: 5, y: 5 }), true);
     liveCells.set(pointToCellKey({ x: 2, y: 3 }), true);
 
-    const grid = new Grid(bottomRightCorner, liveCells);
+    const grid = new Grid({ bottomRightCorner, liveCells });
     assertEquals(grid instanceof Grid, true);
   });
 });
@@ -28,7 +28,7 @@ Deno.test("Valid constructor params", async (t) => {
 Deno.test("Invalid constructor params", async (t) => {
   await t.step("should throw when width is below minimum", () => {
     assertThrows(
-      () => new Grid({ x: 2, y: 5 }),
+      () => new Grid({ bottomRightCorner: { x: 2, y: 5 } }),
       Error,
       "Width must be at least 3",
     );
@@ -36,7 +36,7 @@ Deno.test("Invalid constructor params", async (t) => {
 
   await t.step("should throw when height is below minimum", () => {
     assertThrows(
-      () => new Grid({ x: 5, y: 2 }),
+      () => new Grid({ bottomRightCorner: { x: 5, y: 2 } }),
       Error,
       "Height must be at least 3",
     );
@@ -50,7 +50,7 @@ Deno.test("Invalid constructor params", async (t) => {
     liveCells.set(pointToCellKey({ x: 6, y: 3 }), true);
 
     assertThrows(
-      () => new Grid(bottomRightCorner, liveCells),
+      () => new Grid({ bottomRightCorner, liveCells }),
       Error,
       "Cell at (6, 3) is out of bounds. Grid bounds are (0, 0) to (5, 5).",
     );
@@ -66,7 +66,7 @@ Deno.test("Invalid constructor params", async (t) => {
       liveCells.set(pointToCellKey({ x: 3, y: 6 }), true);
 
       assertThrows(
-        () => new Grid(bottomRightCorner, liveCells),
+        () => new Grid({ bottomRightCorner, liveCells }),
         Error,
         "Cell at (3, 6) is out of bounds. Grid bounds are (0, 0) to (5, 5).",
       );
@@ -81,7 +81,7 @@ Deno.test("Invalid constructor params", async (t) => {
     liveCells.set(pointToCellKey({ x: -1, y: 3 }), true);
 
     assertThrows(
-      () => new Grid(bottomRightCorner, liveCells),
+      () => new Grid({ bottomRightCorner, liveCells }),
       Error,
       "Cell at (-1, 3) is out of bounds. Grid bounds are (0, 0) to (5, 5).",
     );
@@ -95,7 +95,7 @@ Deno.test("Invalid constructor params", async (t) => {
     liveCells.set(pointToCellKey({ x: 3, y: -1 }), true);
 
     assertThrows(
-      () => new Grid(bottomRightCorner, liveCells),
+      () => new Grid({ bottomRightCorner, liveCells }),
       Error,
       "Cell at (3, -1) is out of bounds. Grid bounds are (0, 0) to (5, 5).",
     );
@@ -259,20 +259,20 @@ Deno.test("Grid.toString", async (t) => {
 
 Deno.test("Grid.contains returns true", async (t) => {
   await t.step("should return valid when grid contains a smaller grid", () => {
-    const outer = new Grid({ x: 10, y: 10 });
-    const inner = new Grid({ x: 5, y: 5 });
+    const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
+    const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
     assertEquals(outer.contains({ inner: inner }), { valid: true });
   });
 
   await t.step("should return valid when grids are the same size", () => {
-    const a = new Grid({ x: 5, y: 5 });
-    const b = new Grid({ x: 5, y: 5 });
+    const a = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
+    const b = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
     assertEquals(a.contains({ inner: b }), { valid: true });
   });
 
   await t.step("should return valid when grid fits with offset", () => {
-    const outer = new Grid({ x: 10, y: 10 });
-    const inner = new Grid({ x: 5, y: 5 });
+    const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
+    const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
     assertEquals(outer.contains({ inner: inner, offset: { x: 3, y: 3 } }), {
       valid: true,
     });
@@ -281,8 +281,8 @@ Deno.test("Grid.contains returns true", async (t) => {
   await t.step(
     "should return valid when offset keeps grid exactly at bounds",
     () => {
-      const outer = new Grid({ x: 10, y: 10 });
-      const inner = new Grid({ x: 5, y: 5 });
+      const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
+      const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
       assertEquals(outer.contains({ inner: inner, offset: { x: 5, y: 5 } }), {
         valid: true,
       });
@@ -292,8 +292,8 @@ Deno.test("Grid.contains returns true", async (t) => {
 
 Deno.test("Grid.contains returns false", async (t) => {
   await t.step("should return invalid when grid is larger", () => {
-    const smaller = new Grid({ x: 5, y: 5 });
-    const larger = new Grid({ x: 10, y: 10 });
+    const smaller = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
+    const larger = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
     assertEquals(smaller.contains({ inner: larger }), {
       valid: false,
       message: "Grid with bounds (10, 10) does not fit within (5, 5).",
@@ -301,8 +301,8 @@ Deno.test("Grid.contains returns false", async (t) => {
   });
 
   await t.step("should return invalid when only x exceeds bounds", () => {
-    const outer = new Grid({ x: 5, y: 10 });
-    const inner = new Grid({ x: 6, y: 10 });
+    const outer = new Grid({ bottomRightCorner: { x: 5, y: 10 } });
+    const inner = new Grid({ bottomRightCorner: { x: 6, y: 10 } });
     assertEquals(outer.contains({ inner: inner }), {
       valid: false,
       message: "Grid with bounds (6, 10) does not fit within (5, 10).",
@@ -310,8 +310,8 @@ Deno.test("Grid.contains returns false", async (t) => {
   });
 
   await t.step("should return invalid when only y exceeds bounds", () => {
-    const outer = new Grid({ x: 10, y: 5 });
-    const inner = new Grid({ x: 10, y: 6 });
+    const outer = new Grid({ bottomRightCorner: { x: 10, y: 5 } });
+    const inner = new Grid({ bottomRightCorner: { x: 10, y: 6 } });
     assertEquals(outer.contains({ inner: inner }), {
       valid: false,
       message: "Grid with bounds (10, 6) does not fit within (10, 5).",
@@ -321,8 +321,8 @@ Deno.test("Grid.contains returns false", async (t) => {
   await t.step(
     "should return invalid when offset pushes grid out of bounds",
     () => {
-      const outer = new Grid({ x: 10, y: 10 });
-      const inner = new Grid({ x: 5, y: 5 });
+      const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
+      const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
       assertEquals(outer.contains({ inner: inner, offset: { x: 6, y: 6 } }), {
         valid: false,
         message: "Grid with bounds (11, 11) does not fit within (10, 10).",
@@ -333,8 +333,8 @@ Deno.test("Grid.contains returns false", async (t) => {
 
 Deno.test("Grid.place throws", async (t) => {
   await t.step("should throw when inner grid does not fit", () => {
-    const outer = new Grid({ x: 5, y: 5 });
-    const inner = new Grid({ x: 6, y: 6 });
+    const outer = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
+    const inner = new Grid({ bottomRightCorner: { x: 6, y: 6 } });
     assertThrows(
       () => outer.place({ inner }),
       Error,
@@ -345,8 +345,8 @@ Deno.test("Grid.place throws", async (t) => {
   await t.step(
     "should throw when offset pushes inner grid out of bounds",
     () => {
-      const outer = new Grid({ x: 10, y: 10 });
-      const inner = new Grid({ x: 5, y: 5 });
+      const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
+      const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
       assertThrows(
         () => outer.place({ inner, offset: { x: 6, y: 6 } }),
         Error,
@@ -373,7 +373,7 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-      const inner = new Grid({ x: 3, y: 3 }, innerCells);
+      const inner = new Grid({ bottomRightCorner: { x: 3, y: 3 }, liveCells: innerCells });
 
       outer.place({ inner });
 
@@ -411,7 +411,7 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-      const inner = new Grid({ x: 3, y: 3 }, innerCells);
+      const inner = new Grid({ bottomRightCorner: { x: 3, y: 3 }, liveCells: innerCells });
 
       outer.place({ inner, offset: { x: 5, y: 5 } });
 
