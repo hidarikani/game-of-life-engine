@@ -1,5 +1,6 @@
 import type {
   CellChars,
+  GridOptions,
   IGrid,
   LiveCells,
   PlacementMode,
@@ -24,7 +25,7 @@ export class Grid implements IGrid {
   #bottomRightCorner: Point;
   #liveCells: LiveCells;
 
-  constructor(bottomRightCorner: Point, liveCells?: LiveCells) {
+  constructor({ bottomRightCorner, liveCells, mode }: GridOptions) {
     if (bottomRightCorner.x < MIN_WORLD_WIDTH) {
       throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
     }
@@ -36,6 +37,7 @@ export class Grid implements IGrid {
     this.#bottomRightCorner = bottomRightCorner;
 
     if (liveCells) {
+      // At the moment, Toroidal mode isn't supported
       // Validate that all live cells are within bounds
       for (const cellKey of liveCells.keys()) {
         const point = cellKeyToPoint(cellKey);
@@ -169,7 +171,7 @@ export class Grid implements IGrid {
       }
     }
 
-    return new Grid(bottomRightCorner, liveCells);
+    return new Grid({ bottomRightCorner, liveCells });
   }
 
   toString(): string {

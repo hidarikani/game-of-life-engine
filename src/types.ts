@@ -3,20 +3,9 @@ export type Point = {
   y: number;
 };
 
-export type Rectangle = {
-  w: number;
-  h: number;
-};
-
 export type CellChars = "#" | ".";
 
 export type GridMode = "Finite" | "Toroidal";
-
-export type EngineOptions = {
-  gridSize: Rectangle;
-  mode?: GridMode;
-  seed?: string;
-};
 
 export type CellKey = `${number},${number}`;
 
@@ -28,8 +17,8 @@ export type ValidationResult =
 
 export interface IGrid {
   readonly bottomRightCorner: Point;
-  readonly liveCells: {key: Point, value: boolean}[];
-  cell ({ x, y }: Point): boolean;
+  readonly liveCells: { key: Point; value: boolean }[];
+  cell({ x, y }: Point): boolean;
   population(): number;
   contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
   place(params: {
@@ -39,5 +28,17 @@ export interface IGrid {
   }): void;
   toString(): string;
 }
+
+export type GridOptions = {
+  bottomRightCorner: Point;
+  liveCells?: LiveCells;
+  mode?: GridMode;
+};
+
+export type EngineOptions = {
+  gridSize: Point;
+  mode?: GridMode;
+  seed?: IGrid;
+};
 
 export type PlacementMode = "Overwrite" | "Merge";
