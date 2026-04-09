@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { isPointOutsideBorder, isPointOnBorder } from "./geometry.ts";
+import { isPointOutsideBorder, isPointOnBorder, isPointInsideBorder } from "./geometry.ts";
 
 Deno.test("Geometry: isPointOutsideBorder", async (t) => {
 	const rect = { w: 5, h: 5 };
@@ -68,3 +68,33 @@ Deno.test("Geometry: isPointOnBorder", async (t) => {
 	});
 });
 
+Deno.test("Geometry: isPointInsideBorder", async (t) => {
+	const rect = { w: 5, h: 5 };
+
+	await t.step("points clearly inside are inside", () => {
+		assertEquals(isPointInsideBorder({ x: 0, y: 0 }, rect), true);
+		assertEquals(isPointInsideBorder({ x: 2, y: 2 }, rect), true);
+		assertEquals(isPointInsideBorder({ x: 4, y: 4 }, rect), true);
+	});
+
+	await t.step("points on the border are not inside", () => {
+		assertEquals(isPointInsideBorder({ x: -1, y: 0 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 5, y: 0 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 0, y: -1 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 0, y: 5 }, rect), false);
+	});
+
+	await t.step("corner points on border are not inside", () => {
+		assertEquals(isPointInsideBorder({ x: -1, y: -1 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: -1, y: 5 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 5, y: -1 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 5, y: 5 }, rect), false);
+	});
+
+	await t.step("points outside beyond border are not inside", () => {
+		assertEquals(isPointInsideBorder({ x: -2, y: 0 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 6, y: 0 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 0, y: -2 }, rect), false);
+		assertEquals(isPointInsideBorder({ x: 0, y: 6 }, rect), false);
+	});
+});
