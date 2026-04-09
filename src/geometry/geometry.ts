@@ -1,19 +1,14 @@
-import { MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
+import { MIN_GRID_SIZE } from "../constants.ts";
 import type { GridSize, Point, ValidationResult } from "../types.ts";
 
 export const validateMinGridSize = (
   gridSize: GridSize,
 ): ValidationResult => {
-  if (gridSize.w - 1 < MIN_WORLD_WIDTH) {
+  if (gridSize.w < MIN_GRID_SIZE || gridSize.h < MIN_GRID_SIZE) {
     return {
       valid: false,
-      message: `Width must be at least ${MIN_WORLD_WIDTH}`,
-    };
-  }
-  if (gridSize.h < MIN_WORLD_HEIGHT) {
-    return {
-      valid: false,
-      message: `Height must be at least ${MIN_WORLD_HEIGHT}`,
+      message:
+        `Grid must be at least ${MIN_GRID_SIZE} cells wide and ${MIN_GRID_SIZE} cells tall`,
     };
   }
   return { valid: true };

@@ -1,3 +1,5 @@
+import { Grid } from "./grid/grid.ts";
+
 export type Point = {
   x: number;
   y: number;
@@ -21,12 +23,12 @@ export type ValidationResult =
   | { valid: false; message: string };
 
 export interface IGrid {
-  readonly bottomRightCorner: Point;
-  readonly liveCells: { key: Point; value: boolean }[];
+  readonly gridSize: GridSize; // getter
+  readonly liveCells: { key: Point; value: boolean }[]; // getter
   readCell({ x, y }: Point): boolean;
   population(): number;
   contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
-  writeCell(params: {
+  writeGrid(params: {
     inner: IGrid;
     offset?: Point;
     mode?: PlacementMode;

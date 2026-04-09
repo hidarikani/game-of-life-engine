@@ -5,8 +5,7 @@ import type { CellChars } from "./types.ts";
 // . . .
 // . # .
 // . . .
-export const MIN_WORLD_WIDTH = 3 as const;
-export const MIN_WORLD_HEIGHT = 3 as const;
+export const MIN_GRID_SIZE = 3 as const;
 
 export const ALIVE_CHAR = "#" as const;
 export const DEAD_CHAR = "." as const;
