@@ -2,7 +2,7 @@ import { assertEquals } from "@std/assert";
 import { isPointOutsideBorder, isPointOnBorder } from "./geometry.ts";
 
 Deno.test("Geometry: isPointOutsideBorder", async (t) => {
-	const rect = { x: 5, y: 5 };
+	const rect = { w: 5, h: 5 };
 
 	await t.step("points clearly inside are not outside", () => {
 		assertEquals(isPointOutsideBorder({ x: 0, y: 0 }, rect), false);
@@ -38,7 +38,7 @@ Deno.test("Geometry: isPointOutsideBorder", async (t) => {
 });
 
 Deno.test("Geometry: isPointOnBorder", async (t) => {
-	const rect = { x: 5, y: 5 };
+	const rect = { w: 5, h: 5 };
 
 	await t.step("points clearly inside are not on border", () => {
 		assertEquals(isPointOnBorder({ x: 0, y: 0 }, rect), false);
