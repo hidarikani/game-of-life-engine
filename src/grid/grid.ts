@@ -11,6 +11,8 @@ import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
   DEAD_CHAR,
+  MIN_WORLD_HEIGHT,
+  MIN_WORLD_WIDTH,
   NEWLINE_CHAR,
   PLACEMENT_MODES,
   SEED_PATTERN,
@@ -23,6 +25,14 @@ export class Grid implements IGrid {
   #liveCells: LiveCells;
 
   constructor(bottomRightCorner: Point, liveCells?: LiveCells) {
+    if (bottomRightCorner.x < MIN_WORLD_WIDTH) {
+      throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
+    }
+
+    if (bottomRightCorner.y < MIN_WORLD_HEIGHT) {
+      throw new Error(`Height must be at least ${MIN_WORLD_HEIGHT}`);
+    }
+
     this.#bottomRightCorner = bottomRightCorner;
 
     if (liveCells) {
@@ -50,7 +60,7 @@ export class Grid implements IGrid {
     return this.#bottomRightCorner;
   }
 
-  get liveCells(): {key: Point, value: boolean}[] {
+  get liveCells(): { key: Point; value: boolean }[] {
     return Array.from(this.#liveCells, ([cellKey, value]) => ({
       key: cellKeyToPoint(cellKey),
       value,

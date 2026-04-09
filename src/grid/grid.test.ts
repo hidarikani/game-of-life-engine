@@ -26,6 +26,22 @@ Deno.test("Valid constructor params", async (t) => {
 });
 
 Deno.test("Invalid constructor params", async (t) => {
+  await t.step("should throw when width is below minimum", () => {
+    assertThrows(
+      () => new Grid({ x: 2, y: 5 }),
+      Error,
+      "Width must be at least 3",
+    );
+  });
+
+  await t.step("should throw when height is below minimum", () => {
+    assertThrows(
+      () => new Grid({ x: 5, y: 2 }),
+      Error,
+      "Height must be at least 3",
+    );
+  });
+
   await t.step("should throw when cell x coordinate is out of bounds", () => {
     const bottomRightCorner: Point = { x: 5, y: 5 };
     const liveCells: LiveCells = new Map();
@@ -357,7 +373,7 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
 
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-      const inner = new Grid({ x: 2, y: 2 }, innerCells);
+      const inner = new Grid({ x: 3, y: 3 }, innerCells);
 
       outer.place({ inner });
 
@@ -395,7 +411,7 @@ Deno.test("Grid.place with Overwrite mode", async (t) => {
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-      const inner = new Grid({ x: 2, y: 2 }, innerCells);
+      const inner = new Grid({ x: 3, y: 3 }, innerCells);
 
       outer.place({ inner, offset: { x: 5, y: 5 } });
 
