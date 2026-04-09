@@ -2,5 +2,5 @@ export { Engine } from "./src/engine/engine.ts";
 export type {
   EngineOptions as WorldOptions,
   GridMode,
-  Rectangle,
+  GridSize,
 } from "./src/types.ts";

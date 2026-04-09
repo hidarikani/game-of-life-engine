@@ -3,7 +3,7 @@ import type {
   CellKey,
   LiveCells,
   Point,
-  Rectangle,
+  GridSize,
 } from "../types.ts";
 import {
   ALIVE_CHAR,
@@ -75,7 +75,7 @@ export const stringToGeneration = (
 
 export const generationToString = (
   generation: LiveCells,
-  size: Rectangle,
+  size: GridSize,
 ): string => {
   let res = "";
   for (let y = 0; y < size.h; y++) {

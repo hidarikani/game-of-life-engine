@@ -3,6 +3,11 @@ export type Point = {
   y: number;
 };
 
+export type GridSize = {
+  w: number;
+  h: number;
+};
+
 export type CellChars = "#" | ".";
 
 export type GridMode = "Finite" | "Toroidal";
@@ -18,10 +23,10 @@ export type ValidationResult =
 export interface IGrid {
   readonly bottomRightCorner: Point;
   readonly liveCells: { key: Point; value: boolean }[];
-  cell({ x, y }: Point): boolean;
+  readCell({ x, y }: Point): boolean;
   population(): number;
   contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
-  place(params: {
+  writeCell(params: {
     inner: IGrid;
     offset?: Point;
     mode?: PlacementMode;
@@ -30,7 +35,7 @@ export interface IGrid {
 }
 
 export type GridOptions = {
-  bottomRightCorner: Point;
+  gridSize: GridSize;
   liveCells?: LiveCells;
   mode?: GridMode;
 };

@@ -1,14 +1,20 @@
 import { MIN_WORLD_HEIGHT, MIN_WORLD_WIDTH } from "../constants.ts";
-import type { Point, Rectangle, ValidationResult } from "../types.ts";
+import type { GridSize, Point, ValidationResult } from "../types.ts";
 
 export const validateMinGridSize = (
-  bottomRightCorner: Point,
+  gridSize: GridSize,
 ): ValidationResult => {
-  if (bottomRightCorner.x < MIN_WORLD_WIDTH) {
-    return { valid: false, message: `Width must be at least ${MIN_WORLD_WIDTH}` };
+  if (gridSize.w - 1 < MIN_WORLD_WIDTH) {
+    return {
+      valid: false,
+      message: `Width must be at least ${MIN_WORLD_WIDTH}`,
+    };
   }
-  if (bottomRightCorner.y < MIN_WORLD_HEIGHT) {
-    return { valid: false, message: `Height must be at least ${MIN_WORLD_HEIGHT}` };
+  if (gridSize.h < MIN_WORLD_HEIGHT) {
+    return {
+      valid: false,
+      message: `Height must be at least ${MIN_WORLD_HEIGHT}`,
+    };
   }
   return { valid: true };
 };
@@ -23,7 +29,7 @@ const isYOutsideBorder = (y: number, worldHeight: number): boolean => {
 
 export const isPointOutsideBorder = (
   { x, y }: Point,
-  { w, h }: Rectangle,
+  { w, h }: GridSize,
 ): boolean => {
   return isXOutsideBorder(x, w) || isYOutsideBorder(y, h);
 };
@@ -34,11 +40,11 @@ const isXOnBorder = (x: number, worldWidth: number): boolean => {
 
 const isYOnBorder = (y: number, worldHeight: number): boolean => {
   return y === -1 || y === worldHeight;
-}; 
+};
 
 export const isPointOnBorder = (
   { x, y }: Point,
-  { w, h }: Rectangle,
+  { w, h }: GridSize,
 ): boolean => {
   return isXOnBorder(x, w) || isYOnBorder(y, h);
 };
