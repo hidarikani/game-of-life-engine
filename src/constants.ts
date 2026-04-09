@@ -1,5 +1,10 @@
 import type { CellChars } from "./types.ts";
 
+// Checking if a cell is alive makes sense only if it has neighbours on all around
+// which means minimum dimensions are a 3 by 3 when the center cell is checked for life:
+// . . .
+// . # .
+// . . .
 export const MIN_WORLD_WIDTH = 3 as const;
 export const MIN_WORLD_HEIGHT = 3 as const;
 
