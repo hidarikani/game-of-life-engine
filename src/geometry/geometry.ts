@@ -58,3 +58,27 @@ export const isPointInsideBorder = (
 ): boolean => {
   return isXInsideBorder(x, w) && isYInsideBorder(y, h);
 };
+
+export const gridContains = (
+  { outer, inner, offset = { x: 0, y: 0 } }: {
+    outer: GridSize;
+    inner: GridSize;
+    offset?: Point;
+  },
+): ValidationResult => {
+  const effectiveW = offset.x + inner.w;
+  const effectiveH = offset.y + inner.h;
+
+  if (
+    effectiveW <= outer.w &&
+    effectiveH <= outer.h
+  ) {
+    return { valid: true };
+  }
+
+  return {
+    valid: false,
+    message:
+      `Inner grid of size (${inner.w}, ${inner.h}) offset by (${offset.x}, ${offset.y}) does not fit in outer grid of size (${outer.w}, ${outer.h}).`,
+  };
+};
