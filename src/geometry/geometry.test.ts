@@ -7,6 +7,7 @@ import {
   isPointOutsideBorder,
   validateMinGridSize,
 } from "./geometry.ts";
+import { pointToCellKey } from "../seed/seed.ts";
 
 Deno.test("Geometry: validateMinGridSize", async (t) => {
   await t.step("valid grid at minimum size (3x3) passes", () => {
@@ -229,38 +230,38 @@ Deno.test("Geometry: gridContainsGrid", async (t) => {
 Deno.test("Geometry: gridContainsCells", async (t) => {
   await t.step("returns valid", async (t) => {
     await t.step("empty cells map is valid for any grid", () => {
+      const inner = new Map();
       assertEquals(
-        gridContainsCells({ outer: { w: 5, h: 5 }, inner: new Map() }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         { valid: true },
       );
     });
 
     await t.step("cell at top-left corner (0,0) is valid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 0, y: 0 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["0,0", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         { valid: true },
       );
     });
 
     await t.step("cell at bottom-right interior corner is valid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 4, y: 4 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["4,4", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         { valid: true },
       );
     });
 
     await t.step("multiple cells all inside grid are valid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 1, y: 1 }), true);
+      inner.set(pointToCellKey({ x: 2, y: 2 }), true);
+      inner.set(pointToCellKey({ x: 3, y: 3 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["1,1", true], ["2,2", true], ["3,3", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         { valid: true },
       );
     });
@@ -268,11 +269,10 @@ Deno.test("Geometry: gridContainsCells", async (t) => {
 
   await t.step("returns invalid", async (t) => {
     await t.step("cell with negative x is invalid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: -1, y: 2 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["-1,2", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         {
           valid: false,
           message: "Cell at (-1, 2) is outside the grid of size (5, 5).",
@@ -281,11 +281,10 @@ Deno.test("Geometry: gridContainsCells", async (t) => {
     });
 
     await t.step("cell with negative y is invalid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 2, y: -1 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["2,-1", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         {
           valid: false,
           message: "Cell at (2, -1) is outside the grid of size (5, 5).",
@@ -294,11 +293,10 @@ Deno.test("Geometry: gridContainsCells", async (t) => {
     });
 
     await t.step("cell with x equal to grid width is invalid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 5, y: 2 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["5,2", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         {
           valid: false,
           message: "Cell at (5, 2) is outside the grid of size (5, 5).",
@@ -307,11 +305,10 @@ Deno.test("Geometry: gridContainsCells", async (t) => {
     });
 
     await t.step("cell with y equal to grid height is invalid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 2, y: 5 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["2,5", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         {
           valid: false,
           message: "Cell at (2, 5) is outside the grid of size (5, 5).",
@@ -320,11 +317,11 @@ Deno.test("Geometry: gridContainsCells", async (t) => {
     });
 
     await t.step("one out-of-bounds cell among valid cells is invalid", () => {
+      const inner = new Map();
+      inner.set(pointToCellKey({ x: 1, y: 1 }), true);
+      inner.set(pointToCellKey({ x: 10, y: 10 }), true);
       assertEquals(
-        gridContainsCells({
-          outer: { w: 5, h: 5 },
-          inner: new Map([["1,1", true], ["10,10", true]]),
-        }),
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
         {
           valid: false,
           message: "Cell at (10, 10) is outside the grid of size (5, 5).",
