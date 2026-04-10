@@ -1,5 +1,3 @@
-import { Grid } from "./grid/grid.ts";
-
 export type Point = {
   x: number;
   y: number;
