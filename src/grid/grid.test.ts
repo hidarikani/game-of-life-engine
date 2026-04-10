@@ -205,32 +205,34 @@ Deno.test("Grid.fromString", async (t) => {
   });
 });
 
-// Deno.test("Grid.toString", async (t) => {
-//   await t.step(
-//     "should return string representation of a grid with live and dead cells",
-//     () => {
-//       const seed = `
-//     # . . #
-//     . # # .
-//     . . . #
-//     # # . .
-//     `;
-//       const grid = Grid.fromString({ x: 4, y: 4 }, seed);
-//       assertEquals(grid.toString(), normalizeSeed(seed));
-//     },
-//   );
+Deno.test("Grid.toString", async (t) => {
+  await t.step(
+    "should return string representation of a grid with live and dead cells",
+    () => {
+      const gridSize = { w: 4, h: 4 };
+      const seed = `
+        # . . #
+        . # # .
+        . . . #
+        # # . .
+    `;
+      const grid = Grid.fromString(gridSize, seed);
+      assertEquals(grid.toString(), normalizeSeed(seed));
+    },
+  );
 
-//   await t.step("should roundtrip through fromString and toString", () => {
-//     const seed = `
-//     . # . # .
-//     # . # . #
-//     . # . # .
-//     `;
-//     const grid = Grid.fromString({ x: 5, y: 3 }, seed);
-//     const grid2 = Grid.fromString({ x: 5, y: 3 }, grid.toString());
-//     assertEquals(grid.toString(), grid2.toString());
-//   });
-// });
+  await t.step("should roundtrip through fromString and toString", () => {
+    const gridSize = { w: 5, h: 3 };
+    const seed = `
+      . # . # .
+      # . # . #
+      . # . # .
+    `;
+    const grid = Grid.fromString(gridSize, seed);
+    const grid2 = Grid.fromString(gridSize, grid.toString());
+    assertEquals(grid.toString(), grid2.toString());
+  });
+});
 
 // Deno.test("Grid.contains returns true", async (t) => {
 //   await t.step("should return valid when grid contains a smaller grid", () => {
