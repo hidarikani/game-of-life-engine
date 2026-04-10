@@ -234,113 +234,101 @@ Deno.test("Grid.toString", async (t) => {
   });
 });
 
-Deno.test("Grid.place throws", async (t) => {
-  await t.step("should throw when inner grid does not fit", () => {
-    const gridSizeOuter: GridSize = { w: 5, h: 5 };
-    const gridSizeInner: GridSize = { w: 6, h: 6 };
-    const outer = new Grid({ gridSize: gridSizeOuter });
-    const inner = new Grid({ gridSize: gridSizeInner });
-    assertThrows(
-      () => outer.writeGrid({ inner }),
-      Error,
-      "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
-    );
-  });
-
-  await t.step(
-    "should throw when offset pushes inner grid out of bounds",
-    () => {
-      const gridSizeOuter: GridSize = { w: 10, h: 10 };
-      const gridSizeInner: GridSize = { w: 5, h: 5 };
+Deno.test("Grid.place", async (t) => {
+  await t.step("invalid params", async (t) => {
+    await t.step("should throw when inner grid does not fit", () => {
+      const gridSizeOuter: GridSize = { w: 5, h: 5 };
+      const gridSizeInner: GridSize = { w: 6, h: 6 };
       const outer = new Grid({ gridSize: gridSizeOuter });
       const inner = new Grid({ gridSize: gridSizeInner });
-      const offset: Point = { x: 6, y: 6 };
       assertThrows(
-        () => outer.writeGrid({ inner, offset }),
+        () => outer.writeGrid({ inner }),
         Error,
-        "Inner grid of size (5, 5) offset by (6, 6) does not fit in outer grid of size (10, 10).",
+        "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
       );
-    },
-  );
+    });
+
+    await t.step(
+      "should throw when offset pushes inner grid out of bounds",
+      () => {
+        const gridSizeOuter: GridSize = { w: 10, h: 10 };
+        const gridSizeInner: GridSize = { w: 5, h: 5 };
+        const outer = new Grid({ gridSize: gridSizeOuter });
+        const inner = new Grid({ gridSize: gridSizeInner });
+        const offset: Point = { x: 6, y: 6 };
+        assertThrows(
+          () => outer.writeGrid({ inner, offset }),
+          Error,
+          "Inner grid of size (5, 5) offset by (6, 6) does not fit in outer grid of size (10, 10).",
+        );
+      },
+    );
+  });
+  await t.step("overwrite mode", async (t) => {
+    const outer = Grid.fromString(
+      { w: 5, h: 5 },
+      `
+        # . . . .
+        . # . . .
+        . . . . .
+        . . . . .
+        . . . . #
+      `,
+    );
+
+    await t.step(
+      "should clear existing cells in the target region before placing",
+      () => {
+        const innerCells: LiveCells = new Map();
+        innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
+        const inner = new Grid({
+          gridSize: { w: 3, h: 3 },
+          liveCells: innerCells,
+        });
+
+        outer.writeGrid({ inner });
+
+        assertEquals(
+          outer.toString(),
+          normalizeSeed(`
+            . # . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . #
+          `),
+        );
+      },
+    );
+
+    await t.step(
+      "should overwrite with offset",
+      () => {
+        const innerCells: LiveCells = new Map();
+        innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
+        innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
+        const inner = new Grid({
+          gridSize: { w: 3, h: 3 },
+          liveCells: innerCells,
+        });
+        const offset: Point = { x: 2, y: 2 };
+
+        outer.writeGrid({ inner, offset });
+
+        assertEquals(
+          outer.toString(),
+          normalizeSeed(`
+            . # . . .
+            . . . . .
+            . . # # .
+            . . . . .
+            . . . . .
+          `),
+        );
+      },
+    );
+  });
 });
-
-// Deno.test("Grid.place with Overwrite mode", async (t) => {
-//   await t.step(
-//     "should clear existing cells in the target region before placing",
-//     () => {
-//       const outer = Grid.fromString(
-//         { x: 5, y: 5 },
-//         `
-//         # . . . .
-//         . # . . .
-//         . . . . .
-//         . . . . .
-//         . . . . #
-//       `,
-//       );
-
-//       const innerCells: LiveCells = new Map();
-//       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-//       const inner = new Grid({ bottomRightCorner: { x: 3, y: 3 }, liveCells: innerCells });
-
-//       outer.writeGrid({ inner });
-
-//       assertEquals(
-//         outer.toString(),
-//         normalizeSeed(`
-//           . # . . .
-//           . . . . .
-//           . . . . .
-//           . . . . .
-//           . . . . #
-//         `),
-//       );
-//     },
-//   );
-//   await t.step(
-//     "should overwrite with offset",
-//     () => {
-//       const outer = Grid.fromString(
-//         { x: 10, y: 10 },
-//         `
-//         # . . . . . . . . .
-//         . . . . . . . . . .
-//         . . . . . . . . . .
-//         . . . . . . . . . .
-//         . . . . . . . . . .
-//         . . . . . # . . . .
-//         . . . . . . # . . .
-//         . . . . . . . . . .
-//         . . . . . . . . . .
-//         . . . . . . . . . #
-//       `,
-//       );
-
-//       const innerCells: LiveCells = new Map();
-//       innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-//       innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
-//       const inner = new Grid({ bottomRightCorner: { x: 3, y: 3 }, liveCells: innerCells });
-
-//       outer.writeGrid({ inner, offset: { x: 5, y: 5 } });
-
-//       assertEquals(
-//         outer.toString(),
-//         normalizeSeed(`
-//           # . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . # # . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . .
-//           . . . . . . . . . #
-//         `),
-//       );
-//     },
-//   );
-// });
 
 // Deno.test("Grid.place with Merge mode", async (t) => {
 //   await t.step("should preserve existing cells in the target region", () => {
