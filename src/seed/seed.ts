@@ -1,9 +1,9 @@
 import type {
   CellChars,
   CellKey,
+  GridSize,
   LiveCells,
   Point,
-  GridSize,
 } from "../types.ts";
 import {
   ALIVE_CHAR,
@@ -30,6 +30,13 @@ export const normalizeSeed = (seed: string): string =>
     .split("\n")
     .map((line) => line.trim())
     .join("\n");
+
+export const splitSeed = (normalizedSeed: string): boolean[][] =>
+  normalizedSeed.split(NEWLINE_CHAR).map((row) =>
+    row.split(SEPARATOR_CHAR).map((char) =>
+      CELL_CHAR_TO_BOOL[char as CellChars]
+    )
+  );
 
 export const stringToGeneration = (
   seed: string,
