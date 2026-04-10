@@ -328,80 +328,72 @@ Deno.test("Grid.place", async (t) => {
       },
     );
   });
+  await t.step("merge mode", async (t) => {
+    const outer = Grid.fromString(
+      { w: 5, h: 5 },
+      `
+        . . . . .
+        . . # . .
+        . . # . .
+        . . # . .
+        . . . . .
+      `,
+    );
+
+    await t.step("should preserve existing cells in the target region", () => {
+      const innerCells: LiveCells = new Map();
+      innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
+      const inner = Grid.fromString(
+        { w: 5, h: 5 },
+        `
+          . . . . .
+          . . . . .
+          . # # # .
+          . . . . .
+          . . . . .
+        `,
+      );
+
+      outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
+
+      assertEquals(
+        outer.toString(),
+        normalizeSeed(`
+          . . . . .
+          . . # . .
+          . # # # .
+          . . # . .
+          . . . . .
+        `),
+      );
+    });
+
+    await t.step("should merge with offset", () => {
+      const inner = Grid.fromString(
+        { w: 3, h: 3 },
+        `
+          . . .
+          # # #
+          . . .
+        `,
+      );
+
+      outer.writeGrid({
+        inner,
+        offset: { x: 1, y: 1 },
+        mode: PLACEMENT_MODES.MERGE,
+      });
+
+      assertEquals(
+        outer.toString(),
+        normalizeSeed(`
+          . . . . .
+          . . # . .
+          . # # # .
+          . . # . .
+          . . . . .
+        `),
+      );
+    });
+  });
 });
-
-// Deno.test("Grid.place with Merge mode", async (t) => {
-//   await t.step("should preserve existing cells in the target region", () => {
-//     const outer = Grid.fromString(
-//       { x: 5, y: 5 },
-//       `
-//       . . . . .
-//       . . # . .
-//       . . # . .
-//       . . # . .
-//       . . . . .
-//     `,
-//     );
-
-//     const innerCells: LiveCells = new Map();
-//     innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
-//     const inner = Grid.fromString(
-//       { x: 5, y: 5 },
-//       `
-//       . . . . .
-//       . . . . .
-//       . # # # .
-//       . . . . .
-//       . . . . .
-//     `,
-//     );
-
-//     outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
-
-//     assertEquals(
-//       outer.toString(),
-//       normalizeSeed(`
-//         . . . . .
-//         . . # . .
-//         . # # # .
-//         . . # . .
-//         . . . . .
-//       `),
-//     );
-//   });
-
-//   await t.step("should merge with offset", () => {
-//     const outer = Grid.fromString(
-//       { x: 5, y: 5 },
-//       `
-//       . . . . .
-//       . . # . .
-//       . . # . .
-//       . . # . .
-//       . . . . .
-//     `,
-//     );
-
-//     const inner = Grid.fromString(
-//       { x: 3, y: 3 },
-//       `
-//       . . .
-//       # # #
-//       . . .
-//     `,
-//     );
-
-//     outer.writeGrid({ inner, offset: { x: 1, y: 1 }, mode: PLACEMENT_MODES.MERGE });
-
-//     assertEquals(
-//       outer.toString(),
-//       normalizeSeed(`
-//         . . . . .
-//         . . # . .
-//         . # # # .
-//         . . # . .
-//         . . . . .
-//       `),
-//     );
-//   });
-// });
