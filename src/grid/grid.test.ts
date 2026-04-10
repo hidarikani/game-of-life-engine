@@ -61,50 +61,54 @@ Deno.test("Grid.constructor", async (t) => {
   });
 });
 
-// Deno.test("Grid.fromString valid params", async (t) => {
-//   const validSeed = `
-//   # . . #
-//   . # # .
-//   . . . #
-//   # # . .
-//   `;
+Deno.test("Grid.fromString valid params", async (t) => {
+  const validSeed = `
+  # . . #
+  . # # .
+  . . . #
+  # # . .
+  `;
 
-//   await t.step("should create a grid from a valid seed string", () => {
-//     const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
-//     assertEquals(grid.bottomRightCorner, { x: 4, y: 4 });
-//   });
+  await t.step("should create a grid from a valid seed string", () => {
+    const gridSize: GridSize = { w: 4, h: 4 };
+    const grid = Grid.fromString(gridSize, validSeed);
+    assertEquals(grid.gridSize, gridSize);
+  });
 
-//   await t.step("should parse cells correctly", () => {
-//     const grid = Grid.fromString({ x: 4, y: 4 }, validSeed);
-//     assertEquals(grid.toString(), normalizeSeed(validSeed));
-//   });
+  await t.step("should parse cells correctly", () => {
+    const gridSize: GridSize = { w: 4, h: 4 };
+    const grid = Grid.fromString(gridSize, validSeed);
+    assertEquals(grid.toString(), normalizeSeed(validSeed));
+  });
 
-//   await t.step(
-//     "should create a grid with no live cells from all-dead seed",
-//     () => {
-//       const deadSeed = `
-//     . . .
-//     . . .
-//     . . .
-//     `;
-//       const grid = Grid.fromString({ x: 3, y: 3 }, deadSeed);
-//       assertEquals(grid.population(), 0);
-//     },
-//   );
+  await t.step(
+    "should create a grid with no live cells from all-dead seed",
+    () => {
+      const deadSeed = `
+    . . .
+    . . .
+    . . .
+    `;
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromString(gridSize, deadSeed);
+      assertEquals(grid.population(), 0);
+    },
+  );
 
-//   await t.step(
-//     "should create a grid with all live cells from all-alive seed",
-//     () => {
-//       const aliveSeed = `
-//     # # #
-//     # # #
-//     # # #
-//     `;
-//       const grid = Grid.fromString({ x: 3, y: 3 }, aliveSeed);
-//       assertEquals(grid.population(), 9);
-//     },
-//   );
-// });
+  await t.step(
+    "should create a grid with all live cells from all-alive seed",
+    () => {
+      const aliveSeed = `
+    # # #
+    # # #
+    # # #
+    `;
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromString(gridSize, aliveSeed);
+      assertEquals(grid.population(), 9);
+    },
+  );
+});
 
 // Deno.test("Grid.fromString invalid params", async (t) => {
 //   await t.step("should throw when seed contains invalid character `O`", () => {

@@ -8,7 +8,12 @@ import type {
   PlacementMode,
   Point,
 } from "../types.ts";
-import { cellKeyToPoint, normalizeSeed, pointToCellKey } from "../seed/seed.ts";
+import {
+  cellKeyToPoint,
+  normalizeSeed,
+  pointToCellKey,
+  splitSeed,
+} from "../seed/seed.ts";
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
@@ -22,7 +27,6 @@ import {
 import {
   gridContainsCells,
   gridContainsGrid,
-  isPointInsideBorder,
   isPointOnBorder,
   isPointOutsideBorder,
   validateMinGridSize,
@@ -177,26 +181,22 @@ export class Grid implements IGrid {
 
     const normalizedSeed = normalizeSeed(seed);
 
-    const rows = normalizedSeed.split("\n").map((row) =>
-      row.split(SEPARATOR_CHAR).map((char) =>
-        CELL_CHAR_TO_BOOL[char as CellChars]
-      )
-    );
+    const rows = splitSeed(normalizedSeed);
 
-    if (rows.length !== gridSize.h - 1) {
+    if (rows.length !== gridSize.h) {
       throw new Error("Seed height does not match specified height");
     }
 
     for (const row of rows) {
-      if (row.length !== gridSize.w - 1) {
+      if (row.length !== gridSize.w) {
         throw new Error("Seed width does not match specified width");
       }
     }
 
     const liveCells: LiveCells = new Map();
 
-    for (let y = 0; y < gridSize.h - 1; y++) {
-      for (let x = 0; x < gridSize.w - 1; x++) {
+    for (let y = 0; y < gridSize.h; y++) {
+      for (let x = 0; x < gridSize.w; x++) {
         const cellState = rows[y][x];
         if (cellState) {
           const key = pointToCellKey({ x, y });
