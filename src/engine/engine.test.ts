@@ -6,6 +6,25 @@ import { normalizeSeed } from "../seed/seed.ts";
 import { Grid } from "../grid/grid.ts";
 
 Deno.test("Constructor", async (t) => {
+  await t.step("maxHistory less than 1 throws", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+
+    const seed = `
+      . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
+      . . . . .
+    `;
+    const firstGeneration = Grid.fromString({ gridSize, seed });
+
+    assertThrows(
+      () => new Engine({ firstGeneration, maxHistory: 0 }),
+      Error,
+      "maxHistory must be at least 1",
+    );
+  });
+
   await t.step("valid params", () => {
     const gridSize: GridSize = { w: 5, h: 5 };
     const mode: GridMode = GRID_MODES.TOROIDAL;

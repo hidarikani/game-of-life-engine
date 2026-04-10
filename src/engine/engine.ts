@@ -13,27 +13,18 @@ import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";
 import { Grid } from "../grid/grid.ts";
 
 export class Engine implements IEngine {
-  #gridSize: GridSize;
-  #mode: GridMode;
   #generations: IGrid[];
   #maxHistory: number;
 
   constructor(
     { firstGeneration, maxHistory = 3 }: EngineOptions,
   ) {
-    this.#gridSize = firstGeneration.gridSize;
-    this.#mode = firstGeneration.mode;
+    if (maxHistory < 1) {
+      throw new Error(`maxHistory must be at least 1, got ${maxHistory}`);
+    }
     this.#generations = [];
     this.#generations.push(firstGeneration);
     this.#maxHistory = maxHistory;
-  }
-
-  get gridSize(): GridSize {
-    return this.#gridSize;
-  }
-
-  get mode(): GridMode {
-    return this.#mode;
   }
 
   get maxHistory(): number {
@@ -48,8 +39,20 @@ export class Engine implements IEngine {
     return this.#generations[i];
   }
 
+  get firstGeneration(): IGrid {
+    return this.#generations[0];
+  }
+
   get presentGeneration(): IGrid {
     return this.getGeneration(this.historyLength - 1);
+  }
+
+  get gridSize(): GridSize {
+    return this.firstGeneration.gridSize;
+  }
+
+  get mode(): GridMode {
+    return this.firstGeneration.mode;
   }
 
   // evolveCell({ x, y }: Point): boolean {

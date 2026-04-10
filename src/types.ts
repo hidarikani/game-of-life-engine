@@ -51,6 +51,7 @@ export type GridOptionsFromString = {
 export interface IEngine {
   readonly historyLength: number;
   getGeneration(i: number): IGrid;
+  readonly firstGeneration: IGrid;
   readonly presentGeneration: IGrid;
   readonly gridSize: GridSize;
   readonly mode: GridMode;
