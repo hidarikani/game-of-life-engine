@@ -160,29 +160,29 @@ Deno.test("Engine.evolveCell: correctly evolves cell state", async (t) => {
   });
 });
 
-// Deno.test("Engine.evolveGrid: correctly evolves grid state", async (t) => {
-//   await t.step("Evolves blinker", () => {
-//     const seed = `
-//       . . . . .
-//       . . # . .
-//       . . # . .
-//       . . # . .
-//       . . . . .
-//     `;
+Deno.test("Engine.evolveGrid: correctly evolves grid state", async (t) => {
+  await t.step("Evolves blinker", () => {
+    const seed = `
+      . . . . .
+      . . # . .
+      . . # . .
+      . . # . .
+      . . . . .
+    `;
 
-//     const expected = `
-//       . . . . .
-//       . . . . .
-//       . # # # .
-//       . . . . .
-//       . . . . .
-//     `;
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const firstGeneration = Grid.fromString({ gridSize, seed });
 
-//     const gridSize: GridSize = { w: 5, h: 5 };
-
-//     const engine = new Engine({ gridSize, seed });
-//     engine.evolveGrid();
-//     const actual = engine.toString();
-//     assertEquals(actual, normalizeSeed(expected));
-//   });
-// });
+    const engine = new Engine({ firstGeneration });
+    engine.evolveGrid();
+    const actual = engine.toString();
+    const expected = `
+      . . . . .
+      . . . . .
+      . # # # .
+      . . . . .
+      . . . . .
+    `;
+    assertEquals(actual, normalizeSeed(expected));
+  });
+});

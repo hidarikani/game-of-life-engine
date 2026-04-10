@@ -131,8 +131,7 @@ export class Engine implements IEngine {
     }
   }
 
-  // toString(): string {
-  //   const generation = this.getPresentGeneration();
-  //   return generation.toString();
-  // }
+  toString(): string {
+    return this.presentGeneration.toString();
+  }
 }
