@@ -1,5 +1,7 @@
 import { MIN_GRID_SIZE } from "../constants.ts";
-import type { GridSize, Point, ValidationResult } from "../types.ts";
+import { Grid } from "../grid/grid.ts";
+import { cellKeyToPoint } from "../seed/seed.ts";
+import type { GridSize, LiveCells, Point, ValidationResult } from "../types.ts";
 
 export const validateMinGridSize = (
   gridSize: GridSize,
@@ -59,7 +61,7 @@ export const isPointInsideBorder = (
   return isXInsideBorder(x, w) && isYInsideBorder(y, h);
 };
 
-export const gridContains = (
+export const gridContainsGrid = (
   { outer, inner, offset = { x: 0, y: 0 } }: {
     outer: GridSize;
     inner: GridSize;
@@ -81,4 +83,20 @@ export const gridContains = (
     message:
       `Inner grid of size (${inner.w}, ${inner.h}) offset by (${offset.x}, ${offset.y}) does not fit in outer grid of size (${outer.w}, ${outer.h}).`,
   };
+};
+
+export const gridContainsCells = (
+  { outer, inner }: { outer: GridSize; inner: LiveCells },
+): ValidationResult => {
+  for (const key of inner.keys()) {
+    const point = cellKeyToPoint(key);
+    if (!isPointInsideBorder(point, outer)) {
+      return {
+        valid: false,
+        message:
+          `Cell at (${point.x}, ${point.y}) is outside the grid of size (${outer.w}, ${outer.h}).`,
+      };
+    }
+  }
+  return { valid: true };
 };

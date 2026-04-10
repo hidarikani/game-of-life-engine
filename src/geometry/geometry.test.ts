@@ -1,6 +1,7 @@
 import { assertEquals } from "@std/assert";
 import {
-  gridContains,
+  gridContainsCells,
+  gridContainsGrid,
   isPointInsideBorder,
   isPointOnBorder,
   isPointOutsideBorder,
@@ -131,25 +132,25 @@ Deno.test("Geometry: isPointInsideBorder", async (t) => {
   });
 });
 
-Deno.test("Geometry: gridContains", async (t) => {
+Deno.test("Geometry: gridContainsGrid", async (t) => {
   await t.step("returns valid", async (t) => {
     await t.step("inner fits exactly in outer (no offset)", () => {
       assertEquals(
-        gridContains({ outer: { w: 5, h: 5 }, inner: { w: 5, h: 5 } }),
+        gridContainsGrid({ outer: { w: 5, h: 5 }, inner: { w: 5, h: 5 } }),
         { valid: true },
       );
     });
 
     await t.step("inner smaller than outer fits (no offset)", () => {
       assertEquals(
-        gridContains({ outer: { w: 10, h: 10 }, inner: { w: 3, h: 3 } }),
+        gridContainsGrid({ outer: { w: 10, h: 10 }, inner: { w: 3, h: 3 } }),
         { valid: true },
       );
     });
 
     await t.step("inner fits in outer with offset", () => {
       assertEquals(
-        gridContains({
+        gridContainsGrid({
           outer: { w: 10, h: 10 },
           inner: { w: 3, h: 3 },
           offset: { x: 2, y: 2 },
@@ -160,7 +161,7 @@ Deno.test("Geometry: gridContains", async (t) => {
 
     await t.step("inner fits exactly at offset boundary", () => {
       assertEquals(
-        gridContains({
+        gridContainsGrid({
           outer: { w: 10, h: 10 },
           inner: { w: 5, h: 5 },
           offset: { x: 5, y: 5 },
@@ -173,7 +174,7 @@ Deno.test("Geometry: gridContains", async (t) => {
   await t.step("returns invalid", async (t) => {
     await t.step("inner too wide for outer", () => {
       assertEquals(
-        gridContains({ outer: { w: 4, h: 10 }, inner: { w: 5, h: 3 } }),
+        gridContainsGrid({ outer: { w: 4, h: 10 }, inner: { w: 5, h: 3 } }),
         {
           valid: false,
           message:
@@ -184,7 +185,7 @@ Deno.test("Geometry: gridContains", async (t) => {
 
     await t.step("inner too tall for outer", () => {
       assertEquals(
-        gridContains({ outer: { w: 10, h: 4 }, inner: { w: 3, h: 5 } }),
+        gridContainsGrid({ outer: { w: 10, h: 4 }, inner: { w: 3, h: 5 } }),
         {
           valid: false,
           message:
@@ -195,7 +196,7 @@ Deno.test("Geometry: gridContains", async (t) => {
 
     await t.step("inner overflows outer width due to offset", () => {
       assertEquals(
-        gridContains({
+        gridContainsGrid({
           outer: { w: 10, h: 10 },
           inner: { w: 5, h: 5 },
           offset: { x: 6, y: 0 },
@@ -210,7 +211,7 @@ Deno.test("Geometry: gridContains", async (t) => {
 
     await t.step("inner overflows outer height due to offset", () => {
       assertEquals(
-        gridContains({
+        gridContainsGrid({
           outer: { w: 10, h: 10 },
           inner: { w: 5, h: 5 },
           offset: { x: 0, y: 6 },
@@ -219,6 +220,114 @@ Deno.test("Geometry: gridContains", async (t) => {
           valid: false,
           message:
             "Inner grid of size (5, 5) offset by (0, 6) does not fit in outer grid of size (10, 10).",
+        },
+      );
+    });
+  });
+});
+
+Deno.test("Geometry: gridContainsCells", async (t) => {
+  await t.step("returns valid", async (t) => {
+    await t.step("empty cells map is valid for any grid", () => {
+      assertEquals(
+        gridContainsCells({ outer: { w: 5, h: 5 }, inner: new Map() }),
+        { valid: true },
+      );
+    });
+
+    await t.step("cell at top-left corner (0,0) is valid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["0,0", true]]),
+        }),
+        { valid: true },
+      );
+    });
+
+    await t.step("cell at bottom-right interior corner is valid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["4,4", true]]),
+        }),
+        { valid: true },
+      );
+    });
+
+    await t.step("multiple cells all inside grid are valid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["1,1", true], ["2,2", true], ["3,3", true]]),
+        }),
+        { valid: true },
+      );
+    });
+  });
+
+  await t.step("returns invalid", async (t) => {
+    await t.step("cell with negative x is invalid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["-1,2", true]]),
+        }),
+        {
+          valid: false,
+          message: "Cell at (-1, 2) is outside the grid of size (5, 5).",
+        },
+      );
+    });
+
+    await t.step("cell with negative y is invalid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["2,-1", true]]),
+        }),
+        {
+          valid: false,
+          message: "Cell at (2, -1) is outside the grid of size (5, 5).",
+        },
+      );
+    });
+
+    await t.step("cell with x equal to grid width is invalid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["5,2", true]]),
+        }),
+        {
+          valid: false,
+          message: "Cell at (5, 2) is outside the grid of size (5, 5).",
+        },
+      );
+    });
+
+    await t.step("cell with y equal to grid height is invalid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["2,5", true]]),
+        }),
+        {
+          valid: false,
+          message: "Cell at (2, 5) is outside the grid of size (5, 5).",
+        },
+      );
+    });
+
+    await t.step("one out-of-bounds cell among valid cells is invalid", () => {
+      assertEquals(
+        gridContainsCells({
+          outer: { w: 5, h: 5 },
+          inner: new Map([["1,1", true], ["10,10", true]]),
+        }),
+        {
+          valid: false,
+          message: "Cell at (10, 10) is outside the grid of size (5, 5).",
         },
       );
     });
