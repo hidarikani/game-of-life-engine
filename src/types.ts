@@ -20,11 +20,14 @@ export type ValidationResult =
   | { valid: true }
   | { valid: false; message: string };
 
+export type PlacementMode = "Overwrite" | "Merge";
+
 export interface IGrid {
-  readonly gridSize: GridSize; // getter
-  readonly liveCells: { key: Point; value: boolean }[]; // getter
+  readonly gridSize: GridSize;
+  readonly mode: GridMode;
+  readonly liveCells: { key: Point; value: boolean }[];
+  readonly population: number;
   readCell({ x, y }: Point): boolean;
-  population(): number;
   writeGrid(params: {
     inner: IGrid;
     offset?: Point;
@@ -33,16 +36,28 @@ export interface IGrid {
   toString(): string;
 }
 
-export type GridOptions = {
+export type GridOptionsFromLiveCells = {
   gridSize: GridSize;
   liveCells?: LiveCells;
   mode?: GridMode;
 };
 
-export type EngineOptions = {
-  gridSize: Point;
+export type GridOptionsFromString = {
+  gridSize: GridSize;
+  seed: string;
   mode?: GridMode;
-  seed?: IGrid;
 };
 
-export type PlacementMode = "Overwrite" | "Merge";
+export interface IEngine {
+  readonly historyLength: number;
+  getGeneration(i: number): IGrid;
+  readonly presentGeneration: IGrid;
+  readonly gridSize: GridSize;
+  readonly mode: GridMode;
+  readonly maxHistory: number;
+}
+
+export type EngineOptions = {
+  firstGeneration: IGrid;
+  maxHistory?: number;
+};
