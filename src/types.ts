@@ -27,7 +27,6 @@ export interface IGrid {
   readonly liveCells: { key: Point; value: boolean }[]; // getter
   readCell({ x, y }: Point): boolean;
   population(): number;
-  contains(params: { inner: IGrid; offset?: Point }): ValidationResult;
   writeGrid(params: {
     inner: IGrid;
     offset?: Point;

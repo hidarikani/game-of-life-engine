@@ -1,54 +1,59 @@
 import type {
   CellChars,
+  GridMode,
   GridOptions,
+  GridSize,
   IGrid,
   LiveCells,
   PlacementMode,
   Point,
-  ValidationResult,
 } from "../types.ts";
 import { cellKeyToPoint, normalizeSeed, pointToCellKey } from "../seed/seed.ts";
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
   DEAD_CHAR,
-  MIN_WORLD_HEIGHT,
-  MIN_WORLD_WIDTH,
+  GRID_MODES,
   NEWLINE_CHAR,
   PLACEMENT_MODES,
   SEED_PATTERN,
   SEPARATOR_CHAR,
 } from "../constants.ts";
-import { validateMinGridSize } from "../geometry/geometry.ts";
+import {
+  gridContains,
+  isPointInsideBorder,
+  isPointOnBorder,
+  isPointOutsideBorder,
+  validateMinGridSize,
+} from "../geometry/geometry.ts";
 
 export class Grid implements IGrid {
-  #bottomRightCorner: Point;
+  #gridSize: GridSize;
   #liveCells: LiveCells;
+  #mode: GridMode;
 
-  constructor({ bottomRightCorner, liveCells, mode }: GridOptions) {
-    if (bottomRightCorner.x < MIN_WORLD_WIDTH) {
-      throw new Error(`Width must be at least ${MIN_WORLD_WIDTH}`);
+  constructor(
+    { gridSize, liveCells, mode = GRID_MODES.FINITE }: GridOptions,
+  ) {
+    const minGridSizeResult = validateMinGridSize(gridSize);
+
+    if (!minGridSizeResult.valid) {
+      throw new Error(minGridSizeResult.message);
     }
 
-    if (bottomRightCorner.y < MIN_WORLD_HEIGHT) {
-      throw new Error(`Height must be at least ${MIN_WORLD_HEIGHT}`);
-    }
-
-    this.#bottomRightCorner = bottomRightCorner;
+    this.#gridSize = gridSize;
 
     if (liveCells) {
-      // At the moment, Toroidal mode isn't supported
-      // Validate that all live cells are within bounds
       for (const cellKey of liveCells.keys()) {
         const point = cellKeyToPoint(cellKey);
         if (
-          point.x < 0 ||
-          point.x > bottomRightCorner.x ||
-          point.y < 0 ||
-          point.y > bottomRightCorner.y
+          // At the moment, Toroidal mode isn't supported
+          isPointInsideBorder(point, gridSize)
         ) {
           throw new Error(
-            `Cell at (${point.x}, ${point.y}) is out of bounds. Grid bounds are (0, 0) to (${bottomRightCorner.x}, ${bottomRightCorner.y}).`,
+            `Cell at (${point.x}, ${point.y}) is out of bounds. Grid bounds are (0, 0) to (${
+              gridSize.w - 1
+            }, ${gridSize.h - 1}).`,
           );
         }
       }
@@ -56,10 +61,12 @@ export class Grid implements IGrid {
     } else {
       this.#liveCells = new Map();
     }
+
+    this.#mode = mode;
   }
 
-  get bottomRightCorner(): Point {
-    return this.#bottomRightCorner;
+  get gridSize(): GridSize {
+    return this.#gridSize;
   }
 
   get liveCells(): { key: Point; value: boolean }[] {
@@ -69,50 +76,82 @@ export class Grid implements IGrid {
     }));
   }
 
-  cell({ x, y }: Point): boolean {
-    return this.#liveCells.get(pointToCellKey({ x, y })) ?? false;
+  readCell({ x, y }: Point): boolean {
+    if (
+      isPointOutsideBorder({ x, y }, {
+        w: this.#gridSize.w,
+        h: this.gridSize.h,
+      })
+    ) {
+      throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+    }
+
+    if (
+      isPointOnBorder({ x, y }, { w: this.#gridSize.w, h: this.#gridSize.h })
+    ) {
+      if (this.#mode === GRID_MODES.FINITE) {
+        return false;
+      }
+
+      if (this.#mode === GRID_MODES.TOROIDAL) {
+        let wrappedX: number;
+        let wrappedY: number;
+
+        if (x === -1) {
+          wrappedX = this.#gridSize.w - 1;
+        } else {
+          wrappedX = 0;
+        }
+
+        if (y === -1) {
+          wrappedY = this.#gridSize.h - 1;
+        } else {
+          wrappedY = 0;
+        }
+
+        const key = pointToCellKey({ x: wrappedX, y: wrappedY });
+
+        if (this.#liveCells.has(key)) {
+          return this.#liveCells.get(key)!;
+        }
+
+        return false;
+      }
+    }
+
+    const key = pointToCellKey({ x, y });
+
+    if (this.#liveCells.has(key)) {
+      return this.#liveCells.get(key)!;
+    }
+
+    return false;
   }
 
   population(): number {
     return this.#liveCells.size;
   }
 
-  contains(
-    { inner: grid, offset = { x: 0, y: 0 } }: { inner: IGrid; offset?: Point },
-  ): ValidationResult {
-    const effectiveX = offset.x + grid.bottomRightCorner.x;
-    const effectiveY = offset.y + grid.bottomRightCorner.y;
-
-    if (
-      effectiveX <= this.#bottomRightCorner.x &&
-      effectiveY <= this.#bottomRightCorner.y
-    ) {
-      return { valid: true };
-    }
-
-    return {
-      valid: false,
-      message:
-        `Grid with bounds (${effectiveX}, ${effectiveY}) does not fit within (${this.#bottomRightCorner.x}, ${this.#bottomRightCorner.y}).`,
-    };
-  }
-
-  place(
+  writeGrid(
     { offset = { x: 0, y: 0 }, inner, mode = PLACEMENT_MODES.OVERWRITE }: {
       inner: IGrid;
       offset?: Point;
       mode?: PlacementMode;
     },
   ): void {
-    const contains = this.contains({ offset, inner: inner });
+    const contains = gridContains({
+      outer: this.#gridSize,
+      inner: inner.gridSize,
+      offset,
+    });
 
     if (!contains.valid) {
       throw new Error(contains.message);
     }
 
     if (mode === PLACEMENT_MODES.OVERWRITE) {
-      for (let x = offset.x; x <= offset.x + inner.bottomRightCorner.x; x++) {
-        for (let y = offset.y; y <= offset.y + inner.bottomRightCorner.y; y++) {
+      for (let x = offset.x; x <= offset.x + inner.gridSize.w - 1; x++) {
+        for (let y = offset.y; y <= offset.y + inner.gridSize.h - 1; y++) {
           this.#liveCells.delete(pointToCellKey({ x, y }));
         }
       }
@@ -128,14 +167,14 @@ export class Grid implements IGrid {
   }
 
   static fromString(
-    bottomRightCorner: Point,
+    gridSize: GridSize,
     seed: string,
   ): IGrid {
     if (!SEED_PATTERN.test(seed)) {
       throw new Error("Seed contains invalid characters");
     }
 
-    const minGridSizeResult = validateMinGridSize(bottomRightCorner);
+    const minGridSizeResult = validateMinGridSize(gridSize);
 
     if (!minGridSizeResult.valid) {
       throw new Error(minGridSizeResult.message);
@@ -149,20 +188,20 @@ export class Grid implements IGrid {
       )
     );
 
-    if (rows.length !== bottomRightCorner.y) {
+    if (rows.length !== gridSize.h - 1) {
       throw new Error("Seed height does not match specified height");
     }
 
     for (const row of rows) {
-      if (row.length !== bottomRightCorner.x) {
+      if (row.length !== gridSize.w - 1) {
         throw new Error("Seed width does not match specified width");
       }
     }
 
     const liveCells: LiveCells = new Map();
 
-    for (let y = 0; y < bottomRightCorner.y; y++) {
-      for (let x = 0; x < bottomRightCorner.x; x++) {
+    for (let y = 0; y < gridSize.h - 1; y++) {
+      for (let x = 0; x < gridSize.w - 1; x++) {
         const cellState = rows[y][x];
         if (cellState) {
           const key = pointToCellKey({ x, y });
@@ -171,14 +210,14 @@ export class Grid implements IGrid {
       }
     }
 
-    return new Grid({ bottomRightCorner, liveCells });
+    return new Grid({ gridSize, liveCells });
   }
 
   toString(): string {
     let res = "";
-    for (let y = 0; y < this.#bottomRightCorner.y; y++) {
+    for (let y = 0; y < this.#gridSize.h; y++) {
       const row: string[] = [];
-      for (let x = 0; x < this.#bottomRightCorner.x; x++) {
+      for (let x = 0; x < this.#gridSize.w; x++) {
         const key = pointToCellKey({ x, y });
         const isAlive = this.#liveCells.get(key) ?? false;
         row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
