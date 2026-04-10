@@ -1,7 +1,7 @@
 import type {
-  CellChars,
   GridMode,
-  GridOptions,
+  GridOptionsFromLiveCells,
+  GridOptionsFromString,
   GridSize,
   IGrid,
   LiveCells,
@@ -16,7 +16,6 @@ import {
 } from "../seed/seed.ts";
 import {
   ALIVE_CHAR,
-  CELL_CHAR_TO_BOOL,
   DEAD_CHAR,
   GRID_MODES,
   NEWLINE_CHAR,
@@ -38,7 +37,7 @@ export class Grid implements IGrid {
   #mode: GridMode;
 
   constructor(
-    { gridSize, liveCells, mode = GRID_MODES.FINITE }: GridOptions,
+    { gridSize, liveCells, mode = GRID_MODES.FINITE }: GridOptionsFromLiveCells,
   ) {
     const minGridSizeResult = validateMinGridSize(gridSize);
 
@@ -66,6 +65,10 @@ export class Grid implements IGrid {
 
   get gridSize(): GridSize {
     return this.#gridSize;
+  }
+
+  get mode(): GridMode {
+    return this.#mode;
   }
 
   get liveCells(): { key: Point; value: boolean }[] {
@@ -127,7 +130,7 @@ export class Grid implements IGrid {
     return false;
   }
 
-  population(): number {
+  get population(): number {
     return this.#liveCells.size;
   }
 
@@ -166,8 +169,7 @@ export class Grid implements IGrid {
   }
 
   static fromString(
-    gridSize: GridSize,
-    seed: string,
+    { gridSize, seed, mode = GRID_MODES.FINITE }: GridOptionsFromString,
   ): IGrid {
     if (!SEED_PATTERN.test(seed)) {
       throw new Error("Seed contains invalid characters");
@@ -205,7 +207,7 @@ export class Grid implements IGrid {
       }
     }
 
-    return new Grid({ gridSize, liveCells });
+    return new Grid({ gridSize, liveCells, mode });
   }
 
   toString(): string {

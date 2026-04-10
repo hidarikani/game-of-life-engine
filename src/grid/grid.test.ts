@@ -72,13 +72,13 @@ Deno.test("Grid.fromString", async (t) => {
 
     await t.step("should create a grid from a valid seed string", () => {
       const gridSize: GridSize = { w: 4, h: 4 };
-      const grid = Grid.fromString(gridSize, validSeed);
+      const grid = Grid.fromString({ gridSize, seed: validSeed });
       assertEquals(grid.gridSize, gridSize);
     });
 
     await t.step("should parse cells correctly", () => {
       const gridSize: GridSize = { w: 4, h: 4 };
-      const grid = Grid.fromString(gridSize, validSeed);
+      const grid = Grid.fromString({ gridSize, seed: validSeed });
       assertEquals(grid.toString(), normalizeSeed(validSeed));
     });
 
@@ -91,8 +91,8 @@ Deno.test("Grid.fromString", async (t) => {
           . . .
     `;
         const gridSize: GridSize = { w: 3, h: 3 };
-        const grid = Grid.fromString(gridSize, deadSeed);
-        assertEquals(grid.population(), 0);
+        const grid = Grid.fromString({ gridSize, seed: deadSeed });
+        assertEquals(grid.population, 0);
       },
     );
 
@@ -105,8 +105,8 @@ Deno.test("Grid.fromString", async (t) => {
           # # #
     `;
         const gridSize: GridSize = { w: 3, h: 3 };
-        const grid = Grid.fromString(gridSize, aliveSeed);
-        assertEquals(grid.population(), 9);
+        const grid = Grid.fromString({ gridSize, seed: aliveSeed });
+        assertEquals(grid.population, 9);
       },
     );
   });
@@ -122,7 +122,7 @@ Deno.test("Grid.fromString", async (t) => {
           # # . .
     `;
         assertThrows(
-          () => Grid.fromString(gridSize, invalidSeed),
+          () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
           "Seed contains invalid characters",
         );
@@ -140,7 +140,7 @@ Deno.test("Grid.fromString", async (t) => {
           # # . .
     `;
         assertThrows(
-          () => Grid.fromString(gridSize, invalidSeed),
+          () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
           "Seed contains invalid characters",
         );
@@ -155,7 +155,7 @@ Deno.test("Grid.fromString", async (t) => {
         . .
     `;
       assertThrows(
-        () => Grid.fromString(gridSize, seed),
+        () => Grid.fromString({ gridSize, seed }),
         Error,
         "Grid must be at least 3 cells wide and 3 cells tall",
       );
@@ -168,7 +168,7 @@ Deno.test("Grid.fromString", async (t) => {
         . # .
     `;
       assertThrows(
-        () => Grid.fromString(gridSize, seed),
+        () => Grid.fromString({ gridSize, seed }),
         Error,
         "Grid must be at least 3 cells wide and 3 cells tall",
       );
@@ -182,7 +182,7 @@ Deno.test("Grid.fromString", async (t) => {
         . . . #
     `; //missing row
       assertThrows(
-        () => Grid.fromString(gridSize, seed),
+        () => Grid.fromString({ gridSize, seed }),
         Error,
         "Seed height does not match specified height",
       );
@@ -197,7 +197,7 @@ Deno.test("Grid.fromString", async (t) => {
         # #   .
     `; // last row missing `.`
       assertThrows(
-        () => Grid.fromString(gridSize, seed),
+        () => Grid.fromString({ gridSize, seed }),
         Error,
         "Seed width does not match specified width",
       );
@@ -216,7 +216,7 @@ Deno.test("Grid.toString", async (t) => {
         . . . #
         # # . .
     `;
-      const grid = Grid.fromString(gridSize, seed);
+      const grid = Grid.fromString({ gridSize, seed });
       assertEquals(grid.toString(), normalizeSeed(seed));
     },
   );
@@ -228,8 +228,8 @@ Deno.test("Grid.toString", async (t) => {
       # . # . #
       . # . # .
     `;
-    const grid = Grid.fromString(gridSize, seed);
-    const grid2 = Grid.fromString(gridSize, grid.toString());
+    const grid = Grid.fromString({ gridSize, seed });
+    const grid2 = Grid.fromString({ gridSize, seed: grid.toString() });
     assertEquals(grid.toString(), grid2.toString());
   });
 });
@@ -265,16 +265,16 @@ Deno.test("Grid.place", async (t) => {
     );
   });
   await t.step("overwrite mode", async (t) => {
-    const outer = Grid.fromString(
-      { w: 5, h: 5 },
-      `
+    const outer = Grid.fromString({
+      gridSize: { w: 5, h: 5 },
+      seed: `
         # . . . .
         . # . . .
         . . . . .
         . . . . .
         . . . . #
       `,
-    );
+    });
 
     await t.step(
       "should clear existing cells in the target region before placing",
@@ -329,30 +329,30 @@ Deno.test("Grid.place", async (t) => {
     );
   });
   await t.step("merge mode", async (t) => {
-    const outer = Grid.fromString(
-      { w: 5, h: 5 },
-      `
+    const outer = Grid.fromString({
+      gridSize: { w: 5, h: 5 },
+      seed: `
         . . . . .
         . . # . .
         . . # . .
         . . # . .
         . . . . .
       `,
-    );
+    });
 
     await t.step("should preserve existing cells in the target region", () => {
       const innerCells: LiveCells = new Map();
       innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
-      const inner = Grid.fromString(
-        { w: 5, h: 5 },
-        `
+      const inner = Grid.fromString({
+        gridSize: { w: 5, h: 5 },
+        seed: `
           . . . . .
           . . . . .
           . # # # .
           . . . . .
           . . . . .
         `,
-      );
+      });
 
       outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
 
@@ -369,14 +369,14 @@ Deno.test("Grid.place", async (t) => {
     });
 
     await t.step("should merge with offset", () => {
-      const inner = Grid.fromString(
-        { w: 3, h: 3 },
-        `
+      const inner = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
           . . .
           # # #
           . . .
         `,
-      );
+      });
 
       outer.writeGrid({
         inner,
