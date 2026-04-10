@@ -234,104 +234,35 @@ Deno.test("Grid.toString", async (t) => {
   });
 });
 
-// Deno.test("Grid.contains returns true", async (t) => {
-//   await t.step("should return valid when grid contains a smaller grid", () => {
-//     const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//     const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     assertEquals(outer.contains({ inner: inner }), { valid: true });
-//   });
+Deno.test("Grid.place throws", async (t) => {
+  await t.step("should throw when inner grid does not fit", () => {
+    const gridSizeOuter: GridSize = { w: 5, h: 5 };
+    const gridSizeInner: GridSize = { w: 6, h: 6 };
+    const outer = new Grid({ gridSize: gridSizeOuter });
+    const inner = new Grid({ gridSize: gridSizeInner });
+    assertThrows(
+      () => outer.writeGrid({ inner }),
+      Error,
+      "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
+    );
+  });
 
-//   await t.step("should return valid when grids are the same size", () => {
-//     const a = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     const b = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     assertEquals(a.contains({ inner: b }), { valid: true });
-//   });
-
-//   await t.step("should return valid when grid fits with offset", () => {
-//     const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//     const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     assertEquals(outer.contains({ inner: inner, offset: { x: 3, y: 3 } }), {
-//       valid: true,
-//     });
-//   });
-
-//   await t.step(
-//     "should return valid when offset keeps grid exactly at bounds",
-//     () => {
-//       const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//       const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//       assertEquals(outer.contains({ inner: inner, offset: { x: 5, y: 5 } }), {
-//         valid: true,
-//       });
-//     },
-//   );
-// });
-
-// Deno.test("Grid.contains returns false", async (t) => {
-//   await t.step("should return invalid when grid is larger", () => {
-//     const smaller = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     const larger = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//     assertEquals(smaller.contains({ inner: larger }), {
-//       valid: false,
-//       message: "Grid with bounds (10, 10) does not fit within (5, 5).",
-//     });
-//   });
-
-//   await t.step("should return invalid when only x exceeds bounds", () => {
-//     const outer = new Grid({ bottomRightCorner: { x: 5, y: 10 } });
-//     const inner = new Grid({ bottomRightCorner: { x: 6, y: 10 } });
-//     assertEquals(outer.contains({ inner: inner }), {
-//       valid: false,
-//       message: "Grid with bounds (6, 10) does not fit within (5, 10).",
-//     });
-//   });
-
-//   await t.step("should return invalid when only y exceeds bounds", () => {
-//     const outer = new Grid({ bottomRightCorner: { x: 10, y: 5 } });
-//     const inner = new Grid({ bottomRightCorner: { x: 10, y: 6 } });
-//     assertEquals(outer.contains({ inner: inner }), {
-//       valid: false,
-//       message: "Grid with bounds (10, 6) does not fit within (10, 5).",
-//     });
-//   });
-
-//   await t.step(
-//     "should return invalid when offset pushes grid out of bounds",
-//     () => {
-//       const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//       const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//       assertEquals(outer.contains({ inner: inner, offset: { x: 6, y: 6 } }), {
-//         valid: false,
-//         message: "Grid with bounds (11, 11) does not fit within (10, 10).",
-//       });
-//     },
-//   );
-// });
-
-// Deno.test("Grid.place throws", async (t) => {
-//   await t.step("should throw when inner grid does not fit", () => {
-//     const outer = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//     const inner = new Grid({ bottomRightCorner: { x: 6, y: 6 } });
-//     assertThrows(
-//       () => outer.writeGrid({ inner }),
-//       Error,
-//       "Grid with bounds (6, 6) does not fit within (5, 5).",
-//     );
-//   });
-
-//   await t.step(
-//     "should throw when offset pushes inner grid out of bounds",
-//     () => {
-//       const outer = new Grid({ bottomRightCorner: { x: 10, y: 10 } });
-//       const inner = new Grid({ bottomRightCorner: { x: 5, y: 5 } });
-//       assertThrows(
-//         () => outer.writeGrid({ inner, offset: { x: 6, y: 6 } }),
-//         Error,
-//         "Grid with bounds (11, 11) does not fit within (10, 10).",
-//       );
-//     },
-//   );
-// });
+  await t.step(
+    "should throw when offset pushes inner grid out of bounds",
+    () => {
+      const gridSizeOuter: GridSize = { w: 10, h: 10 };
+      const gridSizeInner: GridSize = { w: 5, h: 5 };
+      const outer = new Grid({ gridSize: gridSizeOuter });
+      const inner = new Grid({ gridSize: gridSizeInner });
+      const offset: Point = { x: 6, y: 6 };
+      assertThrows(
+        () => outer.writeGrid({ inner, offset }),
+        Error,
+        "Inner grid of size (5, 5) offset by (6, 6) does not fit in outer grid of size (10, 10).",
+      );
+    },
+  );
+});
 
 // Deno.test("Grid.place with Overwrite mode", async (t) => {
 //   await t.step(
