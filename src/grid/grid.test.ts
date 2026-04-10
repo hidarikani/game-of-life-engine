@@ -397,3 +397,93 @@ Deno.test("Grid.place", async (t) => {
     });
   });
 });
+
+// Deno.test("Engine.getCell: out of bounds throws", async (t) => {
+//   await t.step("left edge exceeded", () => {
+//     const engine = new Engine({ gridSize: { w: 5, h: 5 } });
+//     assertThrows(
+//       () => engine.getCell({ x: -2, y: 0 }),
+//       Error,
+//       "Cell (-2, 0) is out of bounds",
+//     );
+//   });
+
+//   await t.step("right edge exceeded", () => {
+//     const width = 5;
+//     const engine = new Engine({ gridSize: { w: width, h: 5 } });
+//     assertThrows(
+//       () => engine.getCell({ x: width + 1, y: 0 }),
+//       Error,
+//       `Cell (${width + 1}, 0) is out of bounds`,
+//     );
+//   });
+
+//   await t.step("top edge exceeded", () => {
+//     const engine = new Engine({ gridSize: { w: 5, h: 5 } });
+//     assertThrows(
+//       () => engine.getCell({ x: 0, y: -2 }),
+//       Error,
+//       "Cell (0, -2) is out of bounds",
+//     );
+//   });
+
+//   await t.step("bottom edge exceeded", () => {
+//     const height = 5;
+//     const engine = new Engine({ gridSize: { w: 5, h: height } });
+//     assertThrows(
+//       () => engine.getCell({ x: 0, y: height + 1 }),
+//       Error,
+//       `Cell (0, ${height + 1}) is out of bounds`,
+//     );
+//   });
+// });
+
+// Deno.test("Engine.getCell: toroidal border wrapping", async (t) => {
+//   const seed = `
+//   # . #
+//   . . .
+//   # . .
+//   `;
+
+//   const engine = new Engine({
+//     gridSize: { w: 3, h: 3 },
+//     mode: GRID_MODES.TOROIDAL,
+//     seed,
+//   });
+
+//   await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
+//     const rightNeighborX = 3; // wraps to 0
+//     const rightNeighborY = 2;
+//     const isAlive = engine.getCell({ x: rightNeighborX, y: rightNeighborY });
+//     if (!isAlive) {
+//       throw new Error(
+//         `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+//       );
+//     }
+//   });
+
+//   await t.step("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
+//     const bottomNeighborX = 2;
+//     const bottomNeighborY = 3; // wraps to 0
+//     const isAlive = engine.getCell({ x: bottomNeighborX, y: bottomNeighborY });
+//     if (!isAlive) {
+//       throw new Error(
+//         `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+//       );
+//     }
+//   });
+
+//   await t.step("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
+//     const bottomRightNeighborX = 3; // wraps to 0
+//     const bottomRightNeighborY = 3; // wraps to 0
+//     const isAlive = engine.getCell({
+//       x: bottomRightNeighborX,
+//       y: bottomRightNeighborY,
+//     });
+//     if (!isAlive) {
+//       throw new Error(
+//         `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
+//       );
+//     }
+//   });
+// });
