@@ -1,5 +1,4 @@
 import { MIN_GRID_SIZE } from "../constants.ts";
-import { Grid } from "../grid/grid.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
 import type { GridSize, LiveCells, Point, ValidationResult } from "../types.ts";
 
