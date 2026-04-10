@@ -20,7 +20,8 @@ import {
   SEPARATOR_CHAR,
 } from "../constants.ts";
 import {
-  gridContains,
+  gridContainsCells,
+  gridContainsGrid,
   isPointInsideBorder,
   isPointOnBorder,
   isPointOutsideBorder,
@@ -44,18 +45,12 @@ export class Grid implements IGrid {
     this.#gridSize = gridSize;
 
     if (liveCells) {
-      for (const cellKey of liveCells.keys()) {
-        const point = cellKeyToPoint(cellKey);
-        if (
-          // At the moment, Toroidal mode isn't supported
-          isPointInsideBorder(point, gridSize)
-        ) {
-          throw new Error(
-            `Cell at (${point.x}, ${point.y}) is out of bounds. Grid bounds are (0, 0) to (${
-              gridSize.w - 1
-            }, ${gridSize.h - 1}).`,
-          );
-        }
+      const cellContainmentResult = gridContainsCells({
+        outer: gridSize,
+        inner: liveCells,
+      });
+      if (!cellContainmentResult.valid) {
+        throw new Error(cellContainmentResult.message);
       }
       this.#liveCells = liveCells;
     } else {
@@ -139,7 +134,7 @@ export class Grid implements IGrid {
       mode?: PlacementMode;
     },
   ): void {
-    const contains = gridContains({
+    const contains = gridContainsGrid({
       outer: this.#gridSize,
       inner: inner.gridSize,
       offset,
