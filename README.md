@@ -2,39 +2,59 @@
 
 ## Usage
 
-Install
+Install:
 
 ```sh
 deno add jsr:@hidarikani/game-of-life-engine
 ```
 
-Import, create an `Engine` instance and compute one generation.
+Create a `Grid` from a seed string, pass it to `Engine`, then call `evolveGrid()`
+to step the simulation forward.
 
 ```ts
-import {
-  GridMode,
-  Rectangle,
-  Engine,
-  EngineOptions,
-} from "@hidarikani/game-of-life-engine";
+import { Engine, Grid } from "@hidarikani/game-of-life-engine";
+import type { GridSize } from "@hidarikani/game-of-life-engine";
 
-const gridSize: Rectangle = { w: 5, h: 5 };
-const mode: GridMode = GRID_MODES.TOROIDAL;
-const seed = `
-      . . . . .
-      . . # . .
-      . . # . .
-      . . # . .
-      . . . . .
-    `;
-const engineOptions: EngineOptions = { gridSize, mode, seed };
+const gridSize: GridSize = { w: 5, h: 5 };
 
-const engineFoo = new Engine(engineOptions);
-const engineBar = new Engine({ gridSize });
+// A vertical blinker
+const firstGeneration = Grid.fromString({
+  gridSize,
+  seed: `
+    . . . . .
+    . . # . .
+    . . # . .
+    . . # . .
+    . . . . .
+  `,
+});
 
-engineFoo.evolveGrid();
-const actual = engineFoo.toString();
+const engine = new Engine({ firstGeneration });
+
+engine.evolveGrid();
+console.log(engine.toString());
+// . . . . .
+// . . . . .
+// . # # # .
+// . . . . .
+// . . . . .
 ```
+
+A runnable version of this example is available in [`demo.ts`](demo.ts):
+
+```sh
+deno run demo.ts
+```
+
+### Engine
+
+See [src/engine/README.md](src/engine/README.md) for full `Engine` API documentation
+and usage examples.
+
+### Grid
+
+See [src/grid/README.md](src/grid/README.md) for full `Grid` API documentation
+and usage examples.
 
 ## Coordinates
 
@@ -80,11 +100,6 @@ behavior of border cells depends on `GridMode`.
   interactions—your glider can collide with its own past if the grid is small.
   For example when trying to access cell at `{ x: 9, y: 5}` it shall be
   translated to `{ x: 0, y: 0 }`.
-
-## Grid
-
-See [src/grid/README.md](src/grid/README.md) for full `Grid` API documentation
-and usage examples.
 
 ## Development
 
