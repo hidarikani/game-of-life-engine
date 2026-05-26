@@ -7,9 +7,6 @@ Conway's Game of Life simulation engine published as a JSR package (`@hidarikani
 ## Commands
 
 ```bash
-# Run tests once (for agents — run this after every code change)
-deno task test:agent
-
 # Publish (CI handles this automatically on push to main)
 npx jsr publish
 ```
@@ -53,8 +50,10 @@ patterns.yaml     # Named Game of Life patterns (e.g., Blinker)
 
 Uses Deno's built-in test runner with `@std/assert`. Tests are hierarchical — `Deno.test()` with nested `t.step()`.
 
+After every code change, run tests with:
+
 ```bash
-deno task test:watch
+deno task test:agent
 ```
 
 Test files live alongside source: `engine.test.ts`, `grid.test.ts`, `geometry.test.ts`, `seed.test.ts`.
