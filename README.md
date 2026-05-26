@@ -40,6 +40,8 @@ console.log(engine.toString());
 // . . . . .
 ```
 
+A runnable version of this example is available in [`demo.ts`](demo.ts).
+
 ### Engine
 
 See [src/engine/README.md](src/engine/README.md) for full `Engine` API documentation
