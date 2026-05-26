@@ -7,11 +7,8 @@ Conway's Game of Life simulation engine published as a JSR package (`@hidarikani
 ## Commands
 
 ```bash
-# Run tests (watch mode)
-deno task test:watch
-
-# Run tests once
-deno test --allow-read
+# Run tests once (for agents — run this after every code change)
+deno task test:agent
 
 # Publish (CI handles this automatically on push to main)
 npx jsr publish
