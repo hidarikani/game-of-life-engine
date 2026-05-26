@@ -5,7 +5,7 @@
   "exports": "./mod.ts",
   "tasks": {
     "test:watch": "deno test --watch",
-    "test:ci": "deno test"
+    "test:agent": "deno test"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1"
