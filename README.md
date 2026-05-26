@@ -81,6 +81,11 @@ behavior of border cells depends on `GridMode`.
   For example when trying to access cell at `{ x: 9, y: 5}` it shall be
   translated to `{ x: 0, y: 0 }`.
 
+## Grid
+
+See [src/grid/README.md](src/grid/README.md) for full `Grid` API documentation
+and usage examples.
+
 ## Development
 
 Runs on [Deno][deno]. Tested with `deno --version` `2.5.x`.
