@@ -13,11 +13,7 @@ const gridSize: GridSize = { w: 10, h: 10 };
 const grid = new Grid({ gridSize });
 ```
 
-The minimum allowed size is 3×3. Passing a smaller value throws:
-
-```
-Error: Grid must be at least 3 cells wide and 3 cells tall
-```
+The minimum allowed size is 3×3. Passing a smaller value throws an error.
 
 ## Grid with live cells
 
