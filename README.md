@@ -40,7 +40,11 @@ console.log(engine.toString());
 // . . . . .
 ```
 
-A runnable version of this example is available in [`demo.ts`](demo.ts).
+A runnable version of this example is available in [`demo.ts`](demo.ts):
+
+```sh
+deno run demo.ts
+```
 
 ### Engine
 
