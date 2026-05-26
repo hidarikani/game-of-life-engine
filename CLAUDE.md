@@ -80,3 +80,4 @@ CI (`.github/workflows/publish.yml`) auto-publishes to JSR on push to `main` usi
 
 - Always merge PRs with `gh pr merge <number> --squash`
 - After a squash merge, all branch commits are folded into one commit on main. Do not rebase the working branch onto main — reset directly instead: `git reset --hard origin/main`
+- After resetting a working branch, the remote will be out of sync — force push with `git push --force-with-lease`
