@@ -398,45 +398,46 @@ Deno.test("Grid.place", async (t) => {
   });
 });
 
-// Deno.test("Engine.getCell: out of bounds throws", async (t) => {
-//   await t.step("left edge exceeded", () => {
-//     const engine = new Engine({ gridSize: { w: 5, h: 5 } });
-//     assertThrows(
-//       () => engine.getCell({ x: -2, y: 0 }),
-//       Error,
-//       "Cell (-2, 0) is out of bounds",
-//     );
-//   });
+Deno.test("Grid.readCell: out of bounds throws", async (t) => {
+  await t.step("left edge exceeded", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const grid = new Grid({ gridSize });
+    assertThrows(
+      () => grid.readCell({ x: -2, y: 0 }),
+      Error,
+      "Cell (-2, 0) is out of bounds",
+    );
+  });
 
-//   await t.step("right edge exceeded", () => {
-//     const width = 5;
-//     const engine = new Engine({ gridSize: { w: width, h: 5 } });
-//     assertThrows(
-//       () => engine.getCell({ x: width + 1, y: 0 }),
-//       Error,
-//       `Cell (${width + 1}, 0) is out of bounds`,
-//     );
-//   });
+  // await t.step("right edge exceeded", () => {
+  //   const width = 5;
+  //   const engine = new Engine({ gridSize: { w: width, h: 5 } });
+  //   assertThrows(
+  //     () => engine.getCell({ x: width + 1, y: 0 }),
+  //     Error,
+  //     `Cell (${width + 1}, 0) is out of bounds`,
+  //   );
+  // });
 
-//   await t.step("top edge exceeded", () => {
-//     const engine = new Engine({ gridSize: { w: 5, h: 5 } });
-//     assertThrows(
-//       () => engine.getCell({ x: 0, y: -2 }),
-//       Error,
-//       "Cell (0, -2) is out of bounds",
-//     );
-//   });
+  // await t.step("top edge exceeded", () => {
+  //   const engine = new Engine({ gridSize: { w: 5, h: 5 } });
+  //   assertThrows(
+  //     () => engine.getCell({ x: 0, y: -2 }),
+  //     Error,
+  //     "Cell (0, -2) is out of bounds",
+  //   );
+  // });
 
-//   await t.step("bottom edge exceeded", () => {
-//     const height = 5;
-//     const engine = new Engine({ gridSize: { w: 5, h: height } });
-//     assertThrows(
-//       () => engine.getCell({ x: 0, y: height + 1 }),
-//       Error,
-//       `Cell (0, ${height + 1}) is out of bounds`,
-//     );
-//   });
-// });
+  // await t.step("bottom edge exceeded", () => {
+  //   const height = 5;
+  //   const engine = new Engine({ gridSize: { w: 5, h: height } });
+  //   assertThrows(
+  //     () => engine.getCell({ x: 0, y: height + 1 }),
+  //     Error,
+  //     `Cell (0, ${height + 1}) is out of bounds`,
+  //   );
+  // });
+});
 
 // Deno.test("Engine.getCell: toroidal border wrapping", async (t) => {
 //   const seed = `
