@@ -19,7 +19,7 @@ interaction.
 > no guarantee that feedback will be accepted. The only way to leave feedback
 > is through the issues section of the related GitHub repo.
 
-## Usage
+## Quick Start
 
 Install:
 
@@ -27,28 +27,13 @@ Install:
 deno add jsr:@hidarikani/game-of-life-engine
 ```
 
-Create a `Grid` from a seed string, pass it to `Engine`, then call `evolveGrid()`
-to step the simulation forward.
-
 ```ts
-import { Engine, Grid } from "@hidarikani/game-of-life-engine";
-import type { GridSize } from "@hidarikani/game-of-life-engine";
+import { Engine, PatternLib } from "@hidarikani/game-of-life-engine";
 
-const gridSize: GridSize = { w: 5, h: 5 };
+const lib = PatternLib.fromBuiltInData();
+const blinker = lib.getPatternByKey("blinker");
 
-// A vertical blinker
-const firstGeneration = Grid.fromString({
-  gridSize,
-  seed: `
-    . . . . .
-    . . # . .
-    . . # . .
-    . . # . .
-    . . . . .
-  `,
-});
-
-const engine = new Engine({ firstGeneration });
+const engine = new Engine({ firstGeneration: blinker.generations[0] });
 
 engine.evolveGrid();
 console.log(engine.toString());
@@ -58,6 +43,49 @@ console.log(engine.toString());
 // . . . . .
 // . . . . .
 ```
+
+## Usage
+
+Most consumers won't hand-write seed strings — `PatternLib` comes bundled
+with common still lifes, oscillators, and spaceships (including the blinker
+used above), and can also load patterns from your own YAML file. See
+[src/patterns/README.md](src/patterns/README.md) for the full `PatternLib`
+API, built-in vs. custom pattern sources, and the YAML schema.
+
+Patterns can also be placed onto a larger, otherwise blank `Grid` with
+`writeGrid`, which is how you build a custom world out of known life forms
+instead of evolving a single pattern in isolation. Here, a blinker and a toad
+are placed side by side on a 20×10 grid, then passed to `Engine`:
+
+```ts
+import { Engine, Grid, PatternLib } from "@hidarikani/game-of-life-engine";
+import type { GridSize } from "@hidarikani/game-of-life-engine";
+
+const lib = PatternLib.fromBuiltInData();
+const blinker = lib.getPatternByKey("blinker");
+const toad = lib.getPatternByKey("toad");
+
+// A blank 20x10 world, big enough to fit both patterns side by side
+const gridSize: GridSize = { w: 20, h: 10 };
+const firstGeneration = new Grid({ gridSize });
+
+firstGeneration.writeGrid({
+  inner: blinker.generations[0],
+  offset: { x: 1, y: 2 },
+});
+firstGeneration.writeGrid({
+  inner: toad.generations[0],
+  offset: { x: 8, y: 2 },
+});
+
+const engine = new Engine({ firstGeneration });
+
+engine.evolveGrid();
+console.log(engine.toString());
+```
+
+See [src/grid/README.md](src/grid/README.md#placing-one-grid-inside-another)
+for more on `writeGrid`, including overwrite vs. merge placement.
 
 A runnable version of this example is available in [`demo.ts`](demo.ts):
 
