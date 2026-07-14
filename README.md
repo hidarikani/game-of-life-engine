@@ -13,6 +13,12 @@ interaction.
 > may be added or removed without notice. The first stable release will be
 > `v1.0.0`. Until then, versions will be `v0.x.x`.
 
+> [!WARNING]
+> This library doesn't have a contribution guide yet. For now, its direction
+> is based on the subjective experience of a single maintainer, and there's
+> no guarantee that feedback will be accepted. The only way to leave feedback
+> is through the issues section of the related GitHub repo.
+
 ## Usage
 
 Install:
