@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert } from "@std/assert";
 import { Engine, PatternLib } from "../../mod.ts";
 import type { Pattern } from "../../mod.ts";
 
@@ -12,9 +12,8 @@ Deno.test("built-in patterns evolve to their recorded generations", async (t) =>
       for (let i = 1; i < pattern.generations.length; i++) {
         await t.step(`generation ${i}`, () => {
           engine.evolveGrid();
-          assertEquals(
-            engine.presentGeneration.toString(),
-            pattern.generations[i].toString(),
+          assert(
+            engine.presentGeneration.equals(pattern.generations[i]),
           );
         });
       }
