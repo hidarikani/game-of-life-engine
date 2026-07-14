@@ -17,7 +17,7 @@ type PatternRaw = BasePattern & {
   generations: Generation[];
 };
 
-export type PatternsYaml = {
+export type PatternsRaw = {
   patterns: PatternRaw[];
 };
 

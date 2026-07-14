@@ -3,7 +3,7 @@ import type {
   IPatternLib,
   PatternFilter,
   Pattern,
-  PatternsYaml,
+  PatternsRaw,
 } from "../types/patterns.ts";
 import { Grid } from "../grid/grid.ts";
 import { parse } from "@std/yaml";
@@ -43,9 +43,20 @@ export class PatternLib implements IPatternLib {
   }
 
   static fromBuiltInData(): PatternLib {
-    const { patterns: patternsRaw } = parse(patternsYaml) as PatternsYaml;
+    const { patterns: patternsRaw } = parse(patternsYaml) as PatternsRaw;
 
-    const patternsParsed = patternsRaw.map((entry) => {
+    return new PatternLib(PatternLib.#parsePatterns(patternsRaw));
+  }
+
+  static fromYamlFile(filePath: string): PatternLib {
+    const fileContents = Deno.readTextFileSync(filePath);
+    const { patterns: patternsRaw } = parse(fileContents) as PatternsRaw;
+
+    return new PatternLib(PatternLib.#parsePatterns(patternsRaw));
+  }
+
+  static #parsePatterns(patternsRaw: PatternsRaw["patterns"]): Pattern[] {
+    return patternsRaw.map((entry) => {
       const gridSize: GridSize = { w: entry.width, h: entry.height };
 
       return {
@@ -58,11 +69,5 @@ export class PatternLib implements IPatternLib {
         ),
       };
     });
-
-    return new PatternLib(patternsParsed);
   }
-
-  // static fromYamlFile(): PatternLib {
-  //   // TBD
-  // }
 }
