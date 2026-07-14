@@ -62,34 +62,3 @@ export type EngineOptions = {
   firstGeneration: IGrid;
   maxHistory?: number;
 };
-
-export type PatternType = "still-life" | "oscillator" | "spaceship";
-
-export type Pattern = {
-  key: string;
-  displayName: string;
-  type: PatternType;
-  period: number;
-  generations: IGrid[];
-};
-
-export type PatternFilter = {
-  name: RegExp | null;
-  patternType: PatternType | null;
-};
-
-export interface IPatternLib {
-  getPatterns(filter: PatternFilter | null): Pattern[];
-  getPatternByKey(key: string): Pattern;
-}
-
-export type PatternsYaml = {
-  patterns: {
-    name: string;
-    type: PatternType;
-    period: number;
-    width: number;
-    height: number;
-    generations: { state: string }[];
-  }[];
-};

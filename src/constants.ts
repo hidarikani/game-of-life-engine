@@ -1,4 +1,4 @@
-import type { CellChars } from "./types.ts";
+import type { CellChars } from "./types/types.ts";
 
 // Checking if a cell is alive makes sense only if it has neighbours on all around
 // which means minimum dimensions are a 3 by 3 when the center cell is checked for life:

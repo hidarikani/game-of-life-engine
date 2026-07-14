@@ -13,4 +13,4 @@ export type {
   LiveCells,
   PlacementMode,
   Point,
-} from "./src/types.ts";
+} from "./src/types/types.ts";

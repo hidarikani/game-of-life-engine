@@ -4,7 +4,7 @@ import type {
   GridSize,
   LiveCells,
   Point,
-} from "../types.ts";
+} from "../types/types.ts";
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,

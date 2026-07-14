@@ -6,7 +6,7 @@ import type {
   IGrid,
   LiveCells,
   Point,
-} from "../types.ts";
+} from "../types/types.ts";
 import { GRID_MODES, MIN_GRID_SIZE } from "../constants.ts";
 import { pointToCellKey } from "../seed/seed.ts";
 import { isPointOnBorder, isPointOutsideBorder } from "../geometry/geometry.ts";

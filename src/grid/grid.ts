@@ -7,7 +7,7 @@ import type {
   LiveCells,
   PlacementMode,
   Point,
-} from "../types.ts";
+} from "../types/types.ts";
 import {
   cellKeyToPoint,
   normalizeSeed,

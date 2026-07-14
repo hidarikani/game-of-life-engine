@@ -1,6 +1,6 @@
 import { MIN_GRID_SIZE } from "../constants.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
-import type { GridSize, LiveCells, Point, ValidationResult } from "../types.ts";
+import type { GridSize, LiveCells, Point, ValidationResult } from "../types/types.ts";
 
 export const validateMinGridSize = (
   gridSize: GridSize,
