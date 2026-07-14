@@ -1,21 +1,41 @@
 patterns:
-- name: Blinker
-  key: blinker
-  type: oscillator
-  period: 2
-  width: 5
-  height: 5
-  generations:
-  - state: |
-      . . . . .
-      . . # . .
-      . . # . .
-      . . # . .
-      . . . . .
-  - state: |
-      . . . . .
-      . . . . .
-      . # # # .
-      . . . . .
-      . . . . .
-
+  - name: Blinker
+    key: blinker
+    type: oscillator
+    period: 2
+    width: 5
+    height: 5
+    generations:
+      - state: |
+          . . . . .
+          . . # . .
+          . . # . .
+          . . # . .
+          . . . . .
+      - state: |
+          . . . . .
+          . . . . .
+          . # # # .
+          . . . . .
+          . . . . .
+  - name: Toad
+    key: toad
+    type: oscillator
+    period: 2
+    width: 6
+    height: 6
+    generations:
+      - state: |
+          . . . . . .
+          . . . . . .
+          . . # # # .
+          . # # # . .
+          . . . . . .
+          . . . . . .
+      - state: |
+          . . . . . .
+          . . . # . .
+          . # . . # .
+          . # . . # .
+          . . # . . .
+          . . . . . .
