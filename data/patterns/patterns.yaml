@@ -1,5 +1,6 @@
 patterns:
 - name: Blinker
+  key: blinker
   type: oscillator
   period: 2
   width: 5
