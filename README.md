@@ -1,5 +1,18 @@
 # game-of-life-engine
 
+## Introduction
+
+This library isn't intended to be used stand-alone. Instead, it's meant to be
+imported into other TypeScript programs that need a Game of Life renderer —
+`game-of-life-engine` handles the simulation logic (grid state, evolution
+rules, boundary conditions), while your program handles rendering and
+interaction.
+
+> [!WARNING]
+> This library isn't stable yet. The API is expected to change, and features
+> may be added or removed without notice. The first stable release will be
+> `v1.0.0`. Until then, versions will be `v0.x.x`.
+
 ## Usage
 
 Install:
