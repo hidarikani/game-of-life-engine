@@ -489,3 +489,84 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
     }
   });
 });
+
+Deno.test("Grid.equals", async (t) => {
+  await t.step("should return false when grid sizes differ", () => {
+    const a = new Grid({ gridSize: { w: 4, h: 4 } });
+    const b = new Grid({ gridSize: { w: 5, h: 5 } });
+    assertEquals(a.equals(b), false);
+  });
+
+  await t.step("should return false when population differs", () => {
+    const a = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed: `
+        # . .
+        . . .
+        . . .
+      `,
+    });
+    const b = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed: `
+        # . .
+        . # .
+        . . .
+      `,
+    });
+    assertEquals(a.equals(b), false);
+  });
+
+  await t.step(
+    "should return false when population matches but live cell coordinates differ",
+    () => {
+      const a = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
+          # . .
+          . . .
+          . . .
+        `,
+      });
+      const b = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
+          . . #
+          . . .
+          . . .
+        `,
+      });
+      assertEquals(a.equals(b), false);
+    },
+  );
+
+  await t.step("should return true for two grids with identical cells", () => {
+    const seed = `
+      # . . #
+      . # # .
+      . . . #
+      # # . .
+    `;
+    const a = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
+    const b = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
+    assertEquals(a.equals(b), true);
+  });
+
+  await t.step("should return true for two empty grids of the same size", () => {
+    const a = new Grid({ gridSize: { w: 5, h: 5 } });
+    const b = new Grid({ gridSize: { w: 5, h: 5 } });
+    assertEquals(a.equals(b), true);
+  });
+
+  await t.step("should return true for a grid compared to itself", () => {
+    const grid = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed: `
+        # . .
+        . # .
+        . . #
+      `,
+    });
+    assertEquals(grid.equals(grid), true);
+  });
+});

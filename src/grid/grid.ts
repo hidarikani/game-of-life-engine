@@ -223,4 +223,25 @@ export class Grid implements IGrid {
     }
     return res.trim();
   }
+
+  equals(other: IGrid): boolean {
+    if (
+      this.#gridSize.w !== other.gridSize.w ||
+      this.#gridSize.h !== other.gridSize.h
+    ) {
+      return false;
+    }
+
+    if (this.population !== other.population) {
+      return false;
+    }
+
+    for (const [cellKey, value] of this.#liveCells) {
+      if (other.readCell(cellKeyToPoint(cellKey)) !== value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

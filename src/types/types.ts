@@ -34,6 +34,7 @@ export interface IGrid {
     mode?: PlacementMode;
   }): void;
   toString(): string;
+  equals(other: IGrid): boolean;
 }
 
 export type GridOptionsFromLiveCells = {
