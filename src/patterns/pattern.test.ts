@@ -7,14 +7,14 @@ const YAML_FILE_PATH = join(
   "../../data/patterns/patterns.yaml",
 );
 
-Deno.test("fromBuiltInData", async (t) => {
+Deno.test("PatternLib.fromBuiltInData", async (t) => {
   await t.step("returns a PatternLib instance with patterns loaded", () => {
     const lib = PatternLib.fromBuiltInData();
     assertEquals(lib.getPatterns(null).length > 0, true);
   });
 });
 
-Deno.test("fromYamlFile", async (t) => {
+Deno.test("PatternLib.fromYamlFile", async (t) => {
   await t.step("returns a PatternLib instance with patterns loaded", () => {
     const lib = PatternLib.fromYamlFile(YAML_FILE_PATH);
     assertEquals(lib.getPatterns(null).length > 0, true);
@@ -28,7 +28,7 @@ Deno.test("fromYamlFile", async (t) => {
   });
 });
 
-Deno.test("getPatterns filter", async (t) => {
+Deno.test("PatternLib.getPatterns", async (t) => {
   const lib = PatternLib.fromBuiltInData();
 
   await t.step("returns all patterns when filter is null", () => {
@@ -66,7 +66,7 @@ Deno.test("getPatterns filter", async (t) => {
   });
 });
 
-Deno.test("getPatternByKey", async (t) => {
+Deno.test("PatternLib.getPatternByKey", async (t) => {
   const lib = PatternLib.fromBuiltInData();
 
   await t.step("returns the pattern for a known key", () => {
