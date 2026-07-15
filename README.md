@@ -6,7 +6,7 @@ Web standard compliant implementation of [Conway's Game of Life][cgol]. The game
 rules have been extensively documented on the internet, including
 [Wikipedia][cgol] so it won't be repeated here.
 
-Contents include abstractions for managing cells patterns, initial game state
+Contents include abstractions for managing cell patterns, initial game state
 setup, simulation and output verification.
 
 Intended traits include:
@@ -73,19 +73,19 @@ is provided. Refer to the list below for overview and links to dedicated pages.
 - [PatternLib][pattern-lib] — Abstracts the process of loading cell patterns
   represented as multi-line strings to instances of [Grid][grid]. Supports
   reading patterns stored in [YAML][yaml] files.
-- [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a
-  concrete coordinate system and exposes common operations such as reading
-  cell state and merging patterns together.
+- [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a concrete
+  coordinate system and exposes common operations such as reading cell state and
+  merging patterns together.
 - [Engine](src/engine/README.md) — Contains the simulation rules, evolves a Grid
   to produce a new generation. Manages generation history.
 
-The most frictionless way to start is to use [built-in patterns][built-in-patterns]
-that come bundled with this library (including the blinker used in the
-[quick-start section](#quick-start)). For that, use an instance of
-[PatternLib][pattern-lib]. It is able to retrieve a concrete pattern by `key`
-and supports filtering by certain properties. Advanced workflows are also
-available: a pattern can be loaded from a multi-line string, or from a
-[YAML][yaml] file.
+The most frictionless way to start is to use
+[built-in patterns][built-in-patterns] that come bundled with this library
+(including the blinker used in the [quick-start section](#quick-start)). For
+that, use an instance of [PatternLib][pattern-lib]. It is able to retrieve a
+concrete pattern by `key` and supports filtering by certain properties. Advanced
+workflows are also available: a pattern can be loaded from a multi-line string,
+or from a [YAML][yaml] file.
 
 Operating on cell patterns represented as strings is suboptimal, because there
 are certain common operations needed that strings just don't support. To solve
@@ -100,10 +100,10 @@ is usually larger, for example 1024x768 cells. In this case it would be fun to
 create a blank grid of that size, then place several blinkers inside of it.
 
 The [Engine][engine] is what keeps track of the simulation. It accepts a grid as
-the initial game state. It applies simulation rules to produce a new
-generation. Instead of modifying the current grid, each tick produces a new
-instance. This way a history stack is produced, where each entry is a
-[Grid][grid] instance treated as immutable.
+the initial game state. It applies simulation rules to produce a new generation.
+Instead of modifying the current grid, each tick produces a new instance. This
+way a history stack is produced, where each entry is a [Grid][grid] instance
+treated as immutable.
 
 Below is a concrete code example that loads a **Blinker** and a **Toad**, then
 places them side by side, and finally simulates one tick:
