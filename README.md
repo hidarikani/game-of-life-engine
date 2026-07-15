@@ -73,40 +73,40 @@ is provided. Refer to the list below for overview and links to dedicated pages.
 - [PatternLib][pattern-lib] — Abstracts the process of loading cell patterns
   represented as multi-line strings to instances of [Grid][grid]. Supports
   reading patterns stored in [YAML][yaml] files.
-- [Grid][grid] — Bounded (has fixed dimensions) cell pattern that, concrete
-  coordinate system and exposes common operations such as getting cell
-  neighbors.
+- [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a
+  concrete coordinate system and exposes common operations such as reading
+  cell state and merging patterns together.
 - [Engine](src/engine/README.md) — Contains the simulation rules, evolves a Grid
   to produce a new generation. Manages generation history.
 
-The most frictionless to start is to use [built-in patterns][built-in-patterns]
+The most frictionless way to start is to use [built-in patterns][built-in-patterns]
 that come bundled with this library (including the blinker used in the
-[quick-start section](#quick-start)), For that use an instance of
+[quick-start section](#quick-start)). For that, use an instance of
 [PatternLib][pattern-lib]. It is able to retrieve a concrete pattern by `key`
 and supports filtering by certain properties. Advanced workflows are also
-available, a pattern can be loaded from a multi-line string, or from a
+available: a pattern can be loaded from a multi-line string, or from a
 [YAML][yaml] file.
 
 Operating on cell patterns represented as strings is suboptimal, because there
-are certain common oeprations needed that strings just don't support. To solve
-this issue an abstraction called [Grid][grid] was introduced. Conveniently
-[PatternLib][pattern-lib] methods return instances of[Grid][grid]. It's useful
-to combine grids. It's possible to write a smaller grid (inner) to a larger grid
-(outer). The inner must be able to contain the outer. This is useful when
+are certain common operations needed that strings just don't support. To solve
+this issue, an abstraction called [Grid][grid] was introduced. Conveniently,
+[PatternLib][pattern-lib] methods return instances of [Grid][grid]. It's useful
+to combine grids: a smaller grid (inner) can be written into a larger grid
+(outer), as long as the outer is able to contain the inner. This is useful when
 building out the initial state of the simulation, which is also an instance of
 [Grid][grid]. Grids retrieved from the [PatternLib][pattern-lib] are usually
-small, for example the blinker pattern size is 5 cells. The game work is usually
-larger, for example 1024x768 cells. It this case it would be fun to create a
-blank grid of that size then place several blinkers inside of it.
+small — for example, the blinker pattern size is 5 cells — while the game world
+is usually larger, for example 1024x768 cells. In this case it would be fun to
+create a blank grid of that size, then place several blinkers inside of it.
 
 The [Engine][engine] is what keeps track of the simulation. It accepts a grid as
-the initial game states. It applies simulation rules to produce a new
-generation. Instead of modifying the current grid, each tick produced a new
-instance This way a history stack is produced, where each entry is a
-[Grid][grid] isntance treated as immutable.
+the initial game state. It applies simulation rules to produce a new
+generation. Instead of modifying the current grid, each tick produces a new
+instance. This way a history stack is produced, where each entry is a
+[Grid][grid] instance treated as immutable.
 
 Below is a concrete code example that loads a **Blinker** and a **Toad**, then
-places side by side, and finaly simulates one tick:
+places them side by side, and finally simulates one tick:
 
 ```ts
 import { Engine, Grid, PatternLib } from "@hidarikani/game-of-life-engine";
@@ -151,7 +151,7 @@ Runs on [Deno][deno]. Tested with `deno --version` `2.9.x`.
 
 ```zsh
 # run unit tests in watch mode
-deno run test:watch
+deno task test:watch
 ```
 
 ## Contribution
