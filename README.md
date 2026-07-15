@@ -2,10 +2,36 @@
 
 ## Introduction
 
-This library isn't intended to be used stand-alone. Instead, it's meant to be
-imported into other TypeScript programs that need a Game of Life renderer —
-`game-of-life-engine` handles the simulation logic (grid state, evolution rules,
-boundary conditions), while your program handles rendering and interaction.
+Web standard compliant implementation of [Conway's Game of Life][cgol]. The game
+rules have been extensively documented on the internet, including
+[Wikipedia][cgol] so it won't be repeated here.
+
+Contents include abstractions for managing cells patterns, initial game state
+setup, simulation and output verification.
+
+Intended traits include:
+
+- Web development ready,
+- TypeScript, ESM Module first,
+- Browser runtime compatible,
+- Deno runtime compatible,
+- Quality assured, including:
+  - code formatting
+  - linting
+  - unit and integration testing
+- well documented, including JSDoc and README.md
+
+This library is part of a larger namespace of tools:
+
+- This library (Engine)
+- Text User Interface (TUI) for one-time and interactive simulations
+- React component for rendering game state
+- Next.js app for running interactive simulations in the browser
+
+> [!NOTE]
+> This library isn't intended to be used stand-alone. Instead, it's meant to be
+> imported into other TypeScript programs that need a
+> [Conway's Game of Life][cgol] renderer.
 
 > [!WARNING]
 > This library isn't stable yet. The API is expected to change, and features may
@@ -146,5 +172,6 @@ through the issues section of the related GitHub repo.
 
 <!-- External -->
 
+[cgol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 [deno]: https://deno.com/
 [yaml]: https://yaml.org/
