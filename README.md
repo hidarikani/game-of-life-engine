@@ -4,20 +4,13 @@
 
 This library isn't intended to be used stand-alone. Instead, it's meant to be
 imported into other TypeScript programs that need a Game of Life renderer —
-`game-of-life-engine` handles the simulation logic (grid state, evolution
-rules, boundary conditions), while your program handles rendering and
-interaction.
+`game-of-life-engine` handles the simulation logic (grid state, evolution rules,
+boundary conditions), while your program handles rendering and interaction.
 
 > [!WARNING]
-> This library isn't stable yet. The API is expected to change, and features
-> may be added or removed without notice. The first stable release will be
-> `v1.0.0`. Until then, versions will be `v0.x.x`.
-
-> [!WARNING]
-> This library doesn't have a contribution guide yet. For now, its direction
-> is based on the subjective experience of a single maintainer, and there's
-> no guarantee that feedback will be accepted. The only way to leave feedback
-> is through the issues section of the related GitHub repo.
+> This library isn't stable yet. The API is expected to change, and features may
+> be added or removed without notice. The first stable release will be `v1.0.0`.
+> Until then, versions will be `v0.x.x`.
 
 ## Quick Start
 
@@ -46,16 +39,48 @@ console.log(engine.toString());
 
 ## Usage
 
-Most consumers won't hand-write seed strings — `PatternLib` comes bundled
-with common still lifes, oscillators, and spaceships (including the blinker
-used above), and can also load patterns from your own YAML file. See
-[src/patterns/README.md](src/patterns/README.md) for the full `PatternLib`
-API, built-in vs. custom pattern sources, and the YAML schema.
+The following are the abstractions used in this library that enable easy game
+setup, execution and verification. Each abstraction has a dedicated
+documentation page with usage details. Here only the big picture of integration
+is provided. Refer to the list below for overview and links to dedicated pages.
 
-Patterns can also be placed onto a larger, otherwise blank `Grid` with
-`writeGrid`, which is how you build a custom world out of known life forms
-instead of evolving a single pattern in isolation. Here, a blinker and a toad
-are placed side by side on a 20×10 grid, then passed to `Engine`:
+- [PatternLib][pattern-lib] — Abstracts the process of loading cell patterns
+  represented as multi-line strings to instances of [Grid][grid]. Supports
+  reading patterns stored in [YAML][yaml] files.
+- [Grid][grid] — Bounded (has fixed dimensions) cell pattern that, concrete
+  coordinate system and exposes common operations such as getting cell
+  neighbors.
+- [Engine](src/engine/README.md) — Contains the simulation rules, evolves a Grid
+  to produce a new generation. Manages generation history.
+
+The most frictionless to start is to use [built-in patterns][built-in-patterns]
+that come bundled with this library (including the blinker used in the
+[quick-start section](#quick-start)), For that use an instance of
+[PatternLib][pattern-lib]. It is able to retrieve a concrete pattern by `key`
+and supports filtering by certain properties. Advanced workflows are also
+available, a pattern can be loaded from a multi-line string, or from a
+[YAML][yaml] file.
+
+Operating on cell patterns represented as strings is suboptimal, because there
+are certain common oeprations needed that strings just don't support. To solve
+this issue an abstraction called [Grid][grid] was introduced. Conveniently
+[PatternLib][pattern-lib] methods return instances of[Grid][grid]. It's useful
+to combine grids. It's possible to write a smaller grid (inner) to a larger grid
+(outer). The inner must be able to contain the outer. This is useful when
+building out the initial state of the simulation, which is also an instance of
+[Grid][grid]. Grids retrieved from the [PatternLib][pattern-lib] are usually
+small, for example the blinker pattern size is 5 cells. The game work is usually
+larger, for example 1024x768 cells. It this case it would be fun to create a
+blank grid of that size then place several blinkers inside of it.
+
+The [Engine][engine] is what keeps track of the simulation. It accepts a grid as
+the initial game states. It applies simulation rules to produce a new
+generation. Instead of modifying the current grid, each tick produced a new
+instance This way a history stack is produced, where each entry is a
+[Grid][grid] isntance treated as immutable.
+
+Below is a concrete code example that loads a **Blinker** and a **Toad**, then
+places side by side, and finaly simulates one tick:
 
 ```ts
 import { Engine, Grid, PatternLib } from "@hidarikani/game-of-life-engine";
@@ -84,79 +109,42 @@ engine.evolveGrid();
 console.log(engine.toString());
 ```
 
-See [src/grid/README.md](src/grid/README.md#placing-one-grid-inside-another)
-for more on `writeGrid`, including overwrite vs. merge placement.
-
 A runnable version of this example is available in [`demo.ts`](demo.ts):
 
 ```sh
 deno run demo.ts
 ```
 
-### Engine
-
-See [src/engine/README.md](src/engine/README.md) for full `Engine` API documentation
-and usage examples.
-
-### Grid
-
-See [src/grid/README.md](src/grid/README.md) for full `Grid` API documentation
-and usage examples.
-
-## Coordinates
-
-Instantiating an engine with the following params:
-
-```js
-const engine = new Engine({ width: 8, height: 4 });
-```
-
-Will result in the following grid. Dead cells are represented by `.` and live
-cells by `#`. The coordinates of the only live cell on the grid below is
-`{x: 2, y: 1}`.
-
-```
-    | -1 | 0 1 2 3 4 5 6 7 8 | 9 |
-    +----------------------------> X axis
- -1 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+
-  0 |  . | . . . . . . . . . | . |
-  1 |  . | . . # . . . . . . | . |
-  2 |  . | . . . . . . . . . | . |
-  3 |  . | . . . . . . . . . | . |
-  4 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+
-  5 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+ 
-    v
-Y axis
-```
-
-Notice 1 cell border around the grid (`x = -1, x = 9, y = -1, y = 5`). The
-behavior of border cells depends on `GridMode`.
-
-- `GridMode.Finite` — border cells are treated as permanently dead. In this
-  world, a glider that hits the bottom-right corner simply disintegrates. This
-  is easy to implement, but philosophically a little brutal. The universe has
-  edges, and they are lethal. For example, the top-left neighbor of cell
-  `{ x: 0, y: 0 }` is at `{ x: -1, y: -1 }` and will always be dead (`false`)
-- `GridMode.Toroidal` — The left edge connects to the right, the top connects to
-  the bottom. In that case, a spaceship exiting the bottom-right reappears at
-  the top-left. This turns the universe into the surface of a donut. It’s
-  mathematically tidy and popular for demos, but it introduces artificial
-  interactions—your glider can collide with its own past if the grid is small.
-  For example when trying to access cell at `{ x: 9, y: 5}` it shall be
-  translated to `{ x: 0, y: 0 }`.
-
 ## Development
 
-Runs on [Deno][deno]. Tested with `deno --version` `2.5.x`.
+Runs on [Deno][deno]. Tested with `deno --version` `2.9.x`.
+
+> [!WARNING]
+> Some tests require file read permission, because the [PatternLib][pattern-lib]
+> can read patterns defined in [YAML][yaml] files.
 
 ```zsh
 # run unit tests in watch mode
 deno run test:watch
 ```
 
+## Contribution
+
+This library doesn't have a contribution guide yet. For now, its direction is
+based on the subjective experience of a single maintainer, and there's no
+guarantee that feedback will be accepted. The only way to leave feedback is
+through the issues section of the related GitHub repo.
+
 ---
 
+<!-- Internal -->
+
+[built-in-patterns]: /data/patterns/patterns.yaml
+[pattern-lib]: src/patterns/README.md
+[grid]: src/grid/README.md
+[engine]: src/engine/README.md
+
+<!-- External -->
+
 [deno]: https://deno.com/
+[yaml]: https://yaml.org/
