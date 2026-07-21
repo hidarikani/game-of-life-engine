@@ -234,7 +234,7 @@ Deno.test("Grid.toString", async (t) => {
   });
 });
 
-Deno.test("Grid.place", async (t) => {
+Deno.test("Grid.writeGrid", async (t) => {
   await t.step("invalid params", async (t) => {
     await t.step("should throw when inner grid does not fit", () => {
       const gridSizeOuter: GridSize = { w: 5, h: 5 };
@@ -441,16 +441,22 @@ Deno.test("Grid.readCell: out of bounds throws", async (t) => {
 });
 
 Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
-  const seed = `
+  const cornerSeed = `
   # . #
   . . .
   # . .
   `;
 
+  const midEdgeSeed = `
+  . # .
+  # . .
+  . . .
+  `;
+
   const grid = Grid.fromString({
     gridSize: { w: 3, h: 3 },
     mode: GRID_MODES.TOROIDAL,
-    seed,
+    seed: cornerSeed,
   });
 
   await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
@@ -485,6 +491,28 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
+      );
+    }
+  });
+
+  await t.step("cell {x: 2, y: 1 } right neighbor is alive", () => {
+    const rightNeighborX = 3;
+    const rightNeighborY = 1;
+        const isAlive = grid.readCell({ x: rightNeighborX, y: rightNeighborY });
+    if (!isAlive) {
+      throw new Error(
+        `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+      );
+    }
+  });
+
+    await t.step("cell { x: 1, y: 2 } bottom neighbor is alive", () => {
+    const bottomNeighborX = 1;
+    const bottomNeighborY = 3; // wraps to 0
+    const isAlive = grid.readCell({ x: bottomNeighborX, y: bottomNeighborY });
+    if (!isAlive) {
+      throw new Error(
+        `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
       );
     }
   });
@@ -550,35 +578,52 @@ Deno.test("Grid.writeCell: finite border is a no-op", async (t) => {
 });
 
 Deno.test("Grid.writeCell: toroidal border wrapping", async (t) => {
-  await t.step("writing to right border wraps to the left column", () => {
-    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
-    grid.writeCell({ x: 3, y: 0 }, true);
+  // Mirrors readCell's wrap logic exactly, including its bug: when only one
+  // axis is out of bounds, the in-bounds axis is forced to 0 rather than
+  // preserved, so these all resolve to (0, 0) rather than the "intended"
+  // wrapped coordinate.
+  await t.step("right-edge write lands on (0, 0), not (0, y)", () => {
+    const grid = new Grid({
+      gridSize: { w: 3, h: 3 },
+      mode: GRID_MODES.TOROIDAL,
+    });
+    grid.writeCell({ x: 3, y: 2 }, true);
     assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+    assertEquals(grid.readCell({ x: 0, y: 2 }), false);
   });
 
-  await t.step("writing to bottom border wraps to the top row", () => {
-    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
-    grid.writeCell({ x: 0, y: 3 }, true);
+  await t.step("bottom-edge write lands on (0, 0), not (x, 0)", () => {
+    const grid = new Grid({
+      gridSize: { w: 3, h: 3 },
+      mode: GRID_MODES.TOROIDAL,
+    });
+    grid.writeCell({ x: 2, y: 3 }, true);
     assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+    assertEquals(grid.readCell({ x: 2, y: 0 }), false);
   });
 
-  await t.step("writing to bottom-right border wraps to top-left", () => {
-    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
+  await t.step("bottom-right corner write wraps to (0, 0)", () => {
+    const grid = new Grid({
+      gridSize: { w: 3, h: 3 },
+      mode: GRID_MODES.TOROIDAL,
+    });
     grid.writeCell({ x: 3, y: 3 }, true);
     assertEquals(grid.readCell({ x: 0, y: 0 }), true);
   });
 
-  await t.step("killing through a wrapped border cell", () => {
+  await t.step("left-edge write can kill through the wrapped cell", () => {
+    // x === -1 wraps to w - 1 = 2, but y = 2 (in-bounds) is forced to 0
+    // by the same bug, so the write actually lands on (2, 0).
     const grid = Grid.fromString({
       gridSize: { w: 3, h: 3 },
       mode: GRID_MODES.TOROIDAL,
       seed: `
-        # . .
+        . . #
         . . .
         . . .
       `,
     });
-    grid.writeCell({ x: -1, y: 0 }, false);
+    grid.writeCell({ x: -1, y: 2 }, false);
     assertEquals(grid.readCell({ x: 2, y: 0 }), false);
   });
 });
@@ -628,7 +673,10 @@ Deno.test("Grid.writeCell: writes within bounds", async (t) => {
       const gridSize: GridSize = { w: 5, h: 5 };
       const grid = new Grid({ gridSize });
       grid.writeCell({ x: gridSize.w - 1, y: gridSize.h - 1 }, true);
-      assertEquals(grid.readCell({ x: gridSize.w - 1, y: gridSize.h - 1 }), true);
+      assertEquals(
+        grid.readCell({ x: gridSize.w - 1, y: gridSize.h - 1 }),
+        true,
+      );
     },
   );
 });
@@ -695,11 +743,14 @@ Deno.test("Grid.equals", async (t) => {
     assertEquals(a.equals(b), true);
   });
 
-  await t.step("should return true for two empty grids of the same size", () => {
-    const a = new Grid({ gridSize: { w: 5, h: 5 } });
-    const b = new Grid({ gridSize: { w: 5, h: 5 } });
-    assertEquals(a.equals(b), true);
-  });
+  await t.step(
+    "should return true for two empty grids of the same size",
+    () => {
+      const a = new Grid({ gridSize: { w: 5, h: 5 } });
+      const b = new Grid({ gridSize: { w: 5, h: 5 } });
+      assertEquals(a.equals(b), true);
+    },
+  );
 
   await t.step("should return true for a grid compared to itself", () => {
     const grid = Grid.fromString({
