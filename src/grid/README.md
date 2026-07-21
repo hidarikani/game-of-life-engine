@@ -21,23 +21,22 @@ Will result in the following coordinate space. Dead cells are represented by `.`
 and live cells by `#`.
 
 ```
-    | -1 | 0 1 2 3 4 5 6 7 8 | 9 |
-    +----------------------------> X axis
- -1 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+
-  0 |  . | . . . . . . . . . | . |
-  1 |  . | . . # . . . . . . | . |
-  2 |  . | . . . . . . . . . | . |
-  3 |  . | . . . . . . . . . | . |
-  4 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+
-  5 |  . | . . . . . . . . . | . |
-    +----+-------------------+---+ 
+    | -1 | 0 1 2 3 4 5 6 7 | 8 |
+    +--------------------------> X axis
+ -1 |  . | . . . . . . . . | . |
+    +----+-----------------+---+
+  0 |  . | . . . . . . . . | . |
+  1 |  . | . . # . . . . . | . |
+  2 |  . | . . . . . . . . | . |
+  3 |  . | . . . . . . . . | . |
+    +----+-----------------+---+
+  4 |  . | . . . . . . . . | . |
+    +----+-----------------+---+
     v
 Y axis
 ```
 
-Notice 1 cell border around the grid (`x = -1, x = 9, y = -1, y = 5`). The
+Notice 1 cell border around the grid (`x = -1, x = 8, y = -1, y = 4`). The
 behavior of border cells depends on `GridMode`.
 
 - `GRID_MODES.FINITE` — border cells are treated as permanently dead. In this
@@ -50,8 +49,10 @@ behavior of border cells depends on `GridMode`.
   the top-left. This turns the universe into the surface of a donut. It’s
   mathematically tidy and popular for demos, but it introduces artificial
   interactions—your glider can collide with its own past if the grid is small.
-  For example when trying to access cell at `{ x: 9, y: 5}` it shall be
-  translated to `{ x: 0, y: 0 }`.
+  For example when trying to access cell at `{ x: 8, y: 4 }` (the bottom-right
+  border corner for this grid) it shall be translated to `{ x: 0, y: 0 }`.
+  Only the single-cell border ring wraps this way — coordinates further out
+  (e.g. `{ x: 9, y: 5 }`) are out of bounds and throw.
 
 ## Empty grid
 
@@ -70,8 +71,12 @@ Pass a `LiveCells` map (`Map<CellKey, boolean>`) to pre-populate cells. All
 coordinates must be within `[0, w)` × `[0, h)` or the constructor throws.
 
 ```ts
-import { Grid, GridSize, LiveCells } from "@hidarikani/game-of-life-engine";
-import { pointToCellKey } from "@hidarikani/game-of-life-engine";
+import {
+  Grid,
+  GridSize,
+  LiveCells,
+  pointToCellKey,
+} from "@hidarikani/game-of-life-engine";
 
 const gridSize: GridSize = { w: 5, h: 5 };
 const liveCells: LiveCells = new Map();
@@ -99,7 +104,7 @@ const seed = `
 `;
 
 const grid = Grid.fromString({ gridSize, seed });
-console.log(grid.population); // 8
+console.log(grid.population); // 7
 console.log(grid.toString());
 ```
 
@@ -134,10 +139,41 @@ const inner = Grid.fromString({
   `,
 });
 
-// Merge: keeps existing live cells and adds inner's live cells
+// Merge: keeps existing live cells and adds inner's live cells.
+// outer's vertical bar and inner's horizontal bar combine into a plus shape.
 outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
+console.log(outer.toString());
+// . . . . .
+// . . # . .
+// . # # # .
+// . . # . .
+// . . . . .
 
-// Place with an offset (top-left corner of inner at x:2, y:2)
+// Overwrite (the default mode) with an offset: the inner grid's top-left
+// corner lands at { x: 2, y: 2 }, clearing and replacing that region.
+const block = Grid.fromString({
+  gridSize: { w: 3, h: 3 },
+  seed: `
+    # # #
+    # # #
+    # # #
+  `,
+});
 const offset: Point = { x: 2, y: 2 };
-outer.writeGrid({ inner: new Grid({ gridSize: { w: 3, h: 3 } }), offset });
+outer.writeGrid({ inner: block, offset });
+console.log(outer.toString());
+// . . . . .
+// . . # . .
+// . # # # #
+// . . # # #
+// . . # # #
+```
+
+## Demo
+
+[`grid.demo.ts`](./grid.demo.ts) runs every example above end-to-end and prints
+the results to stdout so you can confirm the behavior for yourself:
+
+```bash
+deno run --allow-read=. src/grid/grid.demo.ts
 ```
