@@ -6,15 +6,21 @@ simulation loop.
 
 ## Coordinates
 
-Instantiating an engine with the following params:
+Instantiating a `Grid` with the following params:
 
-```js
-const engine = new Engine({ width: 8, height: 4 });
+```ts
+const liveCells: LiveCells = new Map();
+liveCells.set(pointToCellKey({ x: 2, y: 1 }), true);
+const gridSize: GridSize = { w: 8, h: 4 };
+const firstGeneration = new Grid({
+  gridSize,
+  liveCells,
+  mode: GRID_MODES.FINITE,
+});
 ```
 
-Will result in the following grid. Dead cells are represented by `.` and live
-cells by `#`. The coordinates of the only live cell on the grid below is
-`{x: 2, y: 1}`.
+Will result in the following coordinate space. Dead cells are represented by `.`
+and live cells by `#`.
 
 ```
     | -1 | 0 1 2 3 4 5 6 7 8 | 9 |
