@@ -28,6 +28,10 @@ import {
   gridContainsGrid,
   isPointOnBorder,
   isPointOutsideBorder,
+  isXOnBottomBorder,
+  isXOnTopBorder,
+  isYOnBottomBorder,
+  isYOnTopBorder,
   validateMinGridSize,
 } from "../geometry/geometry.ts";
 
@@ -89,25 +93,29 @@ export class Grid implements IGrid {
     }
 
     if (
-      isPointOnBorder({ x, y }, { w: this.#gridSize.w, h: this.#gridSize.h })
+      isPointOnBorder({ x, y }, this.#gridSize)
     ) {
       if (this.#mode === GRID_MODES.FINITE) {
         return false;
       }
 
       if (this.#mode === GRID_MODES.TOROIDAL) {
-        let wrappedX: number;
-        let wrappedY: number;
+        let wrappedX = x;
+        let wrappedY = y;
 
-        if (x === -1) {
+        if (isXOnTopBorder(x)) {
           wrappedX = this.#gridSize.w - 1;
-        } else {
+        }
+
+        if (isXOnBottomBorder(x, this.#gridSize.w)) {
           wrappedX = 0;
         }
 
-        if (y === -1) {
+        if (isYOnTopBorder(y)) {
           wrappedY = this.#gridSize.h - 1;
-        } else {
+        }
+
+        if (isYOnBottomBorder(y, this.#gridSize.h)) {
           wrappedY = 0;
         }
 

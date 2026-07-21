@@ -440,20 +440,14 @@ Deno.test("Grid.readCell: out of bounds throws", async (t) => {
   });
 });
 
-Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
+Deno.test("Grid.readCell: toroidal border wrapping: corners", async (t) => {
   const cornerSeed = `
   # . #
   . . .
   # . .
   `;
 
-  const midEdgeSeed = `
-  . # .
-  # . .
-  . . .
-  `;
-
-  const grid = Grid.fromString({
+  const cornerGrid = Grid.fromString({
     gridSize: { w: 3, h: 3 },
     mode: GRID_MODES.TOROIDAL,
     seed: cornerSeed,
@@ -462,7 +456,10 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
     const rightNeighborX = 3; // wraps to 0
     const rightNeighborY = 2;
-    const isAlive = grid.readCell({ x: rightNeighborX, y: rightNeighborY });
+    const isAlive = cornerGrid.readCell({
+      x: rightNeighborX,
+      y: rightNeighborY,
+    });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -473,7 +470,10 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
     const bottomNeighborX = 2;
     const bottomNeighborY = 3; // wraps to 0
-    const isAlive = grid.readCell({ x: bottomNeighborX, y: bottomNeighborY });
+    const isAlive = cornerGrid.readCell({
+      x: bottomNeighborX,
+      y: bottomNeighborY,
+    });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -484,7 +484,7 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
   await t.step("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
     const bottomRightNeighborX = 3; // wraps to 0
     const bottomRightNeighborY = 3; // wraps to 0
-    const isAlive = grid.readCell({
+    const isAlive = cornerGrid.readCell({
       x: bottomRightNeighborX,
       y: bottomRightNeighborY,
     });
@@ -494,11 +494,28 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
       );
     }
   });
+});
+
+Deno.test("Grid.readCell: toroidal border wrapping: edges", async (t) => {
+  const midEdgeSeed = `
+  . # .
+  # . .
+  . . .
+  `;
+
+  const midEdgeGrid = Grid.fromString({
+    gridSize: { w: 3, h: 3 },
+    mode: GRID_MODES.TOROIDAL,
+    seed: midEdgeSeed,
+  });
 
   await t.step("cell {x: 2, y: 1 } right neighbor is alive", () => {
     const rightNeighborX = 3;
     const rightNeighborY = 1;
-        const isAlive = grid.readCell({ x: rightNeighborX, y: rightNeighborY });
+    const isAlive = midEdgeGrid.readCell({
+      x: rightNeighborX,
+      y: rightNeighborY,
+    });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
@@ -506,10 +523,13 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
     }
   });
 
-    await t.step("cell { x: 1, y: 2 } bottom neighbor is alive", () => {
+  await t.step("cell { x: 1, y: 2 } bottom neighbor is alive", () => {
     const bottomNeighborX = 1;
     const bottomNeighborY = 3; // wraps to 0
-    const isAlive = grid.readCell({ x: bottomNeighborX, y: bottomNeighborY });
+    const isAlive = midEdgeGrid.readCell({
+      x: bottomNeighborX,
+      y: bottomNeighborY,
+    });
     if (!isAlive) {
       throw new Error(
         `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
