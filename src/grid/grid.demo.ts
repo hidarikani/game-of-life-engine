@@ -2,7 +2,7 @@
  * Runnable walkthrough of the examples in README.md.
  *
  * Run with:
- *   deno run --allow-read=. src/grid/grid.demo.ts
+ *   deno run src/grid/grid.demo.ts
  */
 import {
   Grid,

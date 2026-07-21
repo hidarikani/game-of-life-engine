@@ -175,5 +175,5 @@ console.log(outer.toString());
 the results to stdout so you can confirm the behavior for yourself:
 
 ```bash
-deno run --allow-read=. src/grid/grid.demo.ts
+deno run src/grid/grid.demo.ts
 ```
