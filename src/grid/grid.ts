@@ -26,6 +26,7 @@ import {
 import {
   gridContainsCells,
   gridContainsGrid,
+  isPointInsideBorder,
   isPointOnBorder,
   isPointOutsideBorder,
   validateMinGridSize,
@@ -128,6 +129,25 @@ export class Grid implements IGrid {
     }
 
     return false;
+  }
+
+  writeCell({ x, y }: Point, value: boolean): void {
+    if (
+      !isPointInsideBorder({ x, y }, {
+        w: this.#gridSize.w,
+        h: this.#gridSize.h,
+      })
+    ) {
+      throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+    }
+
+    const key = pointToCellKey({ x, y });
+
+    if (value) {
+      this.#liveCells.set(key, true);
+    } else {
+      this.#liveCells.delete(key);
+    }
   }
 
   get population(): number {

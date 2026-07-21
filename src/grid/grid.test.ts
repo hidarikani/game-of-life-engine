@@ -490,6 +490,98 @@ Deno.test("Grid.readCell: toroidal border wrapping", async (t) => {
   });
 });
 
+Deno.test("Grid.writeCell: out of bounds throws", async (t) => {
+  await t.step("left edge exceeded", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const grid = new Grid({ gridSize });
+    assertThrows(
+      () => grid.writeCell({ x: -1, y: 0 }, true),
+      Error,
+      "Cell (-1, 0) is out of bounds",
+    );
+  });
+
+  await t.step("right edge exceeded", () => {
+    const width = 5;
+    const grid = new Grid({ gridSize: { w: width, h: 5 } });
+    assertThrows(
+      () => grid.writeCell({ x: width, y: 0 }, true),
+      Error,
+      `Cell (${width}, 0) is out of bounds`,
+    );
+  });
+
+  await t.step("top edge exceeded", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const grid = new Grid({ gridSize });
+    assertThrows(
+      () => grid.writeCell({ x: 0, y: -1 }, true),
+      Error,
+      "Cell (0, -1) is out of bounds",
+    );
+  });
+
+  await t.step("bottom edge exceeded", () => {
+    const height = 5;
+    const grid = new Grid({ gridSize: { w: 5, h: height } });
+    assertThrows(
+      () => grid.writeCell({ x: 0, y: height }, true),
+      Error,
+      `Cell (0, ${height}) is out of bounds`,
+    );
+  });
+});
+
+Deno.test("Grid.writeCell: writes within bounds", async (t) => {
+  await t.step("should bring a dead cell to life", () => {
+    const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+    grid.writeCell({ x: 2, y: 2 }, true);
+    assertEquals(grid.readCell({ x: 2, y: 2 }), true);
+  });
+
+  await t.step("should kill a live cell", () => {
+    const grid = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed: `
+        # . .
+        . . .
+        . . .
+      `,
+    });
+    grid.writeCell({ x: 0, y: 0 }, false);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), false);
+  });
+
+  await t.step("should be a no-op when killing an already-dead cell", () => {
+    const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+    grid.writeCell({ x: 1, y: 1 }, false);
+    assertEquals(grid.population, 0);
+  });
+
+  await t.step("should not increase population when reviving twice", () => {
+    const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+    grid.writeCell({ x: 1, y: 1 }, true);
+    grid.writeCell({ x: 1, y: 1 }, true);
+    assertEquals(grid.population, 1);
+  });
+
+  await t.step("should allow writing at the top-left corner (0, 0)", () => {
+    const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+    grid.writeCell({ x: 0, y: 0 }, true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+  });
+
+  await t.step(
+    "should allow writing at the bottom-right corner (w - 1, h - 1)",
+    () => {
+      const gridSize: GridSize = { w: 5, h: 5 };
+      const grid = new Grid({ gridSize });
+      grid.writeCell({ x: gridSize.w - 1, y: gridSize.h - 1 }, true);
+      assertEquals(grid.readCell({ x: gridSize.w - 1, y: gridSize.h - 1 }), true);
+    },
+  );
+});
+
 Deno.test("Grid.equals", async (t) => {
   await t.step("should return false when grid sizes differ", () => {
     const a = new Grid({ gridSize: { w: 4, h: 4 } });
