@@ -5,6 +5,7 @@
   "exports": "./mod.ts",
   "tasks": {
     "test:watch": "deno test --watch --allow-read=.",
+    "test:watch:geometry": "deno test --watch --allow-read=. src/geometry/geometry.test.ts",
     "test:watch:grid": "deno test --watch --allow-read=. src/grid/grid.test.ts",
     "test:agent": "deno test --allow-read=."
   },
