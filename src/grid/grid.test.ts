@@ -598,28 +598,24 @@ Deno.test("Grid.writeCell: finite border is a no-op", async (t) => {
 });
 
 Deno.test("Grid.writeCell: toroidal border wrapping", async (t) => {
-  // Mirrors readCell's wrap logic exactly, including its bug: when only one
-  // axis is out of bounds, the in-bounds axis is forced to 0 rather than
-  // preserved, so these all resolve to (0, 0) rather than the "intended"
-  // wrapped coordinate.
-  await t.step("right-edge write lands on (0, 0), not (0, y)", () => {
+  await t.step("right-edge write wraps to (0, y), preserving y", () => {
     const grid = new Grid({
       gridSize: { w: 3, h: 3 },
       mode: GRID_MODES.TOROIDAL,
     });
     grid.writeCell({ x: 3, y: 2 }, true);
-    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
-    assertEquals(grid.readCell({ x: 0, y: 2 }), false);
+    assertEquals(grid.readCell({ x: 0, y: 2 }), true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), false);
   });
 
-  await t.step("bottom-edge write lands on (0, 0), not (x, 0)", () => {
+  await t.step("bottom-edge write wraps to (x, 0), preserving x", () => {
     const grid = new Grid({
       gridSize: { w: 3, h: 3 },
       mode: GRID_MODES.TOROIDAL,
     });
     grid.writeCell({ x: 2, y: 3 }, true);
-    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
-    assertEquals(grid.readCell({ x: 2, y: 0 }), false);
+    assertEquals(grid.readCell({ x: 2, y: 0 }), true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), false);
   });
 
   await t.step("bottom-right corner write wraps to (0, 0)", () => {
@@ -631,20 +627,18 @@ Deno.test("Grid.writeCell: toroidal border wrapping", async (t) => {
     assertEquals(grid.readCell({ x: 0, y: 0 }), true);
   });
 
-  await t.step("left-edge write can kill through the wrapped cell", () => {
-    // x === -1 wraps to w - 1 = 2, but y = 2 (in-bounds) is forced to 0
-    // by the same bug, so the write actually lands on (2, 0).
+  await t.step("left-edge write wraps to (w - 1, y), preserving y", () => {
     const grid = Grid.fromString({
       gridSize: { w: 3, h: 3 },
       mode: GRID_MODES.TOROIDAL,
       seed: `
-        . . #
         . . .
+        . . #
         . . .
       `,
     });
-    grid.writeCell({ x: -1, y: 2 }, false);
-    assertEquals(grid.readCell({ x: 2, y: 0 }), false);
+    grid.writeCell({ x: -1, y: 1 }, false);
+    assertEquals(grid.readCell({ x: 2, y: 1 }), false);
   });
 });
 
