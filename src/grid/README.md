@@ -9,14 +9,12 @@ simulation loop.
 Instantiating a `Grid` with the following params:
 
 ```ts
-const liveCells: LiveCells = new Map();
-liveCells.set(pointToCellKey({ x: 2, y: 1 }), true);
 const gridSize: GridSize = { w: 8, h: 4 };
-const firstGeneration = new Grid({
+const finiteGrid = new Grid({
   gridSize,
-  liveCells,
   mode: GRID_MODES.FINITE,
 });
+finiteGrid.writeCell({ x: 2, y: 1 }, true);
 ```
 
 Will result in the following coordinate space. Dead cells are represented by `.`
@@ -42,13 +40,13 @@ Y axis
 Notice 1 cell border around the grid (`x = -1, x = 9, y = -1, y = 5`). The
 behavior of border cells depends on `GridMode`.
 
-- `GridMode.Finite` — border cells are treated as permanently dead. In this
+- `GRID_MODES.FINITE` — border cells are treated as permanently dead. In this
   world, a glider that hits the bottom-right corner simply disintegrates. This
   is easy to implement, but philosophically a little brutal. The universe has
   edges, and they are lethal. For example, the top-left neighbor of cell
   `{ x: 0, y: 0 }` is at `{ x: -1, y: -1 }` and will always be dead (`false`)
-- `GridMode.Toroidal` — The left edge connects to the right, the top connects to
-  the bottom. In that case, a spaceship exiting the bottom-right reappears at
+- `GRID_MODES.TOROIDAL` — The left edge connects to the right, the top connects
+  to the bottom. In that case, a spaceship exiting the bottom-right reappears at
   the top-left. This turns the universe into the surface of a donut. It’s
   mathematically tidy and popular for demos, but it introduces artificial
   interactions—your glider can collide with its own past if the grid is small.
