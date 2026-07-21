@@ -495,9 +495,9 @@ Deno.test("Grid.writeCell: out of bounds throws", async (t) => {
     const gridSize: GridSize = { w: 5, h: 5 };
     const grid = new Grid({ gridSize });
     assertThrows(
-      () => grid.writeCell({ x: -1, y: 0 }, true),
+      () => grid.writeCell({ x: -2, y: 0 }, true),
       Error,
-      "Cell (-1, 0) is out of bounds",
+      "Cell (-2, 0) is out of bounds",
     );
   });
 
@@ -505,9 +505,9 @@ Deno.test("Grid.writeCell: out of bounds throws", async (t) => {
     const width = 5;
     const grid = new Grid({ gridSize: { w: width, h: 5 } });
     assertThrows(
-      () => grid.writeCell({ x: width, y: 0 }, true),
+      () => grid.writeCell({ x: width + 1, y: 0 }, true),
       Error,
-      `Cell (${width}, 0) is out of bounds`,
+      `Cell (${width + 1}, 0) is out of bounds`,
     );
   });
 
@@ -515,9 +515,9 @@ Deno.test("Grid.writeCell: out of bounds throws", async (t) => {
     const gridSize: GridSize = { w: 5, h: 5 };
     const grid = new Grid({ gridSize });
     assertThrows(
-      () => grid.writeCell({ x: 0, y: -1 }, true),
+      () => grid.writeCell({ x: 0, y: -2 }, true),
       Error,
-      "Cell (0, -1) is out of bounds",
+      "Cell (0, -2) is out of bounds",
     );
   });
 
@@ -525,10 +525,61 @@ Deno.test("Grid.writeCell: out of bounds throws", async (t) => {
     const height = 5;
     const grid = new Grid({ gridSize: { w: 5, h: height } });
     assertThrows(
-      () => grid.writeCell({ x: 0, y: height }, true),
+      () => grid.writeCell({ x: 0, y: height + 1 }, true),
       Error,
-      `Cell (0, ${height}) is out of bounds`,
+      `Cell (0, ${height + 1}) is out of bounds`,
     );
+  });
+});
+
+Deno.test("Grid.writeCell: finite border is a no-op", async (t) => {
+  await t.step("writing alive to a border cell does not persist", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const grid = new Grid({ gridSize });
+    grid.writeCell({ x: -1, y: 2 }, true);
+    assertEquals(grid.readCell({ x: -1, y: 2 }), false);
+    assertEquals(grid.population, 0);
+  });
+
+  await t.step("writing dead to a border cell does not throw", () => {
+    const gridSize: GridSize = { w: 5, h: 5 };
+    const grid = new Grid({ gridSize });
+    grid.writeCell({ x: 5, y: 2 }, false);
+    assertEquals(grid.readCell({ x: 5, y: 2 }), false);
+  });
+});
+
+Deno.test("Grid.writeCell: toroidal border wrapping", async (t) => {
+  await t.step("writing to right border wraps to the left column", () => {
+    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
+    grid.writeCell({ x: 3, y: 0 }, true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+  });
+
+  await t.step("writing to bottom border wraps to the top row", () => {
+    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
+    grid.writeCell({ x: 0, y: 3 }, true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+  });
+
+  await t.step("writing to bottom-right border wraps to top-left", () => {
+    const grid = new Grid({ gridSize: { w: 3, h: 3 }, mode: GRID_MODES.TOROIDAL });
+    grid.writeCell({ x: 3, y: 3 }, true);
+    assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+  });
+
+  await t.step("killing through a wrapped border cell", () => {
+    const grid = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      mode: GRID_MODES.TOROIDAL,
+      seed: `
+        # . .
+        . . .
+        . . .
+      `,
+    });
+    grid.writeCell({ x: -1, y: 0 }, false);
+    assertEquals(grid.readCell({ x: 2, y: 0 }), false);
   });
 });
 

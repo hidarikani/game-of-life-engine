@@ -26,7 +26,6 @@ import {
 import {
   gridContainsCells,
   gridContainsGrid,
-  isPointInsideBorder,
   isPointOnBorder,
   isPointOutsideBorder,
   validateMinGridSize,
@@ -133,12 +132,47 @@ export class Grid implements IGrid {
 
   writeCell({ x, y }: Point, value: boolean): void {
     if (
-      !isPointInsideBorder({ x, y }, {
+      isPointOutsideBorder({ x, y }, {
         w: this.#gridSize.w,
-        h: this.#gridSize.h,
+        h: this.gridSize.h,
       })
     ) {
       throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+    }
+
+    if (
+      isPointOnBorder({ x, y }, { w: this.#gridSize.w, h: this.#gridSize.h })
+    ) {
+      if (this.#mode === GRID_MODES.FINITE) {
+        return;
+      }
+
+      if (this.#mode === GRID_MODES.TOROIDAL) {
+        let wrappedX: number;
+        let wrappedY: number;
+
+        if (x === -1) {
+          wrappedX = this.#gridSize.w - 1;
+        } else {
+          wrappedX = 0;
+        }
+
+        if (y === -1) {
+          wrappedY = this.#gridSize.h - 1;
+        } else {
+          wrappedY = 0;
+        }
+
+        const key = pointToCellKey({ x: wrappedX, y: wrappedY });
+
+        if (value) {
+          this.#liveCells.set(key, true);
+        } else {
+          this.#liveCells.delete(key);
+        }
+
+        return;
+      }
     }
 
     const key = pointToCellKey({ x, y });
