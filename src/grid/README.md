@@ -1,9 +1,9 @@
 # Grid
 
-`Grid` is an abstraction that represents two dimentional cell space. Used by the
-[Engine][engine] to represent a single generation of the simulation. It exposes
-methods commong to managing cells and can be instantiated several ways:
-providing a Map of live cells, from seed string.
+`Grid` represents a two-dimensional cell space, used by the [Engine][engine] to
+represent a single generation of the simulation. It exposes methods for managing
+cells and can be instantiated empty, from a `Map` of live cells, or from a seed
+string.
 
 ## Coordinates
 
@@ -18,7 +18,7 @@ const finiteGrid = new Grid({
 finiteGrid.writeCell({ x: 2, y: 1 }, true);
 ```
 
-Will result in the following coordinate space. Coordinates start from 0,0 and
+Will result in the following coordinate space. Coordinates start from `0,0` and
 and exend right and down. Dead cells are represented by `.` and live cells by
 `#`.
 
@@ -181,4 +181,5 @@ deno run src/grid/grid.demo.ts
 ```
 
 <!-- Internal -->
+
 [engine]: ../engine/README.md
