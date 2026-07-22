@@ -1,8 +1,9 @@
 # Grid
 
-`Grid` is the lower-level building block that `Engine` uses internally. You can
-instantiate one directly when you need to compose or inspect grids outside the
-simulation loop.
+`Grid` is an abstraction that represents two dimentional cell space. Used by the
+[Engine][engine] to represent a single generation of the simulation. It exposes
+methods commong to managing cells and can be instantiated several ways:
+providing a Map of live cells, from seed string.
 
 ## Coordinates
 
@@ -17,8 +18,9 @@ const finiteGrid = new Grid({
 finiteGrid.writeCell({ x: 2, y: 1 }, true);
 ```
 
-Will result in the following coordinate space. Dead cells are represented by `.`
-and live cells by `#`.
+Will result in the following coordinate space. Coordinates start from 0,0 and
+and exend right and down. Dead cells are represented by `.` and live cells by
+`#`.
 
 ```
     | -1 | 0 1 2 3 4 5 6 7 | 8 |
@@ -50,9 +52,9 @@ behavior of border cells depends on `GridMode`.
   mathematically tidy and popular for demos, but it introduces artificial
   interactions—your glider can collide with its own past if the grid is small.
   For example when trying to access cell at `{ x: 8, y: 4 }` (the bottom-right
-  border corner for this grid) it shall be translated to `{ x: 0, y: 0 }`.
-  Only the single-cell border ring wraps this way — coordinates further out
-  (e.g. `{ x: 9, y: 5 }`) are out of bounds and throw.
+  border corner for this grid) it shall be translated to `{ x: 0, y: 0 }`. Only
+  the single-cell border ring wraps this way — coordinates further out (e.g.
+  `{ x: 9, y: 5 }`) are out of bounds and throw.
 
 ## Empty grid
 
@@ -177,3 +179,6 @@ the results to stdout so you can confirm the behavior for yourself:
 ```bash
 deno run src/grid/grid.demo.ts
 ```
+
+<!-- Internal -->
+[engine]: ../engine/README.md
