@@ -16,10 +16,10 @@ Intended traits include:
 - Browser runtime compatible,
 - Deno runtime compatible,
 - Quality assured, including:
-  - code formatting
-  - linting
+  - code style formatting (Deno default)
+  - linting (Deno default)
   - unit and integration testing
-- well documented, including JSDoc and README.md
+- well documented, including JSDoc and README.md for major entities
 
 This library is part of a larger namespace of tools:
 
