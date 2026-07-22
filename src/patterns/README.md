@@ -21,7 +21,7 @@ oscillators, spaceships). Each pattern carries one or more generations as
   throw a `PermissionDenied` error.
 
 ```ts
-import { PatternLib } from "@hidarikani/game-of-life-engine";
+import { PatternLib } from "../../mod.ts";
 
 // No --allow-read needed
 const builtIn = PatternLib.fromBuiltInData();
@@ -35,6 +35,8 @@ const custom = PatternLib.fromYamlFile("./my-patterns.yaml");
 `getPatternByKey` returns a single pattern, or throws if the key doesn't exist.
 
 ```ts
+import { PatternLib } from "../../mod.ts";
+
 const lib = PatternLib.fromBuiltInData();
 
 const blinker = lib.getPatternByKey("blinker");
@@ -46,7 +48,7 @@ console.log(blinker.generations[0].toString());
 `patternType`. Pass `null` for no filtering.
 
 ```ts
-import type { PatternFilter } from "@hidarikani/game-of-life-engine";
+import type { PatternFilter } from "../../mod.ts";
 
 const all = lib.getPatterns(null);
 
@@ -62,7 +64,7 @@ Each generation on a `Pattern` is already a `Grid`, so the first one can be
 passed directly as `firstGeneration`:
 
 ```ts
-import { Engine, PatternLib } from "@hidarikani/game-of-life-engine";
+import { Engine, PatternLib } from "../../mod.ts";
 
 const lib = PatternLib.fromBuiltInData();
 const blinker = lib.getPatternByKey("blinker");
@@ -106,3 +108,17 @@ patterns:
 
 A `still-life` pattern never changes, so it only needs one entry under
 `generations` and a `period` of `1`.
+
+## Demo
+
+[`pattern.demo.ts`](./pattern.demo.ts) runs every example above end-to-end and
+prints the results to stdout so you can confirm the behavior for yourself:
+
+```bash
+deno run src/patterns/pattern.demo.ts
+```
+
+The `fromYamlFile` call needs read access to the file it's loading. This demo
+doesn't ship its own `my-patterns.yaml`, so without a grant it prints the
+resulting permission error instead of crashing; pass `--allow-read` (or
+`--allow-read=./my-patterns.yaml`) to load a real file of your own.

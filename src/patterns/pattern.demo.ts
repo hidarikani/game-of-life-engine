@@ -17,11 +17,19 @@ section("Built-in patterns vs. your own file");
 
 // No --allow-read needed
 const builtIn = PatternLib.fromBuiltInData();
+console.log("built-in pattern count:", builtIn.getPatterns(null).length);
 
 // Requires --allow-read (or --allow-read=./my-patterns.yaml)
-// const custom = PatternLib.fromYamlFile("./my-patterns.yaml");
-
-console.log("built-in pattern count:", builtIn.getPatterns(null).length);
+try {
+  const custom = PatternLib.fromYamlFile("./my-patterns.yaml");
+  console.log("custom pattern count:", custom.getPatterns(null).length);
+} catch (error) {
+  // This demo doesn't ship its own "my-patterns.yaml", so this throws.
+  console.log(
+    'fromYamlFile("./my-patterns.yaml"):',
+    (error as Error).message,
+  );
+}
 
 // --- Looking up patterns -------------------------------------------------
 
