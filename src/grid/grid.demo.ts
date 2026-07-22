@@ -12,7 +12,7 @@ import {
   PLACEMENT_MODES,
   Point,
   pointToCellKey,
-} from "@hidarikani/game-of-life-engine";
+} from "../../mod.ts";
 
 function section(title: string): void {
   console.log(`\n=== ${title} ===`);

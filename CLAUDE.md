@@ -60,6 +60,13 @@ Test files live alongside source: `engine.test.ts`, `grid.test.ts`, `geometry.te
 
 When adding features, add tests in the colocated `.test.ts` file. Validate with real behavior — no mocking of core data structures.
 
+## Documentation
+
+Each major entity (`Grid`, `Engine`, etc.) has its own colocated `README.md` and `*.demo.ts` file (e.g. `src/grid/README.md`, `src/grid/grid.demo.ts`).
+
+- The README's code examples must match the demo file line for line — the demo is runnable proof that the README's examples actually work.
+- The demo file imports from `mod.ts` (not individual `src/` files) to simulate how a real consumer of the published package interacts with the library.
+
 ## Dependencies
 
 - **Runtime:** none (self-contained)

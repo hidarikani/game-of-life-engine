@@ -10,6 +10,8 @@ string.
 Instantiating a `Grid` with the following params:
 
 ```ts
+import { Grid, GRID_MODES, GridSize } from "../../mod.ts";
+
 const gridSize: GridSize = { w: 8, h: 4 };
 const finiteGrid = new Grid({
   gridSize,
@@ -59,7 +61,7 @@ behavior of border cells depends on `GridMode`.
 ## Empty grid
 
 ```ts
-import { Grid, GridSize } from "@hidarikani/game-of-life-engine";
+import { Grid, GridSize } from "../../mod.ts";
 
 const gridSize: GridSize = { w: 10, h: 10 };
 const grid = new Grid({ gridSize });
@@ -78,7 +80,7 @@ import {
   GridSize,
   LiveCells,
   pointToCellKey,
-} from "@hidarikani/game-of-life-engine";
+} from "../../mod.ts";
 
 const gridSize: GridSize = { w: 5, h: 5 };
 const liveCells: LiveCells = new Map();
@@ -95,7 +97,7 @@ const grid = new Grid({ gridSize, liveCells });
 exactly.
 
 ```ts
-import { Grid, GridSize } from "@hidarikani/game-of-life-engine";
+import { Grid, GridSize } from "../../mod.ts";
 
 const gridSize: GridSize = { w: 4, h: 4 };
 const seed = `
@@ -117,7 +119,7 @@ console.log(grid.toString());
 cells instead.
 
 ```ts
-import { Grid, PLACEMENT_MODES, Point } from "@hidarikani/game-of-life-engine";
+import { Grid, PLACEMENT_MODES, Point } from "../../mod.ts";
 
 const outer = Grid.fromString({
   gridSize: { w: 5, h: 5 },
