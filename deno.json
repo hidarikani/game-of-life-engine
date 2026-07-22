@@ -3,6 +3,7 @@
   "version": "0.5.0",
   "license": "MIT",
   "exports": "./mod.ts",
+  "unstable": ["raw-imports"],
   "tasks": {
     "test:watch": "deno test --watch --allow-read=.",
     "test:watch:geometry": "deno test --watch --allow-read=. src/geometry/geometry.test.ts",
