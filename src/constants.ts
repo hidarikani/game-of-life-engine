@@ -32,3 +32,9 @@ export const PLACEMENT_MODES = {
   OVERWRITE: "Overwrite",
   MERGE: "Merge",
 } as const;
+
+export const PATTERN_TYPES = {
+  STILL_LIFE: "still-life",
+  OSCILLATOR: "oscillator",
+  SPACESHIP: "spaceship",
+} as const;

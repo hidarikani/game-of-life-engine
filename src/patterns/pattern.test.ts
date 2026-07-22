@@ -1,6 +1,7 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { join } from "@std/path";
 import { PatternLib } from "./pattern.ts";
+import { PATTERN_TYPES } from "../constants.ts";
 
 const YAML_FILE_PATH = join(
   import.meta.dirname!,
@@ -52,15 +53,18 @@ Deno.test("PatternLib.getPatterns", async (t) => {
   await t.step("filters by pattern type", () => {
     const patterns = lib.getPatterns({
       name: null,
-      patternType: "oscillator",
+      patternType: PATTERN_TYPES.OSCILLATOR,
     });
-    assertEquals(patterns.every((p) => p.type === "oscillator"), true);
+    assertEquals(
+      patterns.every((p) => p.type === PATTERN_TYPES.OSCILLATOR),
+      true,
+    );
   });
 
   await t.step("filters by pattern type with no matches", () => {
     const patterns = lib.getPatterns({
       name: null,
-      patternType: "spaceship",
+      patternType: PATTERN_TYPES.SPACESHIP,
     });
     assertEquals(patterns, []);
   });
@@ -73,7 +77,7 @@ Deno.test("PatternLib.getPatternByKey", async (t) => {
     const pattern = lib.getPatternByKey("blinker");
     assertEquals(pattern.key, "blinker");
     assertEquals(pattern.name, "Blinker");
-    assertEquals(pattern.type, "oscillator");
+    assertEquals(pattern.type, PATTERN_TYPES.OSCILLATOR);
     assertEquals(pattern.period, 2);
     assertEquals(pattern.generations.length, 2);
     assertEquals(
