@@ -154,6 +154,35 @@ Runs on [Deno][deno]. Tested with `deno --version` `2.9.x`.
 deno task test:watch
 ```
 
+### Publishing
+
+Publishing to [JSR][jsr] happens automatically in CI via the
+[publish workflow][publish-workflow] on every push to `main`. The package
+version is set in [`deno.json`][deno-json].
+
+Because CI publishes on a version that's already merged to `main`, publish-time
+issues (like an unresolvable import) are otherwise only caught after the fact.
+To catch these earlier, dry-run a publish locally before merging:
+
+```zsh
+deno publish --dry-run
+```
+
+This runs the same checks as CI (types, slow types, file resolution) without
+uploading anything. If it succeeds locally, `npx jsr publish` (the command CI
+runs) should succeed too.
+
+To publish for real from a local machine — for example to hotfix a release
+without waiting on CI — run:
+
+```zsh
+npx jsr publish
+```
+
+This requires authentication: running it interactively opens a browser to link
+your JSR account, or a `JSR_TOKEN`/`--token` can be supplied for non-interactive
+use.
+
 ## Contribution
 
 This library doesn't have a contribution guide yet. For now, its direction is
@@ -168,9 +197,12 @@ through the issues section of the related GitHub repo.
 [grid]: src/grid/README.md
 [engine]: src/engine/README.md
 [demo]: demo.ts
+[publish-workflow]: .github/workflows/publish.yml
+[deno-json]: deno.json
 
 <!-- External -->
 
 [cgol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 [deno]: https://deno.com/
 [yaml]: https://yaml.org/
+[jsr]: https://jsr.io/@hidarikani/game-of-life-engine
