@@ -7,7 +7,7 @@ import type {
   LiveCells,
   PlacementMode,
   Point,
-} from "../types.ts";
+} from "../types/types.ts";
 import {
   cellKeyToPoint,
   normalizeSeed,
@@ -28,6 +28,10 @@ import {
   gridContainsGrid,
   isPointOnBorder,
   isPointOutsideBorder,
+  isXOnBottomBorder,
+  isXOnTopBorder,
+  isYOnBottomBorder,
+  isYOnTopBorder,
   validateMinGridSize,
 } from "../geometry/geometry.ts";
 
@@ -89,25 +93,29 @@ export class Grid implements IGrid {
     }
 
     if (
-      isPointOnBorder({ x, y }, { w: this.#gridSize.w, h: this.#gridSize.h })
+      isPointOnBorder({ x, y }, this.#gridSize)
     ) {
       if (this.#mode === GRID_MODES.FINITE) {
         return false;
       }
 
       if (this.#mode === GRID_MODES.TOROIDAL) {
-        let wrappedX: number;
-        let wrappedY: number;
+        let wrappedX = x;
+        let wrappedY = y;
 
-        if (x === -1) {
+        if (isXOnTopBorder(x)) {
           wrappedX = this.#gridSize.w - 1;
-        } else {
+        }
+
+        if (isXOnBottomBorder(x, this.#gridSize.w)) {
           wrappedX = 0;
         }
 
-        if (y === -1) {
+        if (isYOnTopBorder(y)) {
           wrappedY = this.#gridSize.h - 1;
-        } else {
+        }
+
+        if (isYOnBottomBorder(y, this.#gridSize.h)) {
           wrappedY = 0;
         }
 
@@ -128,6 +136,64 @@ export class Grid implements IGrid {
     }
 
     return false;
+  }
+
+  writeCell({ x, y }: Point, value: boolean): void {
+    if (
+      isPointOutsideBorder({ x, y }, {
+        w: this.#gridSize.w,
+        h: this.gridSize.h,
+      })
+    ) {
+      throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+    }
+
+    if (
+      isPointOnBorder({ x, y }, this.#gridSize)
+    ) {
+      if (this.#mode === GRID_MODES.FINITE) {
+        return;
+      }
+
+      if (this.#mode === GRID_MODES.TOROIDAL) {
+        let wrappedX = x;
+        let wrappedY = y;
+
+        if (isXOnTopBorder(x)) {
+          wrappedX = this.#gridSize.w - 1;
+        }
+
+        if (isXOnBottomBorder(x, this.#gridSize.w)) {
+          wrappedX = 0;
+        }
+
+        if (isYOnTopBorder(y)) {
+          wrappedY = this.#gridSize.h - 1;
+        }
+
+        if (isYOnBottomBorder(y, this.#gridSize.h)) {
+          wrappedY = 0;
+        }
+
+        const key = pointToCellKey({ x: wrappedX, y: wrappedY });
+
+        if (value) {
+          this.#liveCells.set(key, true);
+        } else {
+          this.#liveCells.delete(key);
+        }
+
+        return;
+      }
+    }
+
+    const key = pointToCellKey({ x, y });
+
+    if (value) {
+      this.#liveCells.set(key, true);
+    } else {
+      this.#liveCells.delete(key);
+    }
   }
 
   get population(): number {
@@ -222,5 +288,26 @@ export class Grid implements IGrid {
       res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
     }
     return res.trim();
+  }
+
+  equals(other: IGrid): boolean {
+    if (
+      this.#gridSize.w !== other.gridSize.w ||
+      this.#gridSize.h !== other.gridSize.h
+    ) {
+      return false;
+    }
+
+    if (this.population !== other.population) {
+      return false;
+    }
+
+    for (const [cellKey, value] of this.#liveCells) {
+      if (other.readCell(cellKeyToPoint(cellKey)) !== value) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

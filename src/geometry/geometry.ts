@@ -1,6 +1,11 @@
 import { MIN_GRID_SIZE } from "../constants.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
-import type { GridSize, LiveCells, Point, ValidationResult } from "../types.ts";
+import type {
+  GridSize,
+  LiveCells,
+  Point,
+  ValidationResult,
+} from "../types/types.ts";
 
 export const validateMinGridSize = (
   gridSize: GridSize,
@@ -30,13 +35,21 @@ export const isPointOutsideBorder = (
   return isXOutsideBorder(x, w) || isYOutsideBorder(y, h);
 };
 
-const isXOnBorder = (x: number, worldWidth: number): boolean => {
-  return x === -1 || x === worldWidth;
-};
+export const isXOnTopBorder = (x: number): boolean => x === -1;
 
-const isYOnBorder = (y: number, worldHeight: number): boolean => {
-  return y === -1 || y === worldHeight;
-};
+export const isXOnBottomBorder = (x: number, worldWidth: number): boolean =>
+  x === worldWidth;
+
+const isXOnBorder = (x: number, worldWidth: number): boolean =>
+  isXOnTopBorder(x) || isXOnBottomBorder(x, worldWidth);
+
+export const isYOnTopBorder = (y: number): boolean => y === -1;
+
+export const isYOnBottomBorder = (y: number, worldHeight: number): boolean =>
+  y === worldHeight;
+
+const isYOnBorder = (y: number, worldHeight: number): boolean =>
+  isYOnTopBorder(y) || isYOnBottomBorder(y, worldHeight);
 
 export const isPointOnBorder = (
   { x, y }: Point,

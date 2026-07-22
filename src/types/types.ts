@@ -28,12 +28,14 @@ export interface IGrid {
   readonly liveCells: { key: Point; value: boolean }[];
   readonly population: number;
   readCell({ x, y }: Point): boolean;
+  writeCell({ x, y }: Point, value: boolean): void;
   writeGrid(params: {
     inner: IGrid;
     offset?: Point;
     mode?: PlacementMode;
   }): void;
   toString(): string;
+  equals(other: IGrid): boolean;
 }
 
 export type GridOptionsFromLiveCells = {

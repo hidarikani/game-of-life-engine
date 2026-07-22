@@ -1,13 +1,17 @@
 {
   "name": "@hidarikani/game-of-life-engine",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "exports": "./mod.ts",
   "tasks": {
-    "test:watch": "deno test --watch",
-    "test:agent": "deno test"
+    "test:watch": "deno test --watch --allow-read=.",
+    "test:watch:geometry": "deno test --watch --allow-read=. src/geometry/geometry.test.ts",
+    "test:watch:grid": "deno test --watch --allow-read=. src/grid/grid.test.ts",
+    "test:agent": "deno test --allow-read=."
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1"
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/path": "jsr:@std/path@1",
+    "@std/yaml": "jsr:@std/yaml@1"
   }
 }
