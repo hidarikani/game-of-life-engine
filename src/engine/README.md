@@ -6,7 +6,7 @@ the grid state and advances it one generation at a time.
 ## Instantiation
 
 `Engine` does not accept a seed string directly. You first create a `Grid` (see
-[`src/grid/README.md`](../grid/README.md)), then pass it as `firstGeneration`.
+[`src/grid/README.md`][grid]), then pass it as `firstGeneration`.
 
 ```ts
 import { Engine, Grid, GRID_MODES } from "@hidarikani/game-of-life-engine";
@@ -115,3 +115,9 @@ rendering logic.
 ```ts
 const willBeAlive = engine.evolveCell({ x: 2, y: 2 }); // boolean
 ```
+
+---
+
+<!-- Internal -->
+
+[grid]: ../grid/README.md

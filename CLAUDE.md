@@ -66,6 +66,8 @@ Each major entity (`Grid`, `Engine`, etc.) has its own colocated `README.md` and
 
 - The README's code examples must match the demo file line for line — the demo is runnable proof that the README's examples actually work.
 - The demo file imports from `mod.ts` (not individual `src/` files) to simulate how a real consumer of the published package interacts with the library.
+- Cross-references (links to other READMEs, JSR/external docs) use Markdown reference-style links (`[label][ref]`), with the `[ref]: target` definitions collected at the bottom of the file under `<!-- Internal -->` / `<!-- External -->` comments, separated from the body by a `---`. Don't inline the target URL into the prose. See the bottom of the root `README.md` for the pattern.
+- The exception is a same-directory demo file link (e.g. `[\`grid.demo.ts\`](./grid.demo.ts)`) — those stay inline since they're local to the doc, not a cross-reference.
 
 ## Dependencies
 

@@ -182,6 +182,8 @@ the results to stdout so you can confirm the behavior for yourself:
 deno run src/grid/grid.demo.ts
 ```
 
+---
+
 <!-- Internal -->
 
 [engine]: ../engine/README.md

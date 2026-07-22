@@ -3,7 +3,7 @@
 `PatternLib` is a lookup library for named Game of Life patterns (still lifes,
 oscillators, spaceships). Each pattern carries one or more generations as
 `Grid` instances, so they can be dropped straight into an `Engine` or another
-`Grid` via `writeGrid` (see [`src/grid/README.md`](../grid/README.md)).
+`Grid` via `writeGrid` (see [`src/grid/README.md`][grid]).
 
 ## Built-in patterns vs. your own file
 
@@ -79,7 +79,7 @@ console.log(engine.toString()); // matches blinker.generations[1]
 
 Both constructors expect the same shape: a top-level `patterns` list. Each
 entry declares its metadata plus one `state` seed string (see
-[`src/grid/README.md`](../grid/README.md#grid-from-a-seed-string) for the
+[`src/grid/README.md`][grid-seed-format] for the
 `.`/`#` seed format) per generation in its period. `width`/`height` must match
 every `state` string's dimensions exactly.
 
@@ -122,3 +122,10 @@ The `fromYamlFile` call needs read access to the file it's loading. This demo
 doesn't ship its own `my-patterns.yaml`, so without a grant it prints the
 resulting permission error instead of crashing; pass `--allow-read` (or
 `--allow-read=./my-patterns.yaml`) to load a real file of your own.
+
+---
+
+<!-- Internal -->
+
+[grid]: ../grid/README.md
+[grid-seed-format]: ../grid/README.md#grid-from-a-seed-string
