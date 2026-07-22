@@ -175,15 +175,14 @@ console.log(outer.toString());
 
 ## Demo
 
-[`grid.demo.ts`](./grid.demo.ts) runs every example above end-to-end and prints
+[`grid.demo.ts`][demo] runs every example above end-to-end and prints
 the results to stdout so you can confirm the behavior for yourself:
 
 ```bash
 deno run src/grid/grid.demo.ts
 ```
 
----
-
 <!-- Internal -->
 
 [engine]: ../engine/README.md
+[demo]: ./grid.demo.ts

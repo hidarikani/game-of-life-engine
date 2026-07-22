@@ -76,7 +76,7 @@ is provided. Refer to the list below for overview and links to dedicated pages.
 - [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a concrete
   coordinate system and exposes common operations such as reading cell state and
   merging patterns together.
-- [Engine](src/engine/README.md) — Contains the simulation rules, evolves a Grid
+- [Engine][engine] — Contains the simulation rules, evolves a Grid
   to produce a new generation. Manages generation history.
 
 The most frictionless way to start is to use
@@ -135,7 +135,7 @@ engine.evolveGrid();
 console.log(engine.toString());
 ```
 
-A runnable version of this example is available in [`demo.ts`](demo.ts):
+A runnable version of this example is available in [`demo.ts`][demo]:
 
 ```sh
 deno run demo.ts
@@ -161,14 +161,13 @@ based on the subjective experience of a single maintainer, and there's no
 guarantee that feedback will be accepted. The only way to leave feedback is
 through the issues section of the related GitHub repo.
 
----
-
 <!-- Internal -->
 
 [built-in-patterns]: /data/patterns/patterns.yaml
 [pattern-lib]: src/patterns/README.md
 [grid]: src/grid/README.md
 [engine]: src/engine/README.md
+[demo]: demo.ts
 
 <!-- External -->
 

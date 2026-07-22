@@ -111,7 +111,7 @@ A `still-life` pattern never changes, so it only needs one entry under
 
 ## Demo
 
-[`pattern.demo.ts`](./pattern.demo.ts) runs every example above end-to-end and
+[`pattern.demo.ts`][demo] runs every example above end-to-end and
 prints the results to stdout so you can confirm the behavior for yourself:
 
 ```bash
@@ -123,9 +123,8 @@ doesn't ship its own `my-patterns.yaml`, so without a grant it prints the
 resulting permission error instead of crashing; pass `--allow-read` (or
 `--allow-read=./my-patterns.yaml`) to load a real file of your own.
 
----
-
 <!-- Internal -->
 
 [grid]: ../grid/README.md
 [grid-seed-format]: ../grid/README.md#grid-from-a-seed-string
+[demo]: ./pattern.demo.ts

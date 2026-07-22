@@ -116,8 +116,6 @@ rendering logic.
 const willBeAlive = engine.evolveCell({ x: 2, y: 2 }); // boolean
 ```
 
----
-
 <!-- Internal -->
 
 [grid]: ../grid/README.md
