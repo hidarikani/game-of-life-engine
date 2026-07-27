@@ -76,8 +76,8 @@ is provided. Refer to the list below for overview and links to dedicated pages.
 - [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a concrete
   coordinate system and exposes common operations such as reading cell state and
   merging patterns together.
-- [Engine][engine] — Contains the simulation rules, evolves a Grid
-  to produce a new generation. Manages generation history.
+- [Engine][engine] — Contains the simulation rules, evolves a Grid to produce a
+  new generation. Manages generation history.
 
 The most frictionless way to start is to use
 [built-in patterns][built-in-patterns] that come bundled with this library
@@ -154,6 +154,54 @@ Runs on [Deno][deno]. Tested with `deno --version` `2.9.x`.
 deno task test:watch
 ```
 
+### Publishing
+
+Publishing to [JSR][jsr] happens automatically in CI via the
+[publish workflow][publish-workflow] on every push to `main`. The package
+version is set in [`deno.json`][deno-json].
+
+JSR doesn't resolve raw text imports (`with { type: "text" }`), so the
+[built-in patterns][built-in-patterns] can't be inlined straight from
+[`patterns.yaml`][built-in-patterns]. Instead,
+[`PatternLib.fromBuiltInData()`][pattern-lib] imports a generated
+`data/patterns/patterns.json` (via a stable `with { type: "json" }` import). Run
+this task after editing `patterns.yaml` to keep the JSON in sync, and commit the
+result:
+
+```zsh
+deno task patterns:build
+```
+
+The publish workflow also runs this task before publishing, so CI's copy is
+always regenerated fresh from `patterns.yaml` — but a stale, uncommitted
+`patterns.json` will still fail a local dry run, since `deno publish` refuses to
+publish with uncommitted changes.
+
+Because CI publishes on a version that's already merged to `main`, publish-time
+issues (like an unresolvable import) are otherwise only caught after the fact.
+To catch these earlier, dry-run a publish locally before merging:
+
+```zsh
+deno publish --dry-run
+```
+
+This runs the same checks as CI (types, slow types, file resolution) without
+uploading anything. If it succeeds locally, `deno publish` (the command CI runs)
+should succeed too.
+
+To publish for real from a local machine — for example to hotfix a release
+without waiting on CI — regenerate `patterns.json` first (if `patterns.yaml`
+changed), then run:
+
+```zsh
+deno task patterns:build
+deno publish
+```
+
+This requires authentication: running it interactively opens a browser to link
+your JSR account, or a `JSR_TOKEN`/`--token` can be supplied for non-interactive
+use.
+
 ## Contribution
 
 This library doesn't have a contribution guide yet. For now, its direction is
@@ -168,9 +216,12 @@ through the issues section of the related GitHub repo.
 [grid]: src/grid/README.md
 [engine]: src/engine/README.md
 [demo]: demo.ts
+[publish-workflow]: .github/workflows/publish.yml
+[deno-json]: deno.json
 
 <!-- External -->
 
 [cgol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 [deno]: https://deno.com/
 [yaml]: https://yaml.org/
+[jsr]: https://jsr.io/@hidarikani/game-of-life-engine

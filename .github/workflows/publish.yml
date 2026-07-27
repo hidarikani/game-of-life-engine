@@ -13,5 +13,8 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v5
+      - uses: denoland/setup-deno@v2
+      - name: Generate patterns.json from patterns.yaml
+        run: deno task patterns:build
       - name: Publish package
-        run: npx jsr publish
+        run: deno publish

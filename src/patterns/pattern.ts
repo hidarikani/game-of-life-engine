@@ -1,14 +1,14 @@
 import type { GridSize } from "../types/types.ts";
 import type {
   IPatternLib,
-  PatternFilter,
   Pattern,
+  PatternFilter,
   PatternsRaw,
 } from "../types/patterns.ts";
 import { Grid } from "../grid/grid.ts";
 import { parse } from "@std/yaml";
-import patternsYaml from "../../data/patterns/patterns.yaml" with {
-  type: "text",
+import patternsJson from "../../data/patterns/patterns.json" with {
+  type: "json",
 };
 
 export class PatternLib implements IPatternLib {
@@ -43,7 +43,7 @@ export class PatternLib implements IPatternLib {
   }
 
   static fromBuiltInData(): PatternLib {
-    const { patterns: patternsRaw } = parse(patternsYaml) as PatternsRaw;
+    const { patterns: patternsRaw } = patternsJson as PatternsRaw;
 
     return new PatternLib(PatternLib.#parsePatterns(patternsRaw));
   }
