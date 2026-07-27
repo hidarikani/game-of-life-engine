@@ -76,8 +76,8 @@ is provided. Refer to the list below for overview and links to dedicated pages.
 - [Grid][grid] — Bounded (has fixed dimensions) cell pattern that has a concrete
   coordinate system and exposes common operations such as reading cell state and
   merging patterns together.
-- [Engine][engine] — Contains the simulation rules, evolves a Grid
-  to produce a new generation. Manages generation history.
+- [Engine][engine] — Contains the simulation rules, evolves a Grid to produce a
+  new generation. Manages generation history.
 
 The most frictionless way to start is to use
 [built-in patterns][built-in-patterns] that come bundled with this library
@@ -160,6 +160,23 @@ Publishing to [JSR][jsr] happens automatically in CI via the
 [publish workflow][publish-workflow] on every push to `main`. The package
 version is set in [`deno.json`][deno-json].
 
+JSR doesn't resolve raw text imports (`with { type: "text" }`), so the
+[built-in patterns][built-in-patterns] can't be inlined straight from
+[`patterns.yaml`][built-in-patterns]. Instead,
+[`PatternLib.fromBuiltInData()`][pattern-lib] imports a generated
+`data/patterns/patterns.json` (via a stable `with { type: "json" }` import). Run
+this task after editing `patterns.yaml` to keep the JSON in sync, and commit the
+result:
+
+```zsh
+deno task patterns:build
+```
+
+The publish workflow also runs this task before publishing, so CI's copy is
+always regenerated fresh from `patterns.yaml` — but a stale, uncommitted
+`patterns.json` will still fail a local dry run, since `deno publish` refuses to
+publish with uncommitted changes.
+
 Because CI publishes on a version that's already merged to `main`, publish-time
 issues (like an unresolvable import) are otherwise only caught after the fact.
 To catch these earlier, dry-run a publish locally before merging:
@@ -173,9 +190,11 @@ uploading anything. If it succeeds locally, `npx jsr publish` (the command CI
 runs) should succeed too.
 
 To publish for real from a local machine — for example to hotfix a release
-without waiting on CI — run:
+without waiting on CI — regenerate `patterns.json` first (if `patterns.yaml`
+changed), then run:
 
 ```zsh
+deno task patterns:build
 npx jsr publish
 ```
 

@@ -1,24 +1,25 @@
 # PatternLib
 
 `PatternLib` is a lookup library for named Game of Life patterns (still lifes,
-oscillators, spaceships). Each pattern carries one or more generations as
-`Grid` instances, so they can be dropped straight into an `Engine` or another
-`Grid` via `writeGrid` (see [`src/grid/README.md`][grid]).
+oscillators, spaceships). Each pattern carries one or more generations as `Grid`
+instances, so they can be dropped straight into an `Engine` or another `Grid`
+via `writeGrid` (see [`src/grid/README.md`][grid]).
 
 ## Built-in patterns vs. your own file
 
 `PatternLib` has two constructors:
 
-- `PatternLib.fromBuiltInData()` — loads the patterns bundled with this
-  package (`data/patterns/patterns.yaml`). The YAML is inlined into the
-  package at build time, so **no file system access is required**. This is
-  the one to reach for under Deno's default permission model, or if you've
-  locked your process down with `--allow-read` restricted to specific paths.
-- `PatternLib.fromYamlFile(filePath)` — reads and parses a YAML file from
-  disk at the given path. Because this calls `Deno.readTextFileSync`
-  internally, **your process needs read permission for that file** (e.g. run
-  with `--allow-read` or `--allow-read=<path-to-your-file>`), or Deno will
-  throw a `PermissionDenied` error.
+- `PatternLib.fromBuiltInData()` — loads the patterns bundled with this package
+  (`data/patterns/patterns.yaml`, generated to `data/patterns/patterns.json` —
+  see [publishing][publishing] for why). The JSON is imported as a module, so
+  **no file system access is required**. This is the one to reach for under
+  Deno's default permission model, or if you've locked your process down with
+  `--allow-read` restricted to specific paths.
+- `PatternLib.fromYamlFile(filePath)` — reads and parses a YAML file from disk
+  at the given path. Because this calls `Deno.readTextFileSync` internally,
+  **your process needs read permission for that file** (e.g. run with
+  `--allow-read` or `--allow-read=<path-to-your-file>`), or Deno will throw a
+  `PermissionDenied` error.
 
 ```ts
 import { PatternLib } from "../../mod.ts";
@@ -77,11 +78,11 @@ console.log(engine.toString()); // matches blinker.generations[1]
 
 ## YAML schema
 
-Both constructors expect the same shape: a top-level `patterns` list. Each
-entry declares its metadata plus one `state` seed string (see
-[`src/grid/README.md`][grid-seed-format] for the
-`.`/`#` seed format) per generation in its period. `width`/`height` must match
-every `state` string's dimensions exactly.
+Both constructors expect the same shape: a top-level `patterns` list. Each entry
+declares its metadata plus one `state` seed string (see
+[`src/grid/README.md`][grid-seed-format] for the `.`/`#` seed format) per
+generation in its period. `width`/`height` must match every `state` string's
+dimensions exactly.
 
 ```yaml
 patterns:
@@ -111,8 +112,8 @@ A `still-life` pattern never changes, so it only needs one entry under
 
 ## Demo
 
-[`pattern.demo.ts`][demo] runs every example above end-to-end and
-prints the results to stdout so you can confirm the behavior for yourself:
+[`pattern.demo.ts`][demo] runs every example above end-to-end and prints the
+results to stdout so you can confirm the behavior for yourself:
 
 ```bash
 deno run src/patterns/pattern.demo.ts
@@ -128,3 +129,4 @@ resulting permission error instead of crashing; pass `--allow-read` (or
 [grid]: ../grid/README.md
 [grid-seed-format]: ../grid/README.md#grid-from-a-seed-string
 [demo]: ./pattern.demo.ts
+[publishing]: /README.md#publishing
