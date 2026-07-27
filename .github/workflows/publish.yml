@@ -17,4 +17,4 @@ jobs:
       - name: Generate patterns.json from patterns.yaml
         run: deno task patterns:build
       - name: Publish package
-        run: npx jsr publish
+        run: deno publish

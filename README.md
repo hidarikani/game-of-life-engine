@@ -186,8 +186,8 @@ deno publish --dry-run
 ```
 
 This runs the same checks as CI (types, slow types, file resolution) without
-uploading anything. If it succeeds locally, `npx jsr publish` (the command CI
-runs) should succeed too.
+uploading anything. If it succeeds locally, `deno publish` (the command CI runs)
+should succeed too.
 
 To publish for real from a local machine — for example to hotfix a release
 without waiting on CI — regenerate `patterns.json` first (if `patterns.yaml`
@@ -195,7 +195,7 @@ changed), then run:
 
 ```zsh
 deno task patterns:build
-npx jsr publish
+deno publish
 ```
 
 This requires authentication: running it interactively opens a browser to link

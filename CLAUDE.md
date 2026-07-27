@@ -8,7 +8,7 @@ Conway's Game of Life simulation engine published as a JSR package (`@hidarikani
 
 ```bash
 # Publish (CI handles this automatically on push to main)
-npx jsr publish
+deno publish
 ```
 
 ## Architecture
@@ -76,7 +76,7 @@ Each major entity (`Grid`, `Engine`, etc.) has its own colocated `README.md` and
 
 ## Publishing
 
-CI (`.github/workflows/publish.yml`) auto-publishes to JSR on push to `main` using `npx jsr publish`. Version is set in `deno.json`.
+CI (`.github/workflows/publish.yml`) auto-publishes to JSR on push to `main` using `deno publish`. Version is set in `deno.json`.
 
 ## Git / GitHub
 
