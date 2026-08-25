@@ -12,7 +12,7 @@ This repo contains a engine for running and managing
 - [DEVELOPMENT.md][dev] — for coding, quality assurance, and publishing tips
 - [CONVENTIONS.md][conventions] — for code and documentation conventions
 - [CONTRIBUTING.md][contrib] - explains how contributions are handled
-- [LICENSE.md][license]
+- [LICENSE][license]
 
 ## Git workflow
 
@@ -49,7 +49,7 @@ Quality assurance checks SHALL be executed **before commiting** as described in
 [dev]: ./DEVELOPMENT.md
 [conventions]: ./CONVENTIONS.md
 [contrib]: /CONTRIBUTING.md
-[license]: ./LICENSE.md
+[license]: ./LICENSE
 
 <!-- External -->
 
