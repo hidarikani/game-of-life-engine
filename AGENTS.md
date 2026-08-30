@@ -5,7 +5,7 @@ Vendor-agnostic file for guiding AI agents, based on
 
 ## Introduction
 
-This repo contains a engine for running and managing
+This repo contains an engine for running and managing
 [Conway's Game of Life][cgol] simulations. See the following resources:
 
 - [README.md][readme] — for package overview and tips on running it
@@ -43,7 +43,7 @@ git push --force-with-lease
 
 ## Quality Assurance
 
-Quality assurance checks SHALL be executed **before commiting** as described in
+Quality assurance checks SHALL be executed **before committing** as described in
 [DEVELOPMENT.md][dev].
 
 <!-- Internal -->

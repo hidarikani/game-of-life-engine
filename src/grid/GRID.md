@@ -21,8 +21,7 @@ finiteGrid.writeCell({ x: 2, y: 1 }, true);
 ```
 
 Will result in the following coordinate space. Coordinates start from `0,0` and
-and exend right and down. Dead cells are represented by `.` and live cells by
-`#`.
+extend right and down. Dead cells are represented by `.` and live cells by `#`.
 
 ```
     | -1 | 0 1 2 3 4 5 6 7 | 8 |
@@ -60,8 +59,8 @@ behavior of border cells depends on `GridMode`.
 
 ## Empty grid
 
-THere is a **Minimum grid size:** constaint of 3 by 3 cells (needed to check all
-8 neighbors of a center cell).
+There is a minimum grid size constraint of 3 by 3 cells (needed to check all 8
+neighbors of a center cell).
 
 ```ts
 import { Grid, GridSize } from "../../mod.ts";

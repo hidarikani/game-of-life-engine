@@ -60,7 +60,7 @@ file is proof that the examples actually work.
 | [Grid][grid-doc]              | Represents a two-dimensional collection of cells                        |
 | [PatternLib][pattern-lib-doc] | Tools for loading patterns. Outputs a [Grid][grid-doc]                  |
 | [geometry][geometry-util]     | Utility functions operating on coord system defined by [Grid][grid-doc] |
-| [seed][seed-util]             | Utility functions that help generate game sate                          |
+| [seed][seed-util]             | Utility functions that help generate game state                         |
 
 ## Quality Assurance
 
@@ -114,13 +114,13 @@ This package SHALL be published to [JSR][jsr] on PUSH to `origin/main` via the
 > The package version is set in [`deno.json`][deno-json]. The continuous
 > integration is implemented with GitHub Actions.
 
-JSR doesn't resolve raw text imports (`with { type: "text" }`), so the ˝built-in
+JSR doesn't resolve raw text imports (`with { type: "text" }`), so the built-in
 patterns can't be inlined straight from [`patterns.yaml`][patterns-yaml].
 Instead, [`PatternLib.fromBuiltInData()`][pattern-lib] imports a generated
 [`patterns.json`][patterns-json] (via a stable `with { type: "json" }` import).
 The following task SHALL be executed after editing
 [`patterns.yaml`][patterns-yaml] to keep the JSON in sync. The resulting JSON
-MUST be commited.
+MUST be committed.
 
 ```bash
 deno task patterns:build
