@@ -5,40 +5,62 @@
 Runs on [Deno][deno]. Tested with `2.9.x`.
 
 > [!TIP]
-> To check local deno version `deno --version`. To check package dependendies
+> To check local deno version `deno --version`. To check package dependencies
 > see [deno.json][deno-json].
 
-## Architecture
+## File System
+
+- Folder and file names SHALL be `lower-kebab-case`.
+- Documentation files SHALL be `UPPER_SNAKE_CASE`.
+- Major classes SHALL be colocated with their unit tests, docs and demos in a
+  folder of the same name
+- Typescript type definitions located in dedicated files under `src/types`, then
+  imported into source files that depend on them.
+- Generic names, for fields holding utility (helper) functions, SHALL be
+  avoided:
+  - :x: Bad: `utils.ts`
+  - :white_check_mark: good: `geometry.ts`
+
+Example:
 
 ```
 src/
-├── engine/       # Core Engine class (simulation runner)
-├── grid/         # Grid class implementing IGrid
-├── geometry/     # Border detection utilities
-├── seed/         # Seed string parsing/generation
-├── types.ts      # All shared TypeScript types
-└── constants.ts  # MIN_WORLD_WIDTH, GRID_MODES, etc.
-mod.ts            # Public package exports
-patterns.yaml     # Named Game of Life patterns (e.g., Blinker)
+├── grid/
+│   ├── grid.ts         # Class def
+│   ├── grid.test.ts    # Unit tests
+│   ├── grid.demo.md    # Runnable demo (deno run)
+│   └── GRID.md         # docs explaining the runnable demo
+├── types/              # all types defined under this folder
+├── data/               # YAML and JSON
+├── integration/        # Integration tests that test how several classes interact together
+└── mod.ts              # Package exports
 ```
 
-**Key classes:**
+## Architecture
 
-- `Engine` — main entry point; holds grid state and generation history;
-  `evolveGrid()` advances one generation, `evolveCell(point)` applies GoL rules
-  to one cell
-- `Grid` (implements `IGrid`) — grid operations: `place()`, `contains()`,
-  `fromString()`; composite/merge support
+```mermaid
+classDiagram
+    class Grid
+    class Engine
+    class PatternLib
 
-**Grid modes:**
+    Engine --> Grid
+    PatternLib ..> Grid
+```
 
-- `Finite` — border cells are permanently dead
-- `Toroidal` — edges wrap (donut topology)
+### Key Classes
 
-**Cell storage:** `Map<CellKey, boolean>` where `CellKey = "x,y"`. Only live
-cells are stored.
+Each major class has a dedicated documentation page and a demo file. Code
+examples provided in the doc file MUST match the code in the demo file. The demo
+file is proof that the examples actually work.
 
-**Minimum grid size:** 3×3 (needed to check all 8 neighbors of a center cell).
+| Class or Utility              | Description                                                             |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| [Engine][engine-doc]          | Runs the simulation. Uses [Grid][grid-doc] to represent generations.    |
+| [Grid][grid-doc]              | Represents a two-dimensional collection of cells                        |
+| [PatternLib][pattern-lib-doc] | Tools for loading patterns. Outputs a [Grid][grid-doc]                  |
+| [geometry][geometry-util]     | Utility functions operating on coord system defined by [Grid][grid-doc] |
+| [seed][seed-util]             | Utility functions that help generate game sate                          |
 
 ## Quality Assurance
 
@@ -53,14 +75,13 @@ Deno native quality assurance tools SHALL be executed after making changes:
 - [deno lint][deno-lint]
 - [deno test][deno-test]
 
-
 ```bash
 deno fmt --check ./src
 deno check ./src
 deno lint ./src
 ```
 
-Automated test suite SHALL be executed before commiting:
+Automated test suite SHALL be executed before committing:
 
 ```bash
 # run unit tests in watch mode, human oriented
@@ -74,18 +95,9 @@ deno task test:once:geometry # subset shortcut
 Uses Deno's built-in test runner with `@std/assert`. Tests are hierarchical —
 `Deno.test()` with nested `t.step()`.
 
-Test files SHALL be colocated with source files, for example:
-
-```
-src/
-└── engine/       
-    ├─ engine.ts
-    └── engine.test.ts
-```
-
 ## Version Control
 
-Repository SHALL be versioned using `git` then pushet to GitHub. Repo `main`
+Repository SHALL be versioned using `git` then pushed to GitHub. Repo `main`
 branch is protected with "Require linear history" which means pull requests MUST
 be squashed:
 
@@ -96,7 +108,7 @@ gh pr merge <number> --squash
 ### Publishing
 
 This package SHALL be published to [JSR][jsr] on PUSH to `origin/main` via the
-[publish workflow][publish-workflow] on every push to `orign/main`.
+[publish workflow][publish-workflow] on every push to `origin/main`.
 
 > [!TIP]
 > The package version is set in [`deno.json`][deno-json]. The continuous
@@ -141,8 +153,13 @@ deno publish
 
 <!-- Internal -->
 
+[engine-doc]: ./src/engine/ENGINE.md
+[grid-doc]: ./src/grid/GRID.md
+[pattern-lib-doc]: ./src/patterns/PATTERN.md
+[geometry-util]: ./src/geometry/geometry.ts
+[seed-util]: ./src/seed/seed.ts
 [publish-workflow]: .github/workflows/publish.yml
-[deno-json]: deno.json
+[deno-json]: ./deno.json
 [pattern-lib]: ./src/patterns/pattern.ts
 [patterns-yaml]: ./data/patterns/patterns.yaml
 [patterns-json]: ./data/patterns/patterns.json
