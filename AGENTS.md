@@ -16,6 +16,9 @@ This repo contains a engine for running and managing
 
 ## Git workflow
 
+Expect `git` and `gh` commands to be available on the shell. Prompt the user to
+install them if absent.
+
 This project uses git worktrees, laid out as follows:
 
 - root
