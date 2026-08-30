@@ -53,6 +53,13 @@ Deno native quality assurance tools SHALL be executed after making changes:
 - [deno lint][deno-lint]
 - [deno test][deno-test]
 
+
+```bash
+deno fmt --check ./src
+deno check ./src
+deno lint ./src
+```
+
 Automated test suite SHALL be executed before commiting:
 
 ```bash
