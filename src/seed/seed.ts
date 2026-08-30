@@ -15,15 +15,25 @@ import {
   SEPARATOR_CHAR,
 } from "../constants.ts";
 
+/**
+ * Serializes a point as an `"x,y"` string so it can be used as a `Map`
+ * key — two equal points would otherwise be distinct keys by object
+ * identity. Inverse of `cellKeyToPoint`.
+ */
 export function pointToCellKey({ x, y }: Point): CellKey {
   return `${x}${CELL_KEY_SEPARATOR}${y}`;
 }
 
+/** Parses an `"x,y"` cell key back into a point. Inverse of `pointToCellKey`. */
 export function cellKeyToPoint(key: CellKey): Point {
   const [x, y] = key.split(CELL_KEY_SEPARATOR).map(Number);
   return { x, y };
 }
 
+/**
+ * Strips leading/trailing whitespace from a seed string and from each of
+ * its rows, so seeds written as indented template literals parse cleanly.
+ */
 export const normalizeSeed = (seed: string): string =>
   seed
     .trim()
@@ -31,6 +41,11 @@ export const normalizeSeed = (seed: string): string =>
     .map((line) => line.trim())
     .join("\n");
 
+/**
+ * Splits a normalized seed string into rows of cell states. Expects
+ * input that has already passed `SEED_PATTERN` validation and
+ * `normalizeSeed`; unexpected characters yield `undefined` entries.
+ */
 export const splitSeed = (normalizedSeed: string): boolean[][] =>
   normalizedSeed.split(NEWLINE_CHAR).map((row) =>
     row.split(SEPARATOR_CHAR).map((char) =>
@@ -38,6 +53,13 @@ export const splitSeed = (normalizedSeed: string): boolean[][] =>
     )
   );
 
+/**
+ * Parses a seed string into sparse live-cell storage. Inverse of
+ * `generationToString`.
+ *
+ * @throws If the seed contains invalid characters or its dimensions
+ * don't match `width` and `height`.
+ */
 export const stringToGeneration = (
   seed: string,
   width: number,
@@ -80,6 +102,10 @@ export const stringToGeneration = (
   return aliveCells;
 };
 
+/**
+ * Renders sparse live-cell storage as a seed string. Inverse of
+ * `stringToGeneration`.
+ */
 export const generationToString = (
   generation: LiveCells,
   size: GridSize,

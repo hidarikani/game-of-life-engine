@@ -35,11 +35,27 @@ import {
   validateMinGridSize,
 } from "../geometry/geometry.ts";
 
+/**
+ * A two-dimensional collection of cells backed by sparse storage — only
+ * living cells are kept in memory, so large, mostly-empty grids stay cheap.
+ *
+ * Coordinates one step outside the grid (the border ring at `-1` and
+ * `w`/`h`) are addressable so a simulation can count the neighbors of edge
+ * cells. In `"Finite"` mode the border always reads dead and writes to it
+ * are silently ignored; in `"Toroidal"` mode border coordinates wrap to
+ * the opposite edge. Anything beyond the border ring is out of bounds.
+ */
 export class Grid implements IGrid {
   #gridSize: GridSize;
   #liveCells: LiveCells;
   #mode: GridMode;
 
+  /**
+   * Creates a grid from a sparse map of live cells (empty when omitted).
+   *
+   * @throws If either dimension is below the minimum grid size, or a
+   * live cell lies outside the grid.
+   */
   constructor(
     { gridSize, liveCells, mode = GRID_MODES.FINITE }: GridOptionsFromLiveCells,
   ) {
@@ -67,14 +83,20 @@ export class Grid implements IGrid {
     this.#mode = mode;
   }
 
+  /** Dimensions of the grid in cells. */
   get gridSize(): GridSize {
     return this.#gridSize;
   }
 
+  /** Border behavior of the grid. */
   get mode(): GridMode {
     return this.#mode;
   }
 
+  /**
+   * Every living cell as a point/value pair. Built fresh on each access,
+   * so cache the result when iterating repeatedly.
+   */
   get liveCells(): { key: Point; value: boolean }[] {
     return Array.from(this.#liveCells, ([cellKey, value]) => ({
       key: cellKeyToPoint(cellKey),
@@ -82,6 +104,12 @@ export class Grid implements IGrid {
     }));
   }
 
+  /**
+   * Reads a cell's state. Border coordinates read dead in `"Finite"` mode
+   * and wrap to the opposite edge in `"Toroidal"` mode.
+   *
+   * @throws If the point lies beyond the border ring.
+   */
   readCell({ x, y }: Point): boolean {
     if (
       isPointOutsideBorder({ x, y }, {
@@ -138,6 +166,12 @@ export class Grid implements IGrid {
     return false;
   }
 
+  /**
+   * Sets a cell's state. Border writes are silently ignored in `"Finite"`
+   * mode and wrap to the opposite edge in `"Toroidal"` mode.
+   *
+   * @throws If the point lies beyond the border ring.
+   */
   writeCell({ x, y }: Point, value: boolean): void {
     if (
       isPointOutsideBorder({ x, y }, {
@@ -196,10 +230,20 @@ export class Grid implements IGrid {
     }
   }
 
+  /** Number of living cells. */
   get population(): number {
     return this.#liveCells.size;
   }
 
+  /**
+   * Places `inner` onto this grid with its top-left corner at `offset`
+   * (default `(0, 0)`). In `"Overwrite"` mode (the default) the target
+   * rectangle is cleared first, so the inner grid's dead cells erase
+   * whatever was underneath; in `"Merge"` mode only the inner grid's
+   * live cells are copied and surrounding live cells survive.
+   *
+   * @throws If the inner grid, once offset, does not fit inside this grid.
+   */
   writeGrid(
     { offset = { x: 0, y: 0 }, inner, mode = PLACEMENT_MODES.OVERWRITE }: {
       inner: IGrid;
@@ -234,6 +278,14 @@ export class Grid implements IGrid {
     }
   }
 
+  /**
+   * Creates a grid from a seed string: `#` for alive, `.` for dead, cells
+   * separated by spaces and rows by newlines. Leading and trailing
+   * whitespace around the seed and each row is tolerated.
+   *
+   * @throws If the seed contains other characters, its dimensions don't
+   * match `gridSize`, or either dimension is below the minimum grid size.
+   */
   static fromString(
     { gridSize, seed, mode = GRID_MODES.FINITE }: GridOptionsFromString,
   ): IGrid {
@@ -276,6 +328,10 @@ export class Grid implements IGrid {
     return new Grid({ gridSize, liveCells, mode });
   }
 
+  /**
+   * Renders the grid in the same seed string format `fromString` accepts,
+   * making the two functions round-trip.
+   */
   toString(): string {
     let res = "";
     for (let y = 0; y < this.#gridSize.h; y++) {
@@ -290,6 +346,10 @@ export class Grid implements IGrid {
     return res.trim();
   }
 
+  /**
+   * Compares dimensions, population, and every live cell's state.
+   * Border behavior (`mode`) is deliberately not compared.
+   */
   equals(other: IGrid): boolean {
     if (
       this.#gridSize.w !== other.gridSize.w ||
