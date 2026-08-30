@@ -9,8 +9,8 @@ the grid state and advances it one generation at a time.
 [`src/grid/GRID.md`][grid]), then pass it as `firstGeneration`.
 
 ```ts
-import { Engine, Grid, GRID_MODES } from "@hidarikani/game-of-life-engine";
-import type { GridSize } from "@hidarikani/game-of-life-engine";
+import { Engine, Grid, GRID_MODES } from "../../mod.ts";
+import type { GridSize } from "../../mod.ts";
 
 const gridSize: GridSize = { w: 5, h: 5 };
 
@@ -34,14 +34,20 @@ The grid mode (`Finite` or `Toroidal`) is set on the `Grid`, not the `Engine`.
 The engine inherits it from `firstGeneration`.
 
 ```ts
-const firstGeneration = Grid.fromString({
+const toroidalGeneration = Grid.fromString({
   gridSize,
-  seed: `...`,
+  seed: `
+    . . . . .
+    . . # . .
+    . . # . .
+    . . # . .
+    . . . . .
+  `,
   mode: GRID_MODES.TOROIDAL,
 });
 
-const engine = new Engine({ firstGeneration });
-console.log(engine.mode); // GRID_MODES.TOROIDAL
+const toroidalEngine = new Engine({ firstGeneration: toroidalGeneration });
+console.log(toroidalEngine.mode); // GRID_MODES.TOROIDAL
 ```
 
 ### Generation history
@@ -117,6 +123,16 @@ rendering logic.
 const willBeAlive = engine.evolveCell({ x: 2, y: 2 }); // boolean
 ```
 
+## Demo
+
+[`engine.demo.ts`][demo] runs every example above end-to-end and prints the
+results to stdout so you can confirm the behavior for yourself:
+
+```bash
+deno run src/engine/engine.demo.ts
+```
+
 <!-- Internal -->
 
 [grid]: ../grid/GRID.md
+[demo]: ./engine.demo.ts
