@@ -72,7 +72,7 @@ higher score from [JSR][jsr].
 ## Other
 
 > [!TIP]
-> Use following symbols for drawing folder trees: `├──` `└──`.
+> Use following symbols for drawing folder trees: `├──`, `└──`, `│`.
 
 <!-- Internal -->
 
