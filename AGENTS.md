@@ -51,7 +51,7 @@ Quality assurance checks SHALL be executed **before committing** as described in
 [readme]: ./README.md
 [dev]: ./DEVELOPMENT.md
 [conventions]: ./CONVENTIONS.md
-[contrib]: /CONTRIBUTING.md
+[contrib]: ./CONTRIBUTING.md
 [license]: ./LICENSE
 
 <!-- External -->

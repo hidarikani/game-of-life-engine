@@ -56,4 +56,4 @@ be licensed under the same [MIT License][license] that covers the project.
 
 <!-- Internal -->
 
-[license]: ./LICENSE.md
+[license]: ./LICENSE

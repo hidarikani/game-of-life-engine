@@ -131,9 +131,9 @@ deno run demo.ts
 <!-- Internal -->
 
 [built-in-patterns]: /data/patterns/patterns.yaml
-[pattern-lib]: src/patterns/README.md
-[grid]: src/grid/README.md
-[engine]: src/engine/README.md
+[pattern-lib]: src/patterns/PATTERN.md
+[grid]: src/grid/GRID.md
+[engine]: src/engine/ENGINE.md
 [demo]: demo.ts
 
 <!-- External -->

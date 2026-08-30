@@ -81,7 +81,7 @@ higher score from [JSR][jsr].
 [agents]: ./AGENTS.md
 [dev]: ./DEVELOPMENT.md
 [conventions]: ./CONVENTIONS.md
-[contrib]: /CONTRIBUTING.md
+[contrib]: ./CONTRIBUTING.md
 [license]: ./LICENSE
 
 <!-- External -->
