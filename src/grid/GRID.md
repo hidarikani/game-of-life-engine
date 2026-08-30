@@ -49,9 +49,9 @@ behavior of border cells depends on `GridMode`.
   `{ x: 0, y: 0 }` is at `{ x: -1, y: -1 }` and will always be dead (`false`)
 - `GRID_MODES.TOROIDAL` — The left edge connects to the right, the top connects
   to the bottom. In that case, a spaceship exiting the bottom-right reappears at
-  the top-left. This turns the universe into the surface of a donut. It’s
+  the top-left. This turns the universe into the surface of a donut. It's
   mathematically tidy and popular for demos, but it introduces artificial
-  interactions—your glider can collide with its own past if the grid is small.
+  interactions — your glider can collide with its own past if the grid is small.
   For example when trying to access cell at `{ x: 8, y: 4 }` (the bottom-right
   border corner for this grid) it shall be translated to `{ x: 0, y: 0 }`. Only
   the single-cell border ring wraps this way — coordinates further out (e.g.

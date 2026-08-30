@@ -52,10 +52,9 @@ console.log(engine.toString());
 
 ## Usage
 
-The following are the abstractions used in this library that enable easy game
-setup, execution and verification. Each abstraction has a dedicated
-documentation page with usage details. Here only the big picture of integration
-is provided. Refer to the list below for overview and links to dedicated pages.
+The following abstractions enable easy game setup, execution and verification.
+This section covers only the big picture of integration; each abstraction's
+dedicated documentation page (linked below) has the usage details.
 
 - [PatternLib][pattern-lib] — Abstracts the process of loading cell patterns
   represented as multi-line strings to instances of [Grid][grid]. Supports
@@ -83,8 +82,8 @@ to combine grids: a smaller grid (inner) can be written into a larger grid
 building out the initial state of the simulation, which is also an instance of
 [Grid][grid]. Grids retrieved from the [PatternLib][pattern-lib] are usually
 small — for example, the blinker pattern is a 5x5 grid — while the game world is
-usually larger, for example 1024x768 cells. In this case it would be fun to
-create a blank grid of that size, then place several blinkers inside of it.
+usually larger, for example 1024x768 cells. In this case you can create a blank
+grid of that size, then place several blinkers inside of it.
 
 The [Engine][engine] is what keeps track of the simulation. It accepts a grid as
 the initial game state. It applies simulation rules to produce a new generation.

@@ -11,7 +11,7 @@ This repo contains an engine for running and managing
 - [README.md][readme] — for package overview and tips on running it
 - [DEVELOPMENT.md][dev] — for coding, quality assurance, and publishing tips
 - [CONVENTIONS.md][conventions] — for code and documentation conventions
-- [CONTRIBUTING.md][contrib] - explains how contributions are handled
+- [CONTRIBUTING.md][contrib] — explains how contributions are handled
 - [LICENSE][license]
 
 ## Git workflow

@@ -34,10 +34,10 @@ publish it to [JSR][jsr]. Publishing settings are defined in
   already defined in other docs; it should reference them instead.
 - [AGENTS.md][agents] — vendor-agnostic agentic instructions. Instead of
   repeating information from other files, it should use references.
-- [CONVENTIONS.md][conventions] — project organisation conventions (this file).
+- [CONVENTIONS.md][conventions] — project organization conventions (this file).
 - [DEVELOPMENT.md][dev] — information on coding, quality assurance and
   publishing.
-- [CONTRIBUTING.md][contrib] - explains how contributions are handled
+- [CONTRIBUTING.md][contrib] — explains how contributions are handled
 - [LICENSE][license]
 
 Each major entity (`Grid`, `Engine`, etc.) has its own colocated doc file and

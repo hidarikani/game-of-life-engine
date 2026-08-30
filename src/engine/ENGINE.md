@@ -47,7 +47,8 @@ console.log(engine.mode); // GRID_MODES.TOROIDAL
 ### Generation history
 
 `Engine` keeps a rolling window of past generations in memory. The default is 3.
-You can configure it with `maxHistory` — passing a value less than 1 throws an error.
+You can configure it with `maxHistory` — passing a value less than 1 throws an
+error.
 
 ```ts
 const engine = new Engine({ firstGeneration, maxHistory: 10 });
@@ -96,14 +97,14 @@ for (let i = 0; i < 10; i++) {
 ## Inspecting state
 
 ```ts
-engine.gridSize           // { w: 5, h: 5 }
-engine.mode               // GRID_MODES.FINITE or GRID_MODES.TOROIDAL
-engine.presentGeneration  // the current Grid
-engine.firstGeneration    // the initial Grid
-engine.historyLength      // number of generations currently stored
-engine.maxHistory         // rolling window size
+engine.gridSize; // { w: 5, h: 5 }
+engine.mode; // GRID_MODES.FINITE or GRID_MODES.TOROIDAL
+engine.presentGeneration; // the current Grid
+engine.firstGeneration; // the initial Grid
+engine.historyLength; // number of generations currently stored
+engine.maxHistory; // rolling window size
 
-engine.readCell({ x: 2, y: 2 })  // true if cell is alive, false if dead
+engine.readCell({ x: 2, y: 2 }); // true if cell is alive, false if dead
 ```
 
 ## Checking a single cell's next state
