@@ -2,31 +2,18 @@
 
 ## Introduction
 
-Web standard compliant implementation of [Conway's Game of Life][cgol]. The game
-rules have been extensively documented on the internet, including
-[Wikipedia][cgol] so it won't be repeated here.
-
-Contents include abstractions for managing cell patterns, initial game state
-setup, simulation and output verification.
-
-Intended traits include:
-
-- Web development ready,
-- TypeScript, ESM Module first,
-- Browser runtime compatible,
-- Deno runtime compatible,
-- Quality assured, including:
-  - code style formatting (Deno default)
-  - linting (Deno default)
-  - unit and integration testing
-- well documented, including JSDoc and README.md for major entities
+[Conway's Game of Life][cgol] engine intended to be imported by applications
+that run simulations and manage grid state and patterns. The game's rules have
+been extensively documented elsewhere, including on [Wikipedia][cgol], so they
+won't be repeated here.
 
 This library is part of a larger namespace of tools:
 
-- This library (Engine)
-- Text User Interface (TUI) for one-time and interactive simulations
-- React component for rendering game state
-- Next.js app for running interactive simulations in the browser
+- [Engine][engine-jsr] — this library
+- [Text User Interface][tui-jsr] (TUI) for one-time and interactive simulations
+- React component for rendering game state (planning stage)
+- Next.js app for running interactive simulations in the browser (planning
+  stage)
 
 > [!NOTE]
 > This library isn't intended to be used stand-alone. Instead, it's meant to be
@@ -65,10 +52,9 @@ console.log(engine.toString());
 
 ## Usage
 
-The following are the abstractions used in this library that enable easy game
-setup, execution and verification. Each abstraction has a dedicated
-documentation page with usage details. Here only the big picture of integration
-is provided. Refer to the list below for overview and links to dedicated pages.
+The following abstractions enable easy game setup, execution and verification.
+This section covers only the big picture of integration; each abstraction's
+dedicated documentation page (linked below) has the usage details.
 
 - [PatternLib][pattern-lib] — Abstracts the process of loading cell patterns
   represented as multi-line strings to instances of [Grid][grid]. Supports
@@ -95,9 +81,9 @@ to combine grids: a smaller grid (inner) can be written into a larger grid
 (outer), as long as the outer is able to contain the inner. This is useful when
 building out the initial state of the simulation, which is also an instance of
 [Grid][grid]. Grids retrieved from the [PatternLib][pattern-lib] are usually
-small — for example, the blinker pattern size is 5 cells — while the game world
-is usually larger, for example 1024x768 cells. In this case it would be fun to
-create a blank grid of that size, then place several blinkers inside of it.
+small — for example, the blinker pattern is a 5x5 grid — while the game world is
+usually larger, for example 1024x768 cells. In this case you can create a blank
+grid of that size, then place several blinkers inside of it.
 
 The [Engine][engine] is what keeps track of the simulation. It accepts a grid as
 the initial game state. It applies simulation rules to produce a new generation.
@@ -141,87 +127,17 @@ A runnable version of this example is available in [`demo.ts`][demo]:
 deno run demo.ts
 ```
 
-## Development
-
-Runs on [Deno][deno]. Tested with `deno --version` `2.9.x`.
-
-> [!WARNING]
-> Some tests require file read permission, because the [PatternLib][pattern-lib]
-> can read patterns defined in [YAML][yaml] files.
-
-```zsh
-# run unit tests in watch mode
-deno task test:watch
-```
-
-### Publishing
-
-Publishing to [JSR][jsr] happens automatically in CI via the
-[publish workflow][publish-workflow] on every push to `main`. The package
-version is set in [`deno.json`][deno-json].
-
-JSR doesn't resolve raw text imports (`with { type: "text" }`), so the
-[built-in patterns][built-in-patterns] can't be inlined straight from
-[`patterns.yaml`][built-in-patterns]. Instead,
-[`PatternLib.fromBuiltInData()`][pattern-lib] imports a generated
-`data/patterns/patterns.json` (via a stable `with { type: "json" }` import). Run
-this task after editing `patterns.yaml` to keep the JSON in sync, and commit the
-result:
-
-```zsh
-deno task patterns:build
-```
-
-The publish workflow also runs this task before publishing, so CI's copy is
-always regenerated fresh from `patterns.yaml` — but a stale, uncommitted
-`patterns.json` will still fail a local dry run, since `deno publish` refuses to
-publish with uncommitted changes.
-
-Because CI publishes on a version that's already merged to `main`, publish-time
-issues (like an unresolvable import) are otherwise only caught after the fact.
-To catch these earlier, dry-run a publish locally before merging:
-
-```zsh
-deno publish --dry-run
-```
-
-This runs the same checks as CI (types, slow types, file resolution) without
-uploading anything. If it succeeds locally, `deno publish` (the command CI runs)
-should succeed too.
-
-To publish for real from a local machine — for example to hotfix a release
-without waiting on CI — regenerate `patterns.json` first (if `patterns.yaml`
-changed), then run:
-
-```zsh
-deno task patterns:build
-deno publish
-```
-
-This requires authentication: running it interactively opens a browser to link
-your JSR account, or a `JSR_TOKEN`/`--token` can be supplied for non-interactive
-use.
-
-## Contribution
-
-This library doesn't have a contribution guide yet. For now, its direction is
-based on the subjective experience of a single maintainer, and there's no
-guarantee that feedback will be accepted. The only way to leave feedback is
-through the issues section of the related GitHub repo.
-
 <!-- Internal -->
 
 [built-in-patterns]: /data/patterns/patterns.yaml
-[pattern-lib]: src/patterns/README.md
-[grid]: src/grid/README.md
-[engine]: src/engine/README.md
+[pattern-lib]: src/patterns/PATTERN.md
+[grid]: src/grid/GRID.md
+[engine]: src/engine/ENGINE.md
 [demo]: demo.ts
-[publish-workflow]: .github/workflows/publish.yml
-[deno-json]: deno.json
 
 <!-- External -->
 
 [cgol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
-[deno]: https://deno.com/
 [yaml]: https://yaml.org/
-[jsr]: https://jsr.io/@hidarikani/game-of-life-engine
+[engine-jsr]: https://jsr.io/@hidarikani/game-of-life-engine
+[tui-jsr]: https://jsr.io/@cell-auto/game-of-life-tui

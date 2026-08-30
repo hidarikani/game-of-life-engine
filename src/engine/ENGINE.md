@@ -6,11 +6,11 @@ the grid state and advances it one generation at a time.
 ## Instantiation
 
 `Engine` does not accept a seed string directly. You first create a `Grid` (see
-[`src/grid/README.md`][grid]), then pass it as `firstGeneration`.
+[`src/grid/GRID.md`][grid]), then pass it as `firstGeneration`.
 
 ```ts
-import { Engine, Grid, GRID_MODES } from "@hidarikani/game-of-life-engine";
-import type { GridSize } from "@hidarikani/game-of-life-engine";
+import { Engine, Grid, GRID_MODES } from "../../mod.ts";
+import type { GridSize } from "../../mod.ts";
 
 const gridSize: GridSize = { w: 5, h: 5 };
 
@@ -34,20 +34,27 @@ The grid mode (`Finite` or `Toroidal`) is set on the `Grid`, not the `Engine`.
 The engine inherits it from `firstGeneration`.
 
 ```ts
-const firstGeneration = Grid.fromString({
+const toroidalGeneration = Grid.fromString({
   gridSize,
-  seed: `...`,
+  seed: `
+    . . . . .
+    . . # . .
+    . . # . .
+    . . # . .
+    . . . . .
+  `,
   mode: GRID_MODES.TOROIDAL,
 });
 
-const engine = new Engine({ firstGeneration });
-console.log(engine.mode); // GRID_MODES.TOROIDAL
+const toroidalEngine = new Engine({ firstGeneration: toroidalGeneration });
+console.log(toroidalEngine.mode); // GRID_MODES.TOROIDAL
 ```
 
 ### Generation history
 
 `Engine` keeps a rolling window of past generations in memory. The default is 3.
-You can configure it with `maxHistory` — passing a value less than 1 throws an error.
+You can configure it with `maxHistory` — passing a value less than 1 throws an
+error.
 
 ```ts
 const engine = new Engine({ firstGeneration, maxHistory: 10 });
@@ -96,14 +103,14 @@ for (let i = 0; i < 10; i++) {
 ## Inspecting state
 
 ```ts
-engine.gridSize           // { w: 5, h: 5 }
-engine.mode               // GRID_MODES.FINITE or GRID_MODES.TOROIDAL
-engine.presentGeneration  // the current Grid
-engine.firstGeneration    // the initial Grid
-engine.historyLength      // number of generations currently stored
-engine.maxHistory         // rolling window size
+engine.gridSize; // { w: 5, h: 5 }
+engine.mode; // GRID_MODES.FINITE or GRID_MODES.TOROIDAL
+engine.presentGeneration; // the current Grid
+engine.firstGeneration; // the initial Grid
+engine.historyLength; // number of generations currently stored
+engine.maxHistory; // rolling window size
 
-engine.readCell({ x: 2, y: 2 })  // true if cell is alive, false if dead
+engine.readCell({ x: 2, y: 2 }); // true if cell is alive, false if dead
 ```
 
 ## Checking a single cell's next state
@@ -116,6 +123,16 @@ rendering logic.
 const willBeAlive = engine.evolveCell({ x: 2, y: 2 }); // boolean
 ```
 
+## Demo
+
+[`engine.demo.ts`][demo] runs every example above end-to-end and prints the
+results to stdout so you can confirm the behavior for yourself:
+
+```bash
+deno run src/engine/engine.demo.ts
+```
+
 <!-- Internal -->
 
-[grid]: ../grid/README.md
+[grid]: ../grid/GRID.md
+[demo]: ./engine.demo.ts

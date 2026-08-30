@@ -7,10 +7,10 @@
 import {
   Grid,
   GRID_MODES,
-  GridSize,
-  LiveCells,
+  type GridSize,
+  type LiveCells,
   PLACEMENT_MODES,
-  Point,
+  type Point,
   pointToCellKey,
 } from "../../mod.ts";
 
