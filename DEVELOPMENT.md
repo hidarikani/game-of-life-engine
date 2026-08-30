@@ -137,15 +137,15 @@ deno task test:once
 deno task test:once:geometry # subset shortcut
 ```
 
-### Heuristic Agentic
+### Agentic Heuristics
 
-An agent working on a new feature SHOULD check the following:
+An agent working on any change SHOULD check the following:
 
-    - Documentation typos, grammar, style issues
-    - Inconsistencies between code examples in`*.md` file and `*.demo.ts` file
-    - Inconsistencies between `*.md` file and the actual source `*.ts` file that it documents.
-    - Broken or Stale Markdown links
-    - Code compliance with documentation
+- Documentation typos, grammar, style issues
+- Inconsistencies between code examples in `*.md` files and `*.demo.ts` files
+- Inconsistencies between a `*.md` file and the source it documents (in either
+  direction)
+- Broken or stale Markdown links
 
 ## Version Control
 
