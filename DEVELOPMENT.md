@@ -40,12 +40,53 @@ Example:
 
 ```mermaid
 classDiagram
-    class Grid
-    class Engine
-    class PatternLib
+    class Grid {
+        gridSize
+        mode
+        population
+        fromString(gridSize, seed, mode)$ Grid
+        readCell(point) boolean
+        writeCell(point, value)
+        writeGrid(inner, offset, mode)
+        equals(other) boolean
+        toString() string
+    }
+    class Engine {
+        firstGeneration
+        presentGeneration
+        historyLength
+        maxHistory
+        evolveCell(point) boolean
+        evolveGrid()
+        toString() string
+    }
+    class PatternLib {
+        fromBuiltInData()$ PatternLib
+        fromYamlFile(filePath)$ PatternLib
+        getPatterns(filter) Pattern[]
+        getPatternByKey(key) Pattern
+    }
+    class Pattern {
+        <<type>>
+        name
+        key
+        type
+        period
+    }
+    class geometry {
+        <<utility>>
+    }
+    class seed {
+        <<utility>>
+    }
 
-    Engine --> Grid
-    PatternLib ..> Grid
+    Engine o-- Grid : generation history
+    PatternLib o-- Pattern
+    Pattern o-- Grid : generations
+    PatternLib ..> Grid : fromString()
+    Grid ..> geometry
+    Grid ..> seed
+    Engine ..> seed
 ```
 
 ### Key Classes
@@ -68,6 +109,8 @@ file is proof that the examples actually work.
 > Some tests require file read permission, because the [PatternLib][pattern-lib]
 > can read patterns defined in [YAML][yaml] files.
 
+### Deno Native
+
 Deno native quality assurance tools SHALL be executed after making changes:
 
 - [deno fmt][deno-fmt]
@@ -78,8 +121,10 @@ Deno native quality assurance tools SHALL be executed after making changes:
 ```bash
 deno fmt --check ./src
 deno check ./src
-deno lint --fix ./src 
+deno lint --fix ./src
 ```
+
+### Integration and Unit
 
 Automated test suite SHALL be executed before committing:
 
@@ -92,8 +137,15 @@ deno task test:once
 deno task test:once:geometry # subset shortcut
 ```
 
-Uses Deno's built-in test runner with `@std/assert`. Tests are hierarchical —
-`Deno.test()` with nested `t.step()`.
+### Heuristic Agentic
+
+An agent working on a new feature SHOULD check the following:
+
+    - Documentation typos, grammar, style issues
+    - Inconsistencies between code examples in`*.md` file and `*.demo.ts` file
+    - Inconsistencies between `*.md` file and the actual source `*.ts` file that it documents.
+    - Broken or Stale Markdown links
+    - Code compliance with documentation
 
 ## Version Control
 
