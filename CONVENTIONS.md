@@ -40,11 +40,11 @@ publish it to [JSR][jsr]. Publishing settings are defined in
 - [CONTRIBUTING.md][contrib] - explains how contributions are handled
 - [LICENSE][license]
 
-Each major entity (`Grid`, `Engine`, etc.) has its own colocated `README.md` and
-`*.demo.ts` file (e.g. `src/grid/README.md`, `src/grid/grid.demo.ts`).
+Each major entity (`Grid`, `Engine`, etc.) has its own colocated doc file and
+`*.demo.ts` file (e.g. `src/grid/GRID.md`, `src/grid/grid.demo.ts`).
 
-- The README's code examples MUST match the demo file line for line — the demo
-  is runnable proof that the README's examples actually work.
+- The doc file's code examples MUST match the demo file line for line — the demo
+  is runnable proof that the doc file's examples actually work.
 - The demo file imports from `mod.ts` (not individual `src/` files) to simulate
   how a real consumer of the published package interacts with the library.
 
@@ -72,7 +72,7 @@ higher score from [JSR][jsr].
 ## Other
 
 > [!TIP]
-> Use following symbols for drawing folder trees: `├──`, `└──`, `│`.
+> Use the following symbols for drawing folder trees: `├──`, `└──`, `│`.
 
 <!-- Internal -->
 

@@ -82,8 +82,8 @@ to combine grids: a smaller grid (inner) can be written into a larger grid
 (outer), as long as the outer is able to contain the inner. This is useful when
 building out the initial state of the simulation, which is also an instance of
 [Grid][grid]. Grids retrieved from the [PatternLib][pattern-lib] are usually
-small — for example, the blinker pattern size is 5 cells — while the game world
-is usually larger, for example 1024x768 cells. In this case it would be fun to
+small — for example, the blinker pattern is a 5x5 grid — while the game world is
+usually larger, for example 1024x768 cells. In this case it would be fun to
 create a blank grid of that size, then place several blinkers inside of it.
 
 The [Engine][engine] is what keeps track of the simulation. It accepts a grid as

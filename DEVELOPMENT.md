@@ -24,16 +24,16 @@ Runs on [Deno][deno]. Tested with `2.9.x`.
 Example:
 
 ```
-src/
-├── grid/
-│   ├── grid.ts         # Class def
-│   ├── grid.test.ts    # Unit tests
-│   ├── grid.demo.md    # Runnable demo (deno run)
-│   └── GRID.md         # docs explaining the runnable demo
-├── types/              # all types defined under this folder
-├── data/               # YAML and JSON
-├── integration/        # Integration tests that test how several classes interact together
-└── mod.ts              # Package exports
+├── src/
+│   ├── grid/
+│   │   ├── grid.ts         # Class def
+│   │   ├── grid.test.ts    # Unit tests
+│   │   ├── grid.demo.ts    # Runnable demo (deno run)
+│   │   └── GRID.md         # Docs explaining the runnable demo
+│   ├── types/              # All types defined under this folder
+│   └── integration/        # Integration tests that test how several classes interact together
+├── data/                   # YAML and JSON
+└── mod.ts                  # Package exports
 ```
 
 ## Architecture
@@ -88,7 +88,7 @@ Automated test suite SHALL be executed before committing:
 deno task test:watch
 deno task test:watch:geometry # subset shortcut
 # automation, agentic coding oriented
-test:once
+deno task test:once
 deno task test:once:geometry # subset shortcut
 ```
 
@@ -107,7 +107,7 @@ gh pr merge <number> --squash
 
 ### Publishing
 
-This package SHALL be published to [JSR][jsr] on PUSH to `origin/main` via the
+This package SHALL be published to [JSR][jsr] via the
 [publish workflow][publish-workflow] on every push to `origin/main`.
 
 > [!TIP]
@@ -167,6 +167,7 @@ deno publish
 <!-- External -->
 
 [deno]: https://deno.com/
+[jsr]: https://jsr.io
 [deno-check]: https://docs.deno.com/runtime/reference/cli/check/
 [deno-lint]: https://docs.deno.com/runtime/reference/cli/lint/
 [deno-fmt]: https://docs.deno.com/runtime/reference/cli/fmt/
