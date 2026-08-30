@@ -69,6 +69,11 @@ higher score from [JSR][jsr].
 - Private fields use `#` syntax (e.g., `#liveCells`, `#bottomRightCorner`)
 - One main class per file; tests colocated as `*.test.ts`
 
+## Other
+
+> [!TIP]
+> Use following symbols for drawing folder trees: `├──` `└──`.
+
 <!-- Internal -->
 
 [deno-config]: ./deno.json
