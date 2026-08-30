@@ -7,7 +7,19 @@
     "test:watch": "deno test --watch --allow-read=.",
     "test:watch:geometry": "deno test --watch --allow-read=. src/geometry/geometry.test.ts",
     "test:watch:grid": "deno test --watch --allow-read=. src/grid/grid.test.ts",
-    "test:agent": "deno test --allow-read=.",
+    "test:watch:engine": "deno test --watch --allow-read=. src/engine/engine.test.ts",
+    "test:watch:patterns": "deno test --watch --allow-read=. src/patterns/pattern.test.ts",
+    "test:watch:seed": "deno test --watch --allow-read=. src/seed/seed.test.ts",
+    "test:watch:integration": "deno test --watch --allow-read=. src/integration/integration.test.ts",
+
+    "test:once": "deno test --allow-read=.",
+    "test:once:geometry": "deno test --allow-read=. src/geometry/geometry.test.ts",
+    "test:once:grid": "deno test --allow-read=. src/grid/grid.test.ts",
+    "test:once:engine": "deno test --allow-read=. src/engine/engine.test.ts",
+    "test:once:patterns": "deno test --allow-read=. src/patterns/pattern.test.ts",
+    "test:once:seed": "deno test --allow-read=. src/seed/seed.test.ts",
+    "test:once:integration": "deno test --allow-read=. src/integration/integration.test.ts",
+
     "patterns:build": "deno run --allow-read=data/patterns --allow-write=data/patterns scripts/build-patterns-json.ts"
   },
   "imports": {
