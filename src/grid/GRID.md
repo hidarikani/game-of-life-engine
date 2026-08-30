@@ -60,6 +60,9 @@ behavior of border cells depends on `GridMode`.
 
 ## Empty grid
 
+THere is a **Minimum grid size:** constaint of 3 by 3 cells (needed to check all
+8 neighbors of a center cell).
+
 ```ts
 import { Grid, GridSize } from "../../mod.ts";
 
@@ -75,12 +78,7 @@ Pass a `LiveCells` map (`Map<CellKey, boolean>`) to pre-populate cells. All
 coordinates must be within `[0, w)` × `[0, h)` or the constructor throws.
 
 ```ts
-import {
-  Grid,
-  GridSize,
-  LiveCells,
-  pointToCellKey,
-} from "../../mod.ts";
+import { Grid, GridSize, LiveCells, pointToCellKey } from "../../mod.ts";
 
 const gridSize: GridSize = { w: 5, h: 5 };
 const liveCells: LiveCells = new Map();
@@ -173,10 +171,14 @@ console.log(outer.toString());
 // . . # # #
 ```
 
+## Implementation details
+
+Only live cells are stored. `Map<CellKey, boolean>` where `CellKey = "x,y"`.
+
 ## Demo
 
-[`grid.demo.ts`][demo] runs every example above end-to-end and prints
-the results to stdout so you can confirm the behavior for yourself:
+[`grid.demo.ts`][demo] runs every example above end-to-end and prints the
+results to stdout so you can confirm the behavior for yourself:
 
 ```bash
 deno run src/grid/grid.demo.ts
