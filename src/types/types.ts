@@ -98,7 +98,10 @@ export interface IGrid {
   }): void;
   /** Renders the grid in the seed string format (`#`/`.`). */
   toString(): string;
-  /** Compares dimensions, population, and every live cell's state. */
+  /**
+   * Compares dimensions, border behavior (`mode`), population, and every
+   * live cell's state.
+   */
   equals(other: IGrid): boolean;
 }
 

@@ -754,6 +754,25 @@ Deno.test("Grid.equals", async (t) => {
     },
   );
 
+  await t.step("should return false when modes differ", () => {
+    const seed = `
+      # . .
+      . # .
+      . . .
+    `;
+    const a = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed,
+      mode: GRID_MODES.FINITE,
+    });
+    const b = Grid.fromString({
+      gridSize: { w: 3, h: 3 },
+      seed,
+      mode: GRID_MODES.TOROIDAL,
+    });
+    assertEquals(a.equals(b), false);
+  });
+
   await t.step("should return true for two grids with identical cells", () => {
     const seed = `
       # . . #

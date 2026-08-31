@@ -347,14 +347,18 @@ export class Grid implements IGrid {
   }
 
   /**
-   * Compares dimensions, population, and every live cell's state.
-   * Border behavior (`mode`) is deliberately not compared.
+   * Compares dimensions, border behavior (`mode`), population, and every
+   * live cell's state.
    */
   equals(other: IGrid): boolean {
     if (
       this.#gridSize.w !== other.gridSize.w ||
       this.#gridSize.h !== other.gridSize.h
     ) {
+      return false;
+    }
+
+    if (this.#mode !== other.mode) {
       return false;
     }
 
