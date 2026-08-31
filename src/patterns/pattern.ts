@@ -11,13 +11,23 @@ import patternsJson from "../../data/patterns/patterns.json" with {
   type: "json",
 };
 
+/**
+ * A searchable collection of Game of Life patterns whose generations are
+ * parsed into ready-to-use grids. Load the bundled patterns with
+ * `fromBuiltInData`, or your own with `fromYamlFile`.
+ */
 export class PatternLib implements IPatternLib {
   #patterns: Pattern[];
 
+  /** Creates a library over already-parsed patterns. */
   constructor(patterns: Pattern[]) {
     this.#patterns = patterns;
   }
 
+  /**
+   * Returns the patterns matching `filter`, or every pattern when the
+   * filter is `null`. A pattern must satisfy every non-null criterion.
+   */
   getPatterns(filter: PatternFilter | null): Pattern[] {
     if (!filter) {
       return this.#patterns;
@@ -34,20 +44,29 @@ export class PatternLib implements IPatternLib {
     });
   }
 
-  getPatternByKey(key: string): Pattern {
-    const pattern = this.#patterns.find((pattern) => pattern.key === key);
-    if (!pattern) {
-      throw new Error(`No pattern found with key "${key}"`);
-    }
-    return pattern;
+  /**
+   * Returns the pattern with the given key, or `null` when none exists —
+   * an unknown key is an expected lookup miss, not an error.
+   */
+  getPatternByKey(key: string): Pattern | null {
+    return this.#patterns.find((pattern) => pattern.key === key) ?? null;
   }
 
+  /**
+   * Creates a library from the pattern data bundled with the package.
+   * Requires no file system permissions.
+   */
   static fromBuiltInData(): PatternLib {
     const { patterns: patternsRaw } = patternsJson as PatternsRaw;
 
     return new PatternLib(PatternLib.#parsePatterns(patternsRaw));
   }
 
+  /**
+   * Creates a library from a YAML file shaped like `PatternsRaw`.
+   * Reads the file synchronously, so the Deno process needs read
+   * permission for `filePath`.
+   */
   static fromYamlFile(filePath: string): PatternLib {
     const fileContents = Deno.readTextFileSync(filePath);
     const { patterns: patternsRaw } = parse(fileContents) as PatternsRaw;

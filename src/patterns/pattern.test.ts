@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertExists, assertThrows } from "@std/assert";
 import { join } from "@std/path";
 import { PatternLib } from "./pattern.ts";
 import { PATTERN_TYPES } from "../constants.ts";
@@ -75,6 +75,7 @@ Deno.test("PatternLib.getPatternByKey", async (t) => {
 
   await t.step("returns the pattern for a known key", () => {
     const pattern = lib.getPatternByKey("blinker");
+    assertExists(pattern);
     assertEquals(pattern.key, "blinker");
     assertEquals(pattern.name, "Blinker");
     assertEquals(pattern.type, PATTERN_TYPES.OSCILLATOR);
@@ -90,11 +91,7 @@ Deno.test("PatternLib.getPatternByKey", async (t) => {
     );
   });
 
-  await t.step("throws for an unknown key", () => {
-    assertThrows(
-      () => lib.getPatternByKey("nonexistent"),
-      Error,
-      'No pattern found with key "nonexistent"',
-    );
+  await t.step("returns null for an unknown key", () => {
+    assertEquals(lib.getPatternByKey("nonexistent"), null);
   });
 });

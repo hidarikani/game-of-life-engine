@@ -38,6 +38,9 @@ import { Engine, PatternLib } from "@hidarikani/game-of-life-engine";
 
 const lib = PatternLib.fromBuiltInData();
 const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 
 const engine = new Engine({ firstGeneration: blinker.generations[0] });
 
@@ -101,6 +104,9 @@ import type { GridSize } from "@hidarikani/game-of-life-engine";
 const lib = PatternLib.fromBuiltInData();
 const blinker = lib.getPatternByKey("blinker");
 const toad = lib.getPatternByKey("toad");
+if (!blinker || !toad) {
+  throw new Error("built-in patterns not found");
+}
 
 // A blank 20x10 world, big enough to fit both patterns side by side
 const gridSize: GridSize = { w: 20, h: 10 };

@@ -4,6 +4,9 @@ import type { GridSize } from "./mod.ts";
 const lib = PatternLib.fromBuiltInData();
 const blinker = lib.getPatternByKey("blinker");
 const toad = lib.getPatternByKey("toad");
+if (!blinker || !toad) {
+  throw new Error("built-in patterns not found");
+}
 
 // A blank 20x10 world, big enough to fit both patterns side by side
 const gridSize: GridSize = { w: 20, h: 10 };

@@ -33,7 +33,10 @@ const custom = PatternLib.fromYamlFile("./my-patterns.yaml");
 
 ## Looking up patterns
 
-`getPatternByKey` returns a single pattern, or throws if the key doesn't exist.
+`getPatternByKey` returns a single pattern, or `null` if the key doesn't exist.
+An unknown key is an expected lookup miss (think user input in a GUI), not an
+error — so check the result for `null` instead of wrapping the call in a
+try/catch, and TypeScript narrows the type for the code that follows:
 
 ```ts
 import { PatternLib } from "../../mod.ts";
@@ -41,8 +44,13 @@ import { PatternLib } from "../../mod.ts";
 const lib = PatternLib.fromBuiltInData();
 
 const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 console.log(blinker.name); // "Blinker"
 console.log(blinker.generations[0].toString());
+
+console.log(lib.getPatternByKey("nonexistent")); // null
 ```
 
 `getPatterns` returns all patterns, or filters by name (`RegExp`) and/or
@@ -69,6 +77,9 @@ import { Engine, PatternLib } from "../../mod.ts";
 
 const lib = PatternLib.fromBuiltInData();
 const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 
 const engine = new Engine({ firstGeneration: blinker.generations[0] });
 engine.evolveGrid();
