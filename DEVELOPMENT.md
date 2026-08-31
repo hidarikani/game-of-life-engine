@@ -64,7 +64,7 @@ classDiagram
         fromBuiltInData()$ PatternLib
         fromYamlFile(filePath)$ PatternLib
         getPatterns(filter) Pattern[]
-        getPatternByKey(key) Pattern
+        getPatternByKey(key) Pattern | null
     }
     class Pattern {
         <<type>>

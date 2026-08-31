@@ -74,6 +74,9 @@ export interface IPatternLib {
    * filter is `null`.
    */
   getPatterns(filter: PatternFilter | null): Pattern[];
-  /** Returns the pattern with the given key; throws when none exists. */
-  getPatternByKey(key: string): Pattern;
+  /**
+   * Returns the pattern with the given key, or `null` when none exists —
+   * an unknown key is an expected lookup miss, not an error.
+   */
+  getPatternByKey(key: string): Pattern | null;
 }

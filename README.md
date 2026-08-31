@@ -37,7 +37,7 @@ deno add jsr:@hidarikani/game-of-life-engine
 import { Engine, PatternLib } from "@hidarikani/game-of-life-engine";
 
 const lib = PatternLib.fromBuiltInData();
-const blinker = lib.getPatternByKey("blinker");
+const blinker = lib.getPatternByKey("blinker")!;
 
 const engine = new Engine({ firstGeneration: blinker.generations[0] });
 
@@ -99,8 +99,8 @@ import { Engine, Grid, PatternLib } from "@hidarikani/game-of-life-engine";
 import type { GridSize } from "@hidarikani/game-of-life-engine";
 
 const lib = PatternLib.fromBuiltInData();
-const blinker = lib.getPatternByKey("blinker");
-const toad = lib.getPatternByKey("toad");
+const blinker = lib.getPatternByKey("blinker")!;
+const toad = lib.getPatternByKey("toad")!;
 
 // A blank 20x10 world, big enough to fit both patterns side by side
 const gridSize: GridSize = { w: 20, h: 10 };

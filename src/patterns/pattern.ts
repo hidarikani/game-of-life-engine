@@ -45,16 +45,11 @@ export class PatternLib implements IPatternLib {
   }
 
   /**
-   * Returns the pattern with the given key.
-   *
-   * @throws If no pattern has that key.
+   * Returns the pattern with the given key, or `null` when none exists —
+   * an unknown key is an expected lookup miss, not an error.
    */
-  getPatternByKey(key: string): Pattern {
-    const pattern = this.#patterns.find((pattern) => pattern.key === key);
-    if (!pattern) {
-      throw new Error(`No pattern found with key "${key}"`);
-    }
-    return pattern;
+  getPatternByKey(key: string): Pattern | null {
+    return this.#patterns.find((pattern) => pattern.key === key) ?? null;
   }
 
   /**
