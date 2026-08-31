@@ -26,7 +26,7 @@
 export { Grid } from "./src/grid/grid.ts";
 export { Engine } from "./src/engine/engine.ts";
 export { PatternLib } from "./src/patterns/pattern.ts";
-export { GRID_MODES, PLACEMENT_MODES } from "./src/constants.ts";
+export { GRID_MODES, PATTERN_TYPES, PLACEMENT_MODES } from "./src/constants.ts";
 export { pointToCellKey } from "./src/seed/seed.ts";
 export type {
   EngineOptions,

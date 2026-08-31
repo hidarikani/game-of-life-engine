@@ -1,11 +1,15 @@
 import type { IGrid } from "./types.ts";
+import type { PATTERN_TYPES } from "../constants.ts";
 
 /**
  * Classification of a pattern by its long-term behavior:
  * still lifes never change, oscillators repeat with a period greater
  * than one, and spaceships translate across the grid as they repeat.
+ *
+ * Derived from `PATTERN_TYPES` so the type and the constants cannot
+ * drift apart.
  */
-export type PatternType = "still-life" | "oscillator" | "spaceship";
+export type PatternType = (typeof PATTERN_TYPES)[keyof typeof PATTERN_TYPES];
 
 /** Metadata shared by the raw and parsed representations of a pattern. */
 type BasePattern = {

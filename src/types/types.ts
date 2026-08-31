@@ -1,3 +1,5 @@
+import type { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
+
 /**
  * A coordinate on a grid. The origin `(0, 0)` is the top-left cell;
  * `x` grows rightward and `y` grows downward.
@@ -29,8 +31,10 @@ export type CellChars = "#" | ".";
  * - `"Finite"` — cells beyond the edge are permanently dead.
  * - `"Toroidal"` — the edges wrap around, so the left border is the
  *   right column's neighbor and the top border is the bottom row's neighbor.
+ *
+ * Derived from `GRID_MODES` so the type and the constants cannot drift apart.
  */
-export type GridMode = "Finite" | "Toroidal";
+export type GridMode = (typeof GRID_MODES)[keyof typeof GRID_MODES];
 
 /**
  * A `Point` serialized as `"x,y"`, used as a `Map` key because object
@@ -59,8 +63,12 @@ export type ValidationResult =
  *   in the inner grid erase live cells underneath.
  * - `"Merge"` — only the inner grid's live cells are copied; existing
  *   live cells outside them survive.
+ *
+ * Derived from `PLACEMENT_MODES` so the type and the constants cannot
+ * drift apart.
  */
-export type PlacementMode = "Overwrite" | "Merge";
+export type PlacementMode =
+  (typeof PLACEMENT_MODES)[keyof typeof PLACEMENT_MODES];
 
 /**
  * A two-dimensional collection of cells. Coordinates just outside the
