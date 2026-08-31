@@ -28,8 +28,8 @@ import {
   gridContainsGrid,
   isPointOnBorder,
   isPointOutsideBorder,
-  isXOnBottomBorder,
-  isXOnTopBorder,
+  isXOnLeftBorder,
+  isXOnRightBorder,
   isYOnBottomBorder,
   isYOnTopBorder,
   validateMinGridSize,
@@ -131,11 +131,11 @@ export class Grid implements IGrid {
         let wrappedX = x;
         let wrappedY = y;
 
-        if (isXOnTopBorder(x)) {
+        if (isXOnLeftBorder(x)) {
           wrappedX = this.#gridSize.w - 1;
         }
 
-        if (isXOnBottomBorder(x, this.#gridSize.w)) {
+        if (isXOnRightBorder(x, this.#gridSize.w)) {
           wrappedX = 0;
         }
 
@@ -193,11 +193,11 @@ export class Grid implements IGrid {
         let wrappedX = x;
         let wrappedY = y;
 
-        if (isXOnTopBorder(x)) {
+        if (isXOnLeftBorder(x)) {
           wrappedX = this.#gridSize.w - 1;
         }
 
-        if (isXOnBottomBorder(x, this.#gridSize.w)) {
+        if (isXOnRightBorder(x, this.#gridSize.w)) {
           wrappedX = 0;
         }
 

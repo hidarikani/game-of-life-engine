@@ -45,14 +45,14 @@ export const isPointOutsideBorder = (
 };
 
 /** Whether an x coordinate sits on the border column left of the grid (`-1`). */
-export const isXOnTopBorder = (x: number): boolean => x === -1;
+export const isXOnLeftBorder = (x: number): boolean => x === -1;
 
 /** Whether an x coordinate sits on the border column right of the grid (`w`). */
-export const isXOnBottomBorder = (x: number, worldWidth: number): boolean =>
+export const isXOnRightBorder = (x: number, worldWidth: number): boolean =>
   x === worldWidth;
 
 const isXOnBorder = (x: number, worldWidth: number): boolean =>
-  isXOnTopBorder(x) || isXOnBottomBorder(x, worldWidth);
+  isXOnLeftBorder(x) || isXOnRightBorder(x, worldWidth);
 
 /** Whether a y coordinate sits on the border row above the grid (`-1`). */
 export const isYOnTopBorder = (y: number): boolean => y === -1;
