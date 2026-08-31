@@ -35,16 +35,18 @@ const custom = PatternLib.fromYamlFile("./my-patterns.yaml");
 
 `getPatternByKey` returns a single pattern, or `null` if the key doesn't exist.
 An unknown key is an expected lookup miss (think user input in a GUI), not an
-error — so check the result instead of wrapping the call in a try/catch. The
-examples below use a non-null assertion (`!`) only because the built-in key is
-known to exist.
+error — so check the result for `null` instead of wrapping the call in a
+try/catch, and TypeScript narrows the type for the code that follows:
 
 ```ts
 import { PatternLib } from "../../mod.ts";
 
 const lib = PatternLib.fromBuiltInData();
 
-const blinker = lib.getPatternByKey("blinker")!;
+const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 console.log(blinker.name); // "Blinker"
 console.log(blinker.generations[0].toString());
 
@@ -74,7 +76,10 @@ passed directly as `firstGeneration`:
 import { Engine, PatternLib } from "../../mod.ts";
 
 const lib = PatternLib.fromBuiltInData();
-const blinker = lib.getPatternByKey("blinker")!;
+const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 
 const engine = new Engine({ firstGeneration: blinker.generations[0] });
 engine.evolveGrid();

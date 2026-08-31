@@ -37,7 +37,10 @@ section("Looking up patterns");
 
 const lib = PatternLib.fromBuiltInData();
 
-const blinker = lib.getPatternByKey("blinker")!;
+const blinker = lib.getPatternByKey("blinker");
+if (!blinker) {
+  throw new Error('pattern "blinker" not found');
+}
 console.log(blinker.name); // "Blinker"
 console.log(blinker.generations[0].toString());
 
