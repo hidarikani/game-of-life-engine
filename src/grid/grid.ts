@@ -94,14 +94,11 @@ export class Grid implements IGrid {
   }
 
   /**
-   * Every living cell as a point/value pair. Built fresh on each access,
-   * so cache the result when iterating repeatedly.
+   * Coordinates of every living cell, in no guaranteed order. Built
+   * fresh on each access, so cache the result when iterating repeatedly.
    */
-  get liveCells(): { key: Point; value: boolean }[] {
-    return Array.from(this.#liveCells, ([cellKey, value]) => ({
-      key: cellKeyToPoint(cellKey),
-      value,
-    }));
+  get liveCells(): readonly Point[] {
+    return Array.from(this.#liveCells.keys(), cellKeyToPoint);
   }
 
   /**
@@ -269,10 +266,10 @@ export class Grid implements IGrid {
       }
     }
 
-    for (const { key } of inner.liveCells) {
+    for (const point of inner.liveCells) {
       const offsetKey = pointToCellKey({
-        x: key.x + offset.x,
-        y: key.y + offset.y,
+        x: point.x + offset.x,
+        y: point.y + offset.y,
       });
       this.#liveCells.set(offsetKey, true);
     }

@@ -80,8 +80,8 @@ export interface IGrid {
   readonly gridSize: GridSize;
   /** Border behavior of the grid. */
   readonly mode: GridMode;
-  /** Every living cell as a point/value pair, in no guaranteed order. */
-  readonly liveCells: { key: Point; value: boolean }[];
+  /** Coordinates of every living cell, in no guaranteed order. */
+  readonly liveCells: readonly Point[];
   /** Number of living cells. */
   readonly population: number;
   /**
