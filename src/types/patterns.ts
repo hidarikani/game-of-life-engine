@@ -21,9 +21,10 @@ type BasePattern = {
   type: PatternType;
   /**
    * Number of generations after which the pattern repeats its shape.
-   * Still lifes have a period of 1.
+   * Still life has a period of 1.
+   * Patterns that don't have a known cycle have a null period.
    */
-  period: number;
+  period: number | null;
 };
 
 /** One generation of a raw pattern, as a seed string. */

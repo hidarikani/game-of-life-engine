@@ -71,4 +71,5 @@ export const PATTERN_TYPES = {
   STILL_LIFE: "still-life",
   OSCILLATOR: "oscillator",
   SPACESHIP: "spaceship",
+  CHARACTER: "char",
 } as const;
