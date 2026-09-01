@@ -135,6 +135,8 @@ deno task test:watch:geometry # subset shortcut
 # automation, agentic coding oriented
 deno task test:once
 deno task test:once:geometry # subset shortcut
+# coverage
+deno task test:coverage # open afterwards /coverage/html/index.html
 ```
 
 ### Agentic Heuristics
