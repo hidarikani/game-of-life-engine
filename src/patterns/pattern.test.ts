@@ -34,7 +34,7 @@ Deno.test("PatternLib.getPatterns", async (t) => {
 
   await t.step("returns all patterns when filter is null", () => {
     const patterns = lib.getPatterns(null);
-    assertEquals(patterns.length, 3);
+    assertEquals(patterns.length, 6);
   });
 
   await t.step("filters by name regex", () => {
@@ -50,7 +50,7 @@ Deno.test("PatternLib.getPatterns", async (t) => {
     assertEquals(patterns, []);
   });
 
-  await t.step("filters by pattern type", () => {
+  await t.step("finds type 'oscillator'", () => {
     const patterns = lib.getPatterns({
       name: null,
       patternType: PATTERN_TYPES.OSCILLATOR,
@@ -61,12 +61,25 @@ Deno.test("PatternLib.getPatterns", async (t) => {
     );
   });
 
-  await t.step("filters by pattern type with no matches", () => {
+  await t.step("finds type 'spaceship'", () => {
     const patterns = lib.getPatterns({
       name: null,
       patternType: PATTERN_TYPES.SPACESHIP,
     });
-    assertEquals(patterns, []);
+    assertEquals(
+      patterns.every((p) => p.type === PATTERN_TYPES.SPACESHIP),
+      true,
+    );
+  });
+  await t.step("finds type 'char'", () => {
+    const patterns = lib.getPatterns({
+      name: null,
+      patternType: PATTERN_TYPES.CHARACTER,
+    });
+    assertEquals(
+      patterns.every((p) => p.type === PATTERN_TYPES.CHARACTER),
+      true,
+    );
   });
 });
 

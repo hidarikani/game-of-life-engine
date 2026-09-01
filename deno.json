@@ -1,6 +1,6 @@
 {
   "name": "@hidarikani/game-of-life-engine",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "license": "MIT",
   "exports": "./mod.ts",
   "tasks": {
@@ -19,6 +19,8 @@
     "test:once:patterns": "deno test --allow-read=. src/patterns/pattern.test.ts",
     "test:once:seed": "deno test --allow-read=. src/seed/seed.test.ts",
     "test:once:integration": "deno test --allow-read=. src/integration/integration.test.ts",
+
+    "test:coverage": "deno test --coverage --allow-read=.",
 
     "patterns:build": "deno run --allow-read=data/patterns --allow-write=data/patterns scripts/build-patterns-json.ts"
   },

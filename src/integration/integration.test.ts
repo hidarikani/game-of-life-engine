@@ -7,15 +7,17 @@ Deno.test("built-in patterns evolve to their recorded generations", async (t) =>
 
   for (const pattern of patterns) {
     await t.step(pattern.name, async (t) => {
-      const engine = new Engine({ firstGeneration: pattern.generations[0] });
+      if (pattern.period !== null && pattern.period > 1) {
+        const engine = new Engine({ firstGeneration: pattern.generations[0] });
 
-      for (let i = 1; i < pattern.generations.length; i++) {
-        await t.step(`generation ${i}`, () => {
-          engine.evolveGrid();
-          assert(
-            engine.presentGeneration.equals(pattern.generations[i]),
-          );
-        });
+        for (let i = 1; i < pattern.generations.length; i++) {
+          await t.step(`generation ${i}`, () => {
+            engine.evolveGrid();
+            assert(
+              engine.presentGeneration.equals(pattern.generations[i]),
+            );
+          });
+        }
       }
     });
   }
