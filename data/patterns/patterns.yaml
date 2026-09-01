@@ -39,6 +39,27 @@ patterns:
           . # . . # .
           . . # . . .
           . . . . . .
+  - name: Beacon
+    key: beacon
+    type: oscillator
+    period: 2
+    width: 6
+    height: 6
+    generations:
+      - state: |
+          . . . . . .
+          . # # . . .
+          . # # . . .
+          . . . # # .
+          . . . # # .
+          . . . . . .
+      - state: |
+          . . . . . .
+          . # # . . .
+          . # . . . .
+          . . . . # .
+          . . . # # .
+          . . . . . .
   - name: Pulsar
     key: pulsar
     type: oscillator
