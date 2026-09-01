@@ -34,7 +34,7 @@ Deno.test("PatternLib.getPatterns", async (t) => {
 
   await t.step("returns all patterns when filter is null", () => {
     const patterns = lib.getPatterns(null);
-    assertEquals(patterns.length, 5);
+    assertEquals(patterns.length, 6);
   });
 
   await t.step("filters by name regex", () => {
