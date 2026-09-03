@@ -1,15 +1,5 @@
 import type { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
-
-/**
- * A coordinate on a grid. The origin `(0, 0)` is the top-left cell;
- * `x` grows rightward and `y` grows downward.
- */
-export type Point = {
-  /** Zero-based column index. */
-  x: number;
-  /** Zero-based row index. */
-  y: number;
-};
+import type { Point } from "./geometry.ts";
 
 /**
  * Dimensions of a grid, measured in cells. Both dimensions must be at

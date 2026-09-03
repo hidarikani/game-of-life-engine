@@ -1,3 +1,4 @@
+import type { Point } from "../types/geometry.ts";
 import type {
   GridMode,
   GridOptionsFromLiveCells,
@@ -6,7 +7,6 @@ import type {
   IGrid,
   LiveCells,
   PlacementMode,
-  Point,
 } from "../types/types.ts";
 import {
   cellKeyToPoint,

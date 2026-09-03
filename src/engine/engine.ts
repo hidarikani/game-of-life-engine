@@ -1,3 +1,4 @@
+import type { Point } from "../types/geometry.ts";
 import type {
   EngineOptions,
   GridMode,
@@ -5,7 +6,6 @@ import type {
   IEngine,
   IGrid,
   LiveCells,
-  Point,
 } from "../types/types.ts";
 import { pointToCellKey } from "../seed/seed.ts";
 import { Grid } from "../grid/grid.ts";

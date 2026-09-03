@@ -1,9 +1,9 @@
+import type { Point } from "../types/geometry.ts";
 import type {
   CellChars,
   CellKey,
   GridSize,
   LiveCells,
-  Point,
 } from "../types/types.ts";
 import {
   ALIVE_CHAR,

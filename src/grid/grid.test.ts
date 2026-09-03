@@ -1,6 +1,7 @@
 import { Grid } from "./grid.ts";
 import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
-import type { GridSize, LiveCells, Point } from "../types/types.ts";
+import type { Point } from "../types/geometry.ts";
+import type { GridSize, LiveCells } from "../types/types.ts";
 import { assertEquals, assertThrows } from "@std/assert";
 import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
 

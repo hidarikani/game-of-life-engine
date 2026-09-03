@@ -1,3 +1,5 @@
+export type { Point } from "./src/types/geometry.ts";
+
 export { Grid } from "./src/grid/grid.ts";
 export { Engine } from "./src/engine/engine.ts";
 export { PatternLib } from "./src/patterns/pattern.ts";
@@ -13,7 +15,6 @@ export type {
   IGrid,
   LiveCells,
   PlacementMode,
-  Point,
 } from "./src/types/types.ts";
 export type {
   IPatternLib,
