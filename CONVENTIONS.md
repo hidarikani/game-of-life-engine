@@ -69,6 +69,16 @@ higher score from [JSR][jsr].
 - Private fields use `#` syntax (e.g., `#liveCells`, `#bottomRightCorner`)
 - One main class per file; tests colocated as `*.test.ts`
 
+### Import Order
+
+As of Deno 2.9.x, `deno fmt` does not enforce import ordering, so we follow this
+convention manually:
+
+1. Type imports (`import type`)
+2. Deno standard library imports
+3. Third-party / other-directory imports
+4. Same-directory (relative) imports
+
 ## Other
 
 > [!TIP]
