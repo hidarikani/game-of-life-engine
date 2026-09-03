@@ -1,11 +1,10 @@
+import type { ValidationResult } from "../types/validation.ts";
+import type { Point } from "../types/geometry.ts";
+import type { LiveCells } from "../types/cell.ts";
+import type { GridSize } from "../types/grid.ts";
+
 import { MIN_GRID_SIZE } from "../constants.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
-import type {
-  GridSize,
-  LiveCells,
-  Point,
-  ValidationResult,
-} from "../types/types.ts";
 
 /**
  * Checks that both grid dimensions meet `MIN_GRID_SIZE` — the smallest

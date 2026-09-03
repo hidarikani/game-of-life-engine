@@ -1,7 +1,11 @@
+import type { Point } from "../types/geometry.ts";
+import type { LiveCells } from "../types/cell.ts";
+import type { GridSize } from "../types/grid.ts";
+
+import { assertEquals, assertThrows } from "@std/assert";
+
 import { Grid } from "./grid.ts";
 import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
-import type { GridSize, LiveCells, Point } from "../types/types.ts";
-import { assertEquals, assertThrows } from "@std/assert";
 import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
 
 Deno.test("Grid.constructor", async (t) => {

@@ -78,6 +78,16 @@ higher score from [JSR][jsr].
   point. A non-trivial callback SHOULD be extracted into a named `function`
   declaration so it appears by name in stack traces and profiles.
 
+### Import Order
+
+As of Deno 2.9.x, `deno fmt` does not enforce import ordering, so we follow this
+convention manually:
+
+1. Type imports (`import type`)
+2. Deno standard library imports
+3. Third-party / other-directory imports
+4. Same-directory (relative) imports
+
 ## Other
 
 > [!TIP]

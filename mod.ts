@@ -1,23 +1,17 @@
-export { Grid } from "./src/grid/grid.ts";
-export { Engine } from "./src/engine/engine.ts";
-export { PatternLib } from "./src/patterns/pattern.ts";
-export { GRID_MODES, PATTERN_TYPES, PLACEMENT_MODES } from "./src/constants.ts";
+// Types
+export type * from "./src/types/geometry.ts";
+export type * from "./src/types/cell.ts";
+export type * from "./src/types/grid.ts";
+export type * from "./src/types/engine.ts";
+export type * from "./src/types/pattern.ts";
+
+// Classes
+export * from "./src/grid/grid.ts";
+export * from "./src/engine/engine.ts";
+export * from "./src/patterns/pattern.ts";
+
+// Constants
+export * from "./src/constants.ts";
+
+// Utilities
 export { pointToCellKey } from "./src/seed/seed.ts";
-export type {
-  EngineOptions,
-  GridMode,
-  GridOptionsFromLiveCells,
-  GridOptionsFromString,
-  GridSize,
-  IEngine,
-  IGrid,
-  LiveCells,
-  PlacementMode,
-  Point,
-} from "./src/types/types.ts";
-export type {
-  IPatternLib,
-  Pattern,
-  PatternFilter,
-  PatternType,
-} from "./src/types/patterns.ts";

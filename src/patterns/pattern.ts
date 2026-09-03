@@ -1,10 +1,10 @@
-import type { GridSize } from "../types/types.ts";
+import type { GridSize } from "../types/grid.ts";
 import type {
   IPatternLib,
   Pattern,
   PatternFilter,
   PatternsRaw,
-} from "../types/patterns.ts";
+} from "../types/pattern.ts";
 import { Grid } from "../grid/grid.ts";
 import { parse } from "@std/yaml";
 import patternsJson from "../../data/patterns/patterns.json" with {

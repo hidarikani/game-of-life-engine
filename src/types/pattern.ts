@@ -1,4 +1,5 @@
-import type { IGrid } from "./types.ts";
+import type { IGrid } from "./grid.ts";
+
 import type { PATTERN_TYPES } from "../constants.ts";
 
 /**

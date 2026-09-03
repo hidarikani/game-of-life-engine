@@ -1,10 +1,7 @@
-import type {
-  CellChars,
-  CellKey,
-  GridSize,
-  LiveCells,
-  Point,
-} from "../types/types.ts";
+import type { Point } from "../types/geometry.ts";
+import type { CellChars, CellKey, LiveCells } from "../types/cell.ts";
+import type { GridSize } from "../types/grid.ts";
+
 import {
   ALIVE_CHAR,
   CELL_CHAR_TO_BOOL,
