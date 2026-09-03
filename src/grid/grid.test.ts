@@ -1,56 +1,57 @@
 import type { Point } from "../types/geometry.ts";
 import type { LiveCells } from "../types/cell.ts";
-import type { GridSize } from "../types/grid.ts";
+import type { GridSize, IGrid } from "../types/grid.ts";
 
 import { assertEquals, assertThrows } from "@std/assert";
+import { beforeAll, describe, it } from "@std/testing/bdd";
 
 import { Grid } from "./grid.ts";
 import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
 import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
 
-Deno.test("Grid.constructor", async (t) => {
-  await t.step("Valid constructor params", async (t) => {
-    await t.step("should instantiate dead Grid", () => {
-      const gridSize: GridSize = { w: 10, h: 10 };
-      const grid = new Grid({ gridSize });
-      assertEquals(grid instanceof Grid, true);
+describe("Grid", () => {
+  describe("constructor", () => {
+    describe("Valid constructor params", () => {
+      it("should instantiate dead Grid", () => {
+        const gridSize: GridSize = { w: 10, h: 10 };
+        const grid = new Grid({ gridSize });
+        assertEquals(grid instanceof Grid, true);
+      });
+
+      it("should accept valid liveCells within bounds", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const liveCells: LiveCells = new Map();
+
+        // Add cells within bounds
+        liveCells.set(pointToCellKey({ x: 0, y: 0 }), true);
+        liveCells.set(pointToCellKey({ x: 4, y: 4 }), true);
+        liveCells.set(pointToCellKey({ x: 2, y: 3 }), true);
+
+        const grid = new Grid({ gridSize, liveCells });
+        assertEquals(grid instanceof Grid, true);
+      });
     });
 
-    await t.step("should accept valid liveCells within bounds", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const liveCells: LiveCells = new Map();
+    describe("Invalid constructor params", () => {
+      it("should throw when width is below minimum", () => {
+        const gridSize: GridSize = { w: 2, h: 3 };
+        assertThrows(
+          () => new Grid({ gridSize }),
+          Error,
+          "Grid must be at least 3 cells wide and 3 cells tall",
+        );
+      });
 
-      // Add cells within bounds
-      liveCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-      liveCells.set(pointToCellKey({ x: 4, y: 4 }), true);
-      liveCells.set(pointToCellKey({ x: 2, y: 3 }), true);
+      it("should throw when height is below minimum", () => {
+        const gridSize: GridSize = { w: 3, h: 2 };
+        assertThrows(
+          () => new Grid({ gridSize }),
+          Error,
+          "Grid must be at least 3 cells wide and 3 cells tall",
+        );
+      });
 
-      const grid = new Grid({ gridSize, liveCells });
-      assertEquals(grid instanceof Grid, true);
-    });
-  });
-
-  await t.step("Invalid constructor params", async (t) => {
-    await t.step("should throw when width is below minimum", () => {
-      const gridSize: GridSize = { w: 2, h: 3 };
-      assertThrows(
-        () => new Grid({ gridSize }),
-        Error,
-        "Grid must be at least 3 cells wide and 3 cells tall",
-      );
-    });
-    await t.step("should throw when height is below minimum", () => {
-      const gridSize: GridSize = { w: 3, h: 2 };
-      assertThrows(
-        () => new Grid({ gridSize }),
-        Error,
-        "Grid must be at least 3 cells wide and 3 cells tall",
-      );
-    });
-
-    await t.step(
-      "should throw when cell y coordinate is out of bounds",
-      () => {
+      it("should throw when cell y coordinate is out of bounds", () => {
         const gridSize: GridSize = { w: 5, h: 5 };
         const liveCells: LiveCells = new Map();
         liveCells.set(pointToCellKey({ x: 3, y: 5 }), true);
@@ -60,201 +61,184 @@ Deno.test("Grid.constructor", async (t) => {
           Error,
           "Cell at (3, 5) is outside the grid of size (5, 5).",
         );
-      },
-    );
+      });
+    });
   });
-});
 
-Deno.test("Grid.fromString", async (t) => {
-  await t.step("Valid params", async (t) => {
-    const validSeed = `
-      # . . #
-      . # # .
-      . . . #
-      # # . .
-  `;
+  describe("fromString", () => {
+    describe("Valid params", () => {
+      const validSeed = `
+        # . . #
+        . # # .
+        . . . #
+        # # . .
+      `;
 
-    await t.step("should create a grid from a valid seed string", () => {
-      const gridSize: GridSize = { w: 4, h: 4 };
-      const grid = Grid.fromString({ gridSize, seed: validSeed });
-      assertEquals(grid.gridSize, gridSize);
-    });
+      it("should create a grid from a valid seed string", () => {
+        const gridSize: GridSize = { w: 4, h: 4 };
+        const grid = Grid.fromString({ gridSize, seed: validSeed });
+        assertEquals(grid.gridSize, gridSize);
+      });
 
-    await t.step("should parse cells correctly", () => {
-      const gridSize: GridSize = { w: 4, h: 4 };
-      const grid = Grid.fromString({ gridSize, seed: validSeed });
-      assertEquals(grid.toString(), normalizeSeed(validSeed));
-    });
+      it("should parse cells correctly", () => {
+        const gridSize: GridSize = { w: 4, h: 4 };
+        const grid = Grid.fromString({ gridSize, seed: validSeed });
+        assertEquals(grid.toString(), normalizeSeed(validSeed));
+      });
 
-    await t.step(
-      "should create a grid with no live cells from all-dead seed",
-      () => {
+      it("should create a grid with no live cells from all-dead seed", () => {
         const deadSeed = `
           . . .
           . . .
           . . .
-    `;
+        `;
         const gridSize: GridSize = { w: 3, h: 3 };
         const grid = Grid.fromString({ gridSize, seed: deadSeed });
         assertEquals(grid.population, 0);
-      },
-    );
+      });
 
-    await t.step(
-      "should create a grid with all live cells from all-alive seed",
-      () => {
+      it("should create a grid with all live cells from all-alive seed", () => {
         const aliveSeed = `
           # # #
           # # #
           # # #
-    `;
+        `;
         const gridSize: GridSize = { w: 3, h: 3 };
         const grid = Grid.fromString({ gridSize, seed: aliveSeed });
         assertEquals(grid.population, 9);
-      },
-    );
-  });
-  await t.step("Invalid params", async (t) => {
-    await t.step(
-      "should throw when seed contains invalid character `O`",
-      () => {
+      });
+    });
+
+    describe("Invalid params", () => {
+      it("should throw when seed contains invalid character `O`", () => {
         const gridSize = { w: 4, h: 4 };
         const invalidSeed = `
           # . . O
           . # # .
           . . . #
           # # . .
-    `;
+        `;
         assertThrows(
           () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
           "Seed contains invalid characters",
         );
-      },
-    );
+      });
 
-    await t.step(
-      "should throw when seed contains invalid character `,`",
-      () => {
+      it("should throw when seed contains invalid character `,`", () => {
         const gridSize = { w: 4, h: 4 };
         const invalidSeed = `
           # . . ,
           . # # .
           . . . #
           # # . .
-    `;
+        `;
         assertThrows(
           () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
           "Seed contains invalid characters",
         );
-      },
-    );
+      });
 
-    await t.step("should throw when width is below minimum", () => {
-      const gridSize = { w: 2, h: 3 };
-      const seed = `
-        # .
-        . #
-        . .
-    `;
-      assertThrows(
-        () => Grid.fromString({ gridSize, seed }),
-        Error,
-        "Grid must be at least 3 cells wide and 3 cells tall",
-      );
-    });
+      it("should throw when width is below minimum", () => {
+        const gridSize = { w: 2, h: 3 };
+        const seed = `
+          # .
+          . #
+          . .
+        `;
+        assertThrows(
+          () => Grid.fromString({ gridSize, seed }),
+          Error,
+          "Grid must be at least 3 cells wide and 3 cells tall",
+        );
+      });
 
-    await t.step("should throw when height is below minimum", () => {
-      const gridSize = { w: 3, h: 2 };
-      const seed = `
-        # . .
-        . # .
-    `;
-      assertThrows(
-        () => Grid.fromString({ gridSize, seed }),
-        Error,
-        "Grid must be at least 3 cells wide and 3 cells tall",
-      );
-    });
+      it("should throw when height is below minimum", () => {
+        const gridSize = { w: 3, h: 2 };
+        const seed = `
+          # . .
+          . # .
+        `;
+        assertThrows(
+          () => Grid.fromString({ gridSize, seed }),
+          Error,
+          "Grid must be at least 3 cells wide and 3 cells tall",
+        );
+      });
 
-    await t.step("should throw when seed height does not match", () => {
-      const gridSize = { w: 4, h: 4 };
-      const seed = `
-        # . . #
-        . # # .
-        . . . #
-    `; //missing row
-      assertThrows(
-        () => Grid.fromString({ gridSize, seed }),
-        Error,
-        "Seed height does not match specified height",
-      );
-    });
+      it("should throw when seed height does not match", () => {
+        const gridSize = { w: 4, h: 4 };
+        const seed = `
+          # . . #
+          . # # .
+          . . . #
+        `; //missing row
+        assertThrows(
+          () => Grid.fromString({ gridSize, seed }),
+          Error,
+          "Seed height does not match specified height",
+        );
+      });
 
-    await t.step("should throw when seed width does not match", () => {
-      const gridSize = { w: 4, h: 4 };
-      const seed = `
-        # . . #
-        . # # .
-        . . . #
-        # #   .
-    `; // last row missing `.`
-      assertThrows(
-        () => Grid.fromString({ gridSize, seed }),
-        Error,
-        "Seed width does not match specified width",
-      );
+      it("should throw when seed width does not match", () => {
+        const gridSize = { w: 4, h: 4 };
+        const seed = `
+          # . . #
+          . # # .
+          . . . #
+          # #   .
+        `; // last row missing `.`
+        assertThrows(
+          () => Grid.fromString({ gridSize, seed }),
+          Error,
+          "Seed width does not match specified width",
+        );
+      });
     });
   });
-});
 
-Deno.test("Grid.toString", async (t) => {
-  await t.step(
-    "should return string representation of a grid with live and dead cells",
-    () => {
+  describe("toString", () => {
+    it("should return string representation of a grid with live and dead cells", () => {
       const gridSize = { w: 4, h: 4 };
       const seed = `
         # . . #
         . # # .
         . . . #
         # # . .
-    `;
+      `;
       const grid = Grid.fromString({ gridSize, seed });
       assertEquals(grid.toString(), normalizeSeed(seed));
-    },
-  );
-
-  await t.step("should roundtrip through fromString and toString", () => {
-    const gridSize = { w: 5, h: 3 };
-    const seed = `
-      . # . # .
-      # . # . #
-      . # . # .
-    `;
-    const grid = Grid.fromString({ gridSize, seed });
-    const grid2 = Grid.fromString({ gridSize, seed: grid.toString() });
-    assertEquals(grid.toString(), grid2.toString());
-  });
-});
-
-Deno.test("Grid.writeGrid", async (t) => {
-  await t.step("invalid params", async (t) => {
-    await t.step("should throw when inner grid does not fit", () => {
-      const gridSizeOuter: GridSize = { w: 5, h: 5 };
-      const gridSizeInner: GridSize = { w: 6, h: 6 };
-      const outer = new Grid({ gridSize: gridSizeOuter });
-      const inner = new Grid({ gridSize: gridSizeInner });
-      assertThrows(
-        () => outer.writeGrid({ inner }),
-        Error,
-        "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
-      );
     });
 
-    await t.step(
-      "should throw when offset pushes inner grid out of bounds",
-      () => {
+    it("should roundtrip through fromString and toString", () => {
+      const gridSize = { w: 5, h: 3 };
+      const seed = `
+        . # . # .
+        # . # . #
+        . # . # .
+      `;
+      const grid = Grid.fromString({ gridSize, seed });
+      const grid2 = Grid.fromString({ gridSize, seed: grid.toString() });
+      assertEquals(grid.toString(), grid2.toString());
+    });
+  });
+
+  describe("writeGrid", () => {
+    describe("invalid params", () => {
+      it("should throw when inner grid does not fit", () => {
+        const gridSizeOuter: GridSize = { w: 5, h: 5 };
+        const gridSizeInner: GridSize = { w: 6, h: 6 };
+        const outer = new Grid({ gridSize: gridSizeOuter });
+        const inner = new Grid({ gridSize: gridSizeInner });
+        assertThrows(
+          () => outer.writeGrid({ inner }),
+          Error,
+          "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
+        );
+      });
+
+      it("should throw when offset pushes inner grid out of bounds", () => {
         const gridSizeOuter: GridSize = { w: 10, h: 10 };
         const gridSizeInner: GridSize = { w: 5, h: 5 };
         const outer = new Grid({ gridSize: gridSizeOuter });
@@ -265,24 +249,29 @@ Deno.test("Grid.writeGrid", async (t) => {
           Error,
           "Inner grid of size (5, 5) offset by (6, 6) does not fit in outer grid of size (10, 10).",
         );
-      },
-    );
-  });
-  await t.step("overwrite mode", async (t) => {
-    const outer = Grid.fromString({
-      gridSize: { w: 5, h: 5 },
-      seed: `
-        # . . . .
-        . # . . .
-        . . . . .
-        . . . . .
-        . . . . #
-      `,
+      });
     });
 
-    await t.step(
-      "should clear existing cells in the target region before placing",
-      () => {
+    // The cases below share one `outer` grid on purpose: each writes into the
+    // grid left behind by the previous one, so placement is exercised against
+    // a non-empty target.
+    describe("overwrite mode", () => {
+      let outer: IGrid;
+
+      beforeAll(() => {
+        outer = Grid.fromString({
+          gridSize: { w: 5, h: 5 },
+          seed: `
+            # . . . .
+            . # . . .
+            . . . . .
+            . . . . .
+            . . . . #
+          `,
+        });
+      });
+
+      it("should clear existing cells in the target region before placing", () => {
         const innerCells: LiveCells = new Map();
         innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
         const inner = new Grid({
@@ -302,12 +291,9 @@ Deno.test("Grid.writeGrid", async (t) => {
             . . . . #
           `),
         );
-      },
-    );
+      });
 
-    await t.step(
-      "should overwrite with offset",
-      () => {
+      it("should overwrite with offset", () => {
         const innerCells: LiveCells = new Map();
         innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
         innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
@@ -329,167 +315,169 @@ Deno.test("Grid.writeGrid", async (t) => {
             . . . . .
           `),
         );
-      },
-    );
-  });
-  await t.step("merge mode", async (t) => {
-    const outer = Grid.fromString({
-      gridSize: { w: 5, h: 5 },
-      seed: `
-        . . . . .
-        . . # . .
-        . . # . .
-        . . # . .
-        . . . . .
-      `,
-    });
-
-    await t.step("should preserve existing cells in the target region", () => {
-      const innerCells: LiveCells = new Map();
-      innerCells.set(pointToCellKey({ x: 2, y: 0 }), true);
-      const inner = Grid.fromString({
-        gridSize: { w: 5, h: 5 },
-        seed: `
-          . . . . .
-          . . . . .
-          . # # # .
-          . . . . .
-          . . . . .
-        `,
       });
-
-      outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
-
-      assertEquals(
-        outer.toString(),
-        normalizeSeed(`
-          . . . . .
-          . . # . .
-          . # # # .
-          . . # . .
-          . . . . .
-        `),
-      );
     });
 
-    await t.step("should merge with offset", () => {
-      const inner = Grid.fromString({
-        gridSize: { w: 3, h: 3 },
-        seed: `
-          . . .
-          # # #
-          . . .
-        `,
-      });
+    describe("merge mode", () => {
+      let outer: IGrid;
 
-      outer.writeGrid({
-        inner,
-        offset: { x: 1, y: 1 },
-        mode: PLACEMENT_MODES.MERGE,
-      });
-
-      assertEquals(
-        outer.toString(),
-        normalizeSeed(`
-          . . . . .
-          . . # . .
-          . # # # .
-          . . # . .
-          . . . . .
-        `),
-      );
-    });
-  });
-});
-
-Deno.test("Grid.readCell", async (t) => {
-  await t.step("out of bounds throws", async (t) => {
-    await t.step("left edge exceeded", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      assertThrows(
-        () => grid.readCell({ x: -2, y: 0 }),
-        Error,
-        "Cell (-2, 0) is out of bounds",
-      );
-    });
-
-    await t.step("right edge exceeded", () => {
-      const width = 5;
-      const grid = new Grid({ gridSize: { w: width, h: 5 } });
-      assertThrows(
-        () => grid.readCell({ x: width + 1, y: 0 }),
-        Error,
-        `Cell (${width + 1}, 0) is out of bounds`,
-      );
-    });
-
-    await t.step("top edge exceeded", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      assertThrows(
-        () => grid.readCell({ x: 0, y: -2 }),
-        Error,
-        "Cell (0, -2) is out of bounds",
-      );
-    });
-
-    await t.step("bottom edge exceeded", () => {
-      const height = 5;
-      const grid = new Grid({ gridSize: { w: 5, h: height } });
-      assertThrows(
-        () => grid.readCell({ x: 0, y: height + 1 }),
-        Error,
-        `Cell (0, ${height + 1}) is out of bounds`,
-      );
-    });
-  });
-
-  await t.step("toroidal border wrapping", async (t) => {
-    await t.step("corners", async (t) => {
-      const cornerSeed = `
-      # . #
-      . . .
-      # . .
-      `;
-
-      const cornerGrid = Grid.fromString({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
-        seed: cornerSeed,
-      });
-
-      await t.step("cell { x: 2, y: 2 } right neighbor is alive", () => {
-        const rightNeighborX = 3; // wraps to 0
-        const rightNeighborY = 2;
-        const isAlive = cornerGrid.readCell({
-          x: rightNeighborX,
-          y: rightNeighborY,
+      beforeAll(() => {
+        outer = Grid.fromString({
+          gridSize: { w: 5, h: 5 },
+          seed: `
+            . . . . .
+            . . # . .
+            . . # . .
+            . . # . .
+            . . . . .
+          `,
         });
-        if (!isAlive) {
-          throw new Error(
-            `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
-          );
-        }
       });
 
-      await t.step("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
-        const bottomNeighborX = 2;
-        const bottomNeighborY = 3; // wraps to 0
-        const isAlive = cornerGrid.readCell({
-          x: bottomNeighborX,
-          y: bottomNeighborY,
+      it("should preserve existing cells in the target region", () => {
+        const inner = Grid.fromString({
+          gridSize: { w: 5, h: 5 },
+          seed: `
+            . . . . .
+            . . . . .
+            . # # # .
+            . . . . .
+            . . . . .
+          `,
         });
-        if (!isAlive) {
-          throw new Error(
-            `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
-          );
-        }
+
+        outer.writeGrid({ inner, mode: PLACEMENT_MODES.MERGE });
+
+        assertEquals(
+          outer.toString(),
+          normalizeSeed(`
+            . . . . .
+            . . # . .
+            . # # # .
+            . . # . .
+            . . . . .
+          `),
+        );
       });
 
-      await t.step(
-        "cell { x: 2, y: 2 } bottom-right neighbor is alive",
-        () => {
+      it("should merge with offset", () => {
+        const inner = Grid.fromString({
+          gridSize: { w: 3, h: 3 },
+          seed: `
+            . . .
+            # # #
+            . . .
+          `,
+        });
+
+        outer.writeGrid({
+          inner,
+          offset: { x: 1, y: 1 },
+          mode: PLACEMENT_MODES.MERGE,
+        });
+
+        assertEquals(
+          outer.toString(),
+          normalizeSeed(`
+            . . . . .
+            . . # . .
+            . # # # .
+            . . # . .
+            . . . . .
+          `),
+        );
+      });
+    });
+  });
+
+  describe("readCell", () => {
+    describe("out of bounds throws", () => {
+      it("left edge exceeded", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        assertThrows(
+          () => grid.readCell({ x: -2, y: 0 }),
+          Error,
+          "Cell (-2, 0) is out of bounds",
+        );
+      });
+
+      it("right edge exceeded", () => {
+        const width = 5;
+        const grid = new Grid({ gridSize: { w: width, h: 5 } });
+        assertThrows(
+          () => grid.readCell({ x: width + 1, y: 0 }),
+          Error,
+          `Cell (${width + 1}, 0) is out of bounds`,
+        );
+      });
+
+      it("top edge exceeded", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        assertThrows(
+          () => grid.readCell({ x: 0, y: -2 }),
+          Error,
+          "Cell (0, -2) is out of bounds",
+        );
+      });
+
+      it("bottom edge exceeded", () => {
+        const height = 5;
+        const grid = new Grid({ gridSize: { w: 5, h: height } });
+        assertThrows(
+          () => grid.readCell({ x: 0, y: height + 1 }),
+          Error,
+          `Cell (0, ${height + 1}) is out of bounds`,
+        );
+      });
+    });
+
+    describe("toroidal border wrapping", () => {
+      describe("corners", () => {
+        let cornerGrid: IGrid;
+
+        beforeAll(() => {
+          cornerGrid = Grid.fromString({
+            gridSize: { w: 3, h: 3 },
+            mode: GRID_MODES.TOROIDAL,
+            seed: `
+              # . #
+              . . .
+              # . .
+            `,
+          });
+        });
+
+        it("cell { x: 2, y: 2 } right neighbor is alive", () => {
+          const rightNeighborX = 3; // wraps to 0
+          const rightNeighborY = 2;
+          const isAlive = cornerGrid.readCell({
+            x: rightNeighborX,
+            y: rightNeighborY,
+          });
+          if (!isAlive) {
+            throw new Error(
+              `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+            );
+          }
+        });
+
+        it("cell { x: 2, y: 2 } bottom neighbor is alive", () => {
+          const bottomNeighborX = 2;
+          const bottomNeighborY = 3; // wraps to 0
+          const isAlive = cornerGrid.readCell({
+            x: bottomNeighborX,
+            y: bottomNeighborY,
+          });
+          if (!isAlive) {
+            throw new Error(
+              `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+            );
+          }
+        });
+
+        it("cell { x: 2, y: 2 } bottom-right neighbor is alive", () => {
           const bottomRightNeighborX = 3; // wraps to 0
           const bottomRightNeighborY = 3; // wraps to 0
           const isAlive = cornerGrid.readCell({
@@ -501,201 +489,200 @@ Deno.test("Grid.readCell", async (t) => {
               `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
             );
           }
-        },
-      );
-    });
-
-    await t.step("edges", async (t) => {
-      const midEdgeSeed = `
-      . # .
-      # . .
-      . . .
-      `;
-
-      const midEdgeGrid = Grid.fromString({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
-        seed: midEdgeSeed,
-      });
-
-      await t.step("cell {x: 2, y: 1 } right neighbor is alive", () => {
-        const rightNeighborX = 3;
-        const rightNeighborY = 1;
-        const isAlive = midEdgeGrid.readCell({
-          x: rightNeighborX,
-          y: rightNeighborY,
         });
-        if (!isAlive) {
-          throw new Error(
-            `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
-          );
-        }
       });
 
-      await t.step("cell { x: 1, y: 2 } bottom neighbor is alive", () => {
-        const bottomNeighborX = 1;
-        const bottomNeighborY = 3; // wraps to 0
-        const isAlive = midEdgeGrid.readCell({
-          x: bottomNeighborX,
-          y: bottomNeighborY,
+      describe("edges", () => {
+        let midEdgeGrid: IGrid;
+
+        beforeAll(() => {
+          midEdgeGrid = Grid.fromString({
+            gridSize: { w: 3, h: 3 },
+            mode: GRID_MODES.TOROIDAL,
+            seed: `
+              . # .
+              # . .
+              . . .
+            `,
+          });
         });
-        if (!isAlive) {
-          throw new Error(
-            `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
-          );
-        }
+
+        it("cell {x: 2, y: 1 } right neighbor is alive", () => {
+          const rightNeighborX = 3;
+          const rightNeighborY = 1;
+          const isAlive = midEdgeGrid.readCell({
+            x: rightNeighborX,
+            y: rightNeighborY,
+          });
+          if (!isAlive) {
+            throw new Error(
+              `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+            );
+          }
+        });
+
+        it("cell { x: 1, y: 2 } bottom neighbor is alive", () => {
+          const bottomNeighborX = 1;
+          const bottomNeighborY = 3; // wraps to 0
+          const isAlive = midEdgeGrid.readCell({
+            x: bottomNeighborX,
+            y: bottomNeighborY,
+          });
+          if (!isAlive) {
+            throw new Error(
+              `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+            );
+          }
+        });
       });
     });
   });
-});
 
-Deno.test("Grid.writeCell", async (t) => {
-  await t.step("out of bounds throws", async (t) => {
-    await t.step("left edge exceeded", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      assertThrows(
-        () => grid.writeCell({ x: -2, y: 0 }, true),
-        Error,
-        "Cell (-2, 0) is out of bounds",
-      );
-    });
-
-    await t.step("right edge exceeded", () => {
-      const width = 5;
-      const grid = new Grid({ gridSize: { w: width, h: 5 } });
-      assertThrows(
-        () => grid.writeCell({ x: width + 1, y: 0 }, true),
-        Error,
-        `Cell (${width + 1}, 0) is out of bounds`,
-      );
-    });
-
-    await t.step("top edge exceeded", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      assertThrows(
-        () => grid.writeCell({ x: 0, y: -2 }, true),
-        Error,
-        "Cell (0, -2) is out of bounds",
-      );
-    });
-
-    await t.step("bottom edge exceeded", () => {
-      const height = 5;
-      const grid = new Grid({ gridSize: { w: 5, h: height } });
-      assertThrows(
-        () => grid.writeCell({ x: 0, y: height + 1 }, true),
-        Error,
-        `Cell (0, ${height + 1}) is out of bounds`,
-      );
-    });
-  });
-
-  await t.step("finite border is a no-op", async (t) => {
-    await t.step("writing alive to a border cell does not persist", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      grid.writeCell({ x: -1, y: 2 }, true);
-      assertEquals(grid.readCell({ x: -1, y: 2 }), false);
-      assertEquals(grid.population, 0);
-    });
-
-    await t.step("writing dead to a border cell does not throw", () => {
-      const gridSize: GridSize = { w: 5, h: 5 };
-      const grid = new Grid({ gridSize });
-      grid.writeCell({ x: 5, y: 2 }, false);
-      assertEquals(grid.readCell({ x: 5, y: 2 }), false);
-    });
-  });
-
-  await t.step("toroidal border wrapping", async (t) => {
-    await t.step("right-edge write wraps to (0, y), preserving y", () => {
-      const grid = new Grid({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
+  describe("writeCell", () => {
+    describe("out of bounds throws", () => {
+      it("left edge exceeded", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        assertThrows(
+          () => grid.writeCell({ x: -2, y: 0 }, true),
+          Error,
+          "Cell (-2, 0) is out of bounds",
+        );
       });
-      grid.writeCell({ x: 3, y: 2 }, true);
-      assertEquals(grid.readCell({ x: 0, y: 2 }), true);
-      assertEquals(grid.readCell({ x: 0, y: 0 }), false);
-    });
 
-    await t.step("bottom-edge write wraps to (x, 0), preserving x", () => {
-      const grid = new Grid({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
+      it("right edge exceeded", () => {
+        const width = 5;
+        const grid = new Grid({ gridSize: { w: width, h: 5 } });
+        assertThrows(
+          () => grid.writeCell({ x: width + 1, y: 0 }, true),
+          Error,
+          `Cell (${width + 1}, 0) is out of bounds`,
+        );
       });
-      grid.writeCell({ x: 2, y: 3 }, true);
-      assertEquals(grid.readCell({ x: 2, y: 0 }), true);
-      assertEquals(grid.readCell({ x: 0, y: 0 }), false);
-    });
 
-    await t.step("bottom-right corner write wraps to (0, 0)", () => {
-      const grid = new Grid({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
+      it("top edge exceeded", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        assertThrows(
+          () => grid.writeCell({ x: 0, y: -2 }, true),
+          Error,
+          "Cell (0, -2) is out of bounds",
+        );
       });
-      grid.writeCell({ x: 3, y: 3 }, true);
-      assertEquals(grid.readCell({ x: 0, y: 0 }), true);
-    });
 
-    await t.step("left-edge write wraps to (w - 1, y), preserving y", () => {
-      const grid = Grid.fromString({
-        gridSize: { w: 3, h: 3 },
-        mode: GRID_MODES.TOROIDAL,
-        seed: `
-          . . .
-          . . #
-          . . .
-        `,
+      it("bottom edge exceeded", () => {
+        const height = 5;
+        const grid = new Grid({ gridSize: { w: 5, h: height } });
+        assertThrows(
+          () => grid.writeCell({ x: 0, y: height + 1 }, true),
+          Error,
+          `Cell (0, ${height + 1}) is out of bounds`,
+        );
       });
-      grid.writeCell({ x: -1, y: 1 }, false);
-      assertEquals(grid.readCell({ x: 2, y: 1 }), false);
-    });
-  });
-
-  await t.step("writes within bounds", async (t) => {
-    await t.step("should bring a dead cell to life", () => {
-      const grid = new Grid({ gridSize: { w: 5, h: 5 } });
-      grid.writeCell({ x: 2, y: 2 }, true);
-      assertEquals(grid.readCell({ x: 2, y: 2 }), true);
     });
 
-    await t.step("should kill a live cell", () => {
-      const grid = Grid.fromString({
-        gridSize: { w: 3, h: 3 },
-        seed: `
-          # . .
-          . . .
-          . . .
-        `,
+    describe("finite border is a no-op", () => {
+      it("writing alive to a border cell does not persist", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        grid.writeCell({ x: -1, y: 2 }, true);
+        assertEquals(grid.readCell({ x: -1, y: 2 }), false);
+        assertEquals(grid.population, 0);
       });
-      grid.writeCell({ x: 0, y: 0 }, false);
-      assertEquals(grid.readCell({ x: 0, y: 0 }), false);
+
+      it("writing dead to a border cell does not throw", () => {
+        const gridSize: GridSize = { w: 5, h: 5 };
+        const grid = new Grid({ gridSize });
+        grid.writeCell({ x: 5, y: 2 }, false);
+        assertEquals(grid.readCell({ x: 5, y: 2 }), false);
+      });
     });
 
-    await t.step("should be a no-op when killing an already-dead cell", () => {
-      const grid = new Grid({ gridSize: { w: 5, h: 5 } });
-      grid.writeCell({ x: 1, y: 1 }, false);
-      assertEquals(grid.population, 0);
+    describe("toroidal border wrapping", () => {
+      it("right-edge write wraps to (0, y), preserving y", () => {
+        const grid = new Grid({
+          gridSize: { w: 3, h: 3 },
+          mode: GRID_MODES.TOROIDAL,
+        });
+        grid.writeCell({ x: 3, y: 2 }, true);
+        assertEquals(grid.readCell({ x: 0, y: 2 }), true);
+        assertEquals(grid.readCell({ x: 0, y: 0 }), false);
+      });
+
+      it("bottom-edge write wraps to (x, 0), preserving x", () => {
+        const grid = new Grid({
+          gridSize: { w: 3, h: 3 },
+          mode: GRID_MODES.TOROIDAL,
+        });
+        grid.writeCell({ x: 2, y: 3 }, true);
+        assertEquals(grid.readCell({ x: 2, y: 0 }), true);
+        assertEquals(grid.readCell({ x: 0, y: 0 }), false);
+      });
+
+      it("bottom-right corner write wraps to (0, 0)", () => {
+        const grid = new Grid({
+          gridSize: { w: 3, h: 3 },
+          mode: GRID_MODES.TOROIDAL,
+        });
+        grid.writeCell({ x: 3, y: 3 }, true);
+        assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+      });
+
+      it("left-edge write wraps to (w - 1, y), preserving y", () => {
+        const grid = Grid.fromString({
+          gridSize: { w: 3, h: 3 },
+          mode: GRID_MODES.TOROIDAL,
+          seed: `
+            . . .
+            . . #
+            . . .
+          `,
+        });
+        grid.writeCell({ x: -1, y: 1 }, false);
+        assertEquals(grid.readCell({ x: 2, y: 1 }), false);
+      });
     });
 
-    await t.step("should not increase population when reviving twice", () => {
-      const grid = new Grid({ gridSize: { w: 5, h: 5 } });
-      grid.writeCell({ x: 1, y: 1 }, true);
-      grid.writeCell({ x: 1, y: 1 }, true);
-      assertEquals(grid.population, 1);
-    });
+    describe("writes within bounds", () => {
+      it("should bring a dead cell to life", () => {
+        const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+        grid.writeCell({ x: 2, y: 2 }, true);
+        assertEquals(grid.readCell({ x: 2, y: 2 }), true);
+      });
 
-    await t.step("should allow writing at the top-left corner (0, 0)", () => {
-      const grid = new Grid({ gridSize: { w: 5, h: 5 } });
-      grid.writeCell({ x: 0, y: 0 }, true);
-      assertEquals(grid.readCell({ x: 0, y: 0 }), true);
-    });
+      it("should kill a live cell", () => {
+        const grid = Grid.fromString({
+          gridSize: { w: 3, h: 3 },
+          seed: `
+            # . .
+            . . .
+            . . .
+          `,
+        });
+        grid.writeCell({ x: 0, y: 0 }, false);
+        assertEquals(grid.readCell({ x: 0, y: 0 }), false);
+      });
 
-    await t.step(
-      "should allow writing at the bottom-right corner (w - 1, h - 1)",
-      () => {
+      it("should be a no-op when killing an already-dead cell", () => {
+        const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+        grid.writeCell({ x: 1, y: 1 }, false);
+        assertEquals(grid.population, 0);
+      });
+
+      it("should not increase population when reviving twice", () => {
+        const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+        grid.writeCell({ x: 1, y: 1 }, true);
+        grid.writeCell({ x: 1, y: 1 }, true);
+        assertEquals(grid.population, 1);
+      });
+
+      it("should allow writing at the top-left corner (0, 0)", () => {
+        const grid = new Grid({ gridSize: { w: 5, h: 5 } });
+        grid.writeCell({ x: 0, y: 0 }, true);
+        assertEquals(grid.readCell({ x: 0, y: 0 }), true);
+      });
+
+      it("should allow writing at the bottom-right corner (w - 1, h - 1)", () => {
         const gridSize: GridSize = { w: 5, h: 5 };
         const grid = new Grid({ gridSize });
         grid.writeCell({ x: gridSize.w - 1, y: gridSize.h - 1 }, true);
@@ -703,41 +690,38 @@ Deno.test("Grid.writeCell", async (t) => {
           grid.readCell({ x: gridSize.w - 1, y: gridSize.h - 1 }),
           true,
         );
-      },
-    );
-  });
-});
-
-Deno.test("Grid.equals", async (t) => {
-  await t.step("should return false when grid sizes differ", () => {
-    const a = new Grid({ gridSize: { w: 4, h: 4 } });
-    const b = new Grid({ gridSize: { w: 5, h: 5 } });
-    assertEquals(a.equals(b), false);
-  });
-
-  await t.step("should return false when population differs", () => {
-    const a = Grid.fromString({
-      gridSize: { w: 3, h: 3 },
-      seed: `
-        # . .
-        . . .
-        . . .
-      `,
+      });
     });
-    const b = Grid.fromString({
-      gridSize: { w: 3, h: 3 },
-      seed: `
-        # . .
-        . # .
-        . . .
-      `,
-    });
-    assertEquals(a.equals(b), false);
   });
 
-  await t.step(
-    "should return false when population matches but live cell coordinates differ",
-    () => {
+  describe("equals", () => {
+    it("should return false when grid sizes differ", () => {
+      const a = new Grid({ gridSize: { w: 4, h: 4 } });
+      const b = new Grid({ gridSize: { w: 5, h: 5 } });
+      assertEquals(a.equals(b), false);
+    });
+
+    it("should return false when population differs", () => {
+      const a = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
+          # . .
+          . . .
+          . . .
+        `,
+      });
+      const b = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
+          # . .
+          . # .
+          . . .
+        `,
+      });
+      assertEquals(a.equals(b), false);
+    });
+
+    it("should return false when population matches but live cell coordinates differ", () => {
       const a = Grid.fromString({
         gridSize: { w: 3, h: 3 },
         seed: `
@@ -755,58 +739,55 @@ Deno.test("Grid.equals", async (t) => {
         `,
       });
       assertEquals(a.equals(b), false);
-    },
-  );
-
-  await t.step("should return false when modes differ", () => {
-    const seed = `
-      # . .
-      . # .
-      . . .
-    `;
-    const a = Grid.fromString({
-      gridSize: { w: 3, h: 3 },
-      seed,
-      mode: GRID_MODES.FINITE,
     });
-    const b = Grid.fromString({
-      gridSize: { w: 3, h: 3 },
-      seed,
-      mode: GRID_MODES.TOROIDAL,
+
+    it("should return false when modes differ", () => {
+      const seed = `
+        # . .
+        . # .
+        . . .
+      `;
+      const a = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed,
+        mode: GRID_MODES.FINITE,
+      });
+      const b = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed,
+        mode: GRID_MODES.TOROIDAL,
+      });
+      assertEquals(a.equals(b), false);
     });
-    assertEquals(a.equals(b), false);
-  });
 
-  await t.step("should return true for two grids with identical cells", () => {
-    const seed = `
-      # . . #
-      . # # .
-      . . . #
-      # # . .
-    `;
-    const a = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
-    const b = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
-    assertEquals(a.equals(b), true);
-  });
+    it("should return true for two grids with identical cells", () => {
+      const seed = `
+        # . . #
+        . # # .
+        . . . #
+        # # . .
+      `;
+      const a = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
+      const b = Grid.fromString({ gridSize: { w: 4, h: 4 }, seed });
+      assertEquals(a.equals(b), true);
+    });
 
-  await t.step(
-    "should return true for two empty grids of the same size",
-    () => {
+    it("should return true for two empty grids of the same size", () => {
       const a = new Grid({ gridSize: { w: 5, h: 5 } });
       const b = new Grid({ gridSize: { w: 5, h: 5 } });
       assertEquals(a.equals(b), true);
-    },
-  );
-
-  await t.step("should return true for a grid compared to itself", () => {
-    const grid = Grid.fromString({
-      gridSize: { w: 3, h: 3 },
-      seed: `
-        # . .
-        . # .
-        . . #
-      `,
     });
-    assertEquals(grid.equals(grid), true);
+
+    it("should return true for a grid compared to itself", () => {
+      const grid = Grid.fromString({
+        gridSize: { w: 3, h: 3 },
+        seed: `
+          # . .
+          . # .
+          . . #
+        `,
+      });
+      assertEquals(grid.equals(grid), true);
+    });
   });
 });

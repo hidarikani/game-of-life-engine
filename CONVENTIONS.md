@@ -78,6 +78,20 @@ higher score from [JSR][jsr].
   point. A non-trivial callback SHOULD be extracted into a named `function`
   declaration so it appears by name in stack traces and profiles.
 
+### Testing
+
+- Tests SHALL be written in the BDD style, using `describe` to group cases and
+  `it` to declare them, as described in the [Deno BDD tutorial][bdd-tutorial]
+  and provided by [`@std/testing/bdd`][std-bdd].
+- The outermost `describe` SHALL name the unit under test (e.g. `Grid`, `seed`),
+  with nested `describe` blocks naming the method or behaviour being exercised.
+  This keeps the `deno test` output readable as a specification.
+- Assertions SHALL come from [`@std/assert`][std-assert].
+- Fixtures shared by several cases SHOULD be created in a `beforeEach` hook
+  rather than repeated inline. `beforeAll` SHALL be reserved for fixtures that
+  are either read-only or deliberately mutated in sequence by successive cases;
+  where a group relies on that sequencing, it MUST say so in a comment.
+
 ### Import Order
 
 As of Deno 2.9.x, `deno fmt` does not enforce import ordering, so we follow this
@@ -108,4 +122,7 @@ convention manually:
 [deno]: https://deno.com/
 [jsr]: https://jsr.io
 [js-doc]: https://jsdoc.app/
+[std-assert]: https://jsr.io/@std/assert
+[std-bdd]: https://jsr.io/@std/testing/doc/bdd
+[bdd-tutorial]: https://docs.deno.com/examples/bdd_tutorial/
 [rfc-2119]: https://www.rfc-editor.org/rfc/rfc2119.html
