@@ -1,4 +1,6 @@
-import type { CellKey, GridSize, LiveCells } from "../types/types.ts";
+import type { CellKey, LiveCells } from "../types/cell.ts";
+import type { GridSize } from "../types/grid.ts";
+
 import { assertEquals, assertThrows } from "@std/assert";
 import {
   generationToString,

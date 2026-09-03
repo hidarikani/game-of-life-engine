@@ -1,5 +1,5 @@
-import type { IGrid } from "./types.ts";
 import type { PATTERN_TYPES } from "../constants.ts";
+import type { IGrid } from "./grid.ts";
 
 /**
  * Classification of a pattern by its long-term behavior:

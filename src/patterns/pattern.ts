@@ -1,4 +1,4 @@
-import type { GridSize } from "../types/types.ts";
+import type { GridSize } from "../types/grid.ts";
 import type {
   IPatternLib,
   Pattern,

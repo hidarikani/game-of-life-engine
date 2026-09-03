@@ -1,7 +1,9 @@
+import type { GridMode, GridSize } from "../types/grid.ts";
+
 import { assertEquals, assertThrows } from "@std/assert";
+
 import { GRID_MODES } from "../constants.ts";
 import { Engine } from "./engine.ts";
-import type { GridMode, GridSize } from "../types/types.ts";
 import { normalizeSeed } from "../seed/seed.ts";
 import { Grid } from "../grid/grid.ts";
 
