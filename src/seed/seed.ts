@@ -31,24 +31,26 @@ export function cellKeyToPoint(key: CellKey): Point {
  * Strips leading/trailing whitespace from a seed string and from each of
  * its rows, so seeds written as indented template literals parse cleanly.
  */
-export const normalizeSeed = (seed: string): string =>
-  seed
+export function normalizeSeed(seed: string): string {
+  return seed
     .trim()
     .split("\n")
     .map((line) => line.trim())
     .join("\n");
+}
 
 /**
  * Splits a normalized seed string into rows of cell states. Expects
  * input that has already passed `SEED_PATTERN` validation and
  * `normalizeSeed`; unexpected characters yield `undefined` entries.
  */
-export const splitSeed = (normalizedSeed: string): boolean[][] =>
-  normalizedSeed.split(NEWLINE_CHAR).map((row) =>
+export function splitSeed(normalizedSeed: string): boolean[][] {
+  return normalizedSeed.split(NEWLINE_CHAR).map((row) =>
     row.split(SEPARATOR_CHAR).map((char) =>
       CELL_CHAR_TO_BOOL[char as CellChars]
     )
   );
+}
 
 /**
  * Parses a seed string into sparse live-cell storage. Inverse of
@@ -57,11 +59,11 @@ export const splitSeed = (normalizedSeed: string): boolean[][] =>
  * @throws If the seed contains invalid characters or its dimensions
  * don't match `width` and `height`.
  */
-export const stringToGeneration = (
+export function stringToGeneration(
   seed: string,
   width: number,
   height: number,
-): LiveCells => {
+): LiveCells {
   if (!SEED_PATTERN.test(seed)) {
     throw new Error("Seed contains invalid characters");
   }
@@ -97,16 +99,16 @@ export const stringToGeneration = (
   }
 
   return aliveCells;
-};
+}
 
 /**
  * Renders sparse live-cell storage as a seed string. Inverse of
  * `stringToGeneration`.
  */
-export const generationToString = (
+export function generationToString(
   generation: LiveCells,
   size: GridSize,
-): string => {
+): string {
   let res = "";
   for (let y = 0; y < size.h; y++) {
     const row: string[] = [];
@@ -118,4 +120,4 @@ export const generationToString = (
     res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
   }
   return res.trim();
-};
+}

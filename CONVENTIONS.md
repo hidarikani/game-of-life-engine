@@ -68,6 +68,15 @@ higher score from [JSR][jsr].
 - Types/interfaces: `PascalCase` (Point, Rectangle, GridMode, EngineOptions)
 - Private fields use `#` syntax (e.g., `#liveCells`, `#bottomRightCorner`)
 - One main class per file; tests colocated as `*.test.ts`
+- Named top-level functions MUST be written as `function` declarations, not as
+  arrow functions assigned to `const`. Declarations are hoisted (so files can be
+  organized public-API-first and they stay safe under circular imports), read as
+  named API surface, and their braced bodies give the debugger real statements
+  to break on.
+- Arrow functions SHALL be reserved for nested and anonymous callbacks (e.g.
+  `map`/`filter` lambdas), where their lexical `this` and terseness are the
+  point. A non-trivial callback SHOULD be extracted into a named `function`
+  declaration so it appears by name in stack traces and profiles.
 
 ### Import Order
 
