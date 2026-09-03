@@ -9,7 +9,7 @@ export type {
   IGrid,
   PlacementMode,
 } from "./src/types/grid.ts";
-export type { EngineOptions, IEngine } from "./src/types/types.ts";
+export type { EngineOptions, IEngine } from "./src/types/engine.ts";
 export type {
   IPatternLib,
   Pattern,
