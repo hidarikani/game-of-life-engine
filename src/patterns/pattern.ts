@@ -4,7 +4,7 @@ import type {
   Pattern,
   PatternFilter,
   PatternsRaw,
-} from "../types/patterns.ts";
+} from "../types/pattern.ts";
 import { Grid } from "../grid/grid.ts";
 import { parse } from "@std/yaml";
 import patternsJson from "../../data/patterns/patterns.json" with {

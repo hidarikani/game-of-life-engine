@@ -15,7 +15,7 @@ export type {
   Pattern,
   PatternFilter,
   PatternType,
-} from "./src/types/patterns.ts";
+} from "./src/types/pattern.ts";
 
 // Classes
 export { Grid } from "./src/grid/grid.ts";
