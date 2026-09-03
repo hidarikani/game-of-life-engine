@@ -39,14 +39,6 @@ export type CellKey = `${number},${number}`;
 export type LiveCells = Map<CellKey, boolean>;
 
 /**
- * Outcome of a validation check. When `valid` is `false`, `message`
- * explains the failure in human-readable form.
- */
-export type ValidationResult =
-  | { valid: true }
-  | { valid: false; message: string };
-
-/**
  * Determines how an inner grid is placed onto an outer grid.
  *
  * - `"Overwrite"` — the target rectangle is cleared first, so dead cells
