@@ -29,7 +29,7 @@ export const NEWLINE_CHAR = "\n" as const;
  * Matches seed strings composed only of the allowed characters.
  * Used to reject malformed seeds before parsing.
  */
-export const SEED_PATTERN = new RegExp(
+export const SEED_PATTERN: RegExp = new RegExp(
   `^[${ALIVE_CHAR}${DEAD_CHAR}${SEPARATOR_CHAR}${NEWLINE_CHAR}]*$`,
 );
 
