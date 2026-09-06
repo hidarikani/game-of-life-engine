@@ -3,10 +3,12 @@ import type { GridSize } from "../types/grid.ts";
 
 import { assertEquals, assertThrows } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
+import { stub } from "@std/testing/mock";
 
 import {
   generationToString,
   normalizeSeed,
+  randSeed,
   stringToGeneration,
 } from "./seed.ts";
 
@@ -145,6 +147,95 @@ describe("seed", () => {
       const result = generationToString(generation, size);
       const expected = normalizeSeed(seed);
       assertEquals(result, expected);
+    });
+  });
+
+  describe("randSeed", () => {
+    describe("invalid bias throws", () => {
+      it("bias of exactly 0 throws", () => {
+        assertThrows(
+          () => randSeed({ w: 3, h: 3 }, 0),
+          Error,
+          "bias must be larger than zero and less than 1",
+        );
+      });
+
+      it("bias of exactly 1 throws", () => {
+        assertThrows(
+          () => randSeed({ w: 3, h: 3 }, 1),
+          Error,
+          "bias must be larger than zero and less than 1",
+        );
+      });
+
+      it("negative bias throws", () => {
+        assertThrows(
+          () => randSeed({ w: 3, h: 3 }, -0.1),
+          Error,
+          "bias must be larger than zero and less than 1",
+        );
+      });
+
+      it("bias greater than 1 throws", () => {
+        assertThrows(
+          () => randSeed({ w: 3, h: 3 }, 1.1),
+          Error,
+          "bias must be larger than zero and less than 1",
+        );
+      });
+    });
+
+    it("defaults to a bias of 0.5 when omitted", () => {
+      using _randomStub = stub(Math, "random", () => 0.6);
+      const size = { w: 2, h: 2 };
+      const result = randSeed(size);
+      assertEquals(result, "# #\n# #");
+    });
+
+    it("produces a row per height and a cell per width", () => {
+      const size = { w: 5, h: 3 };
+      const result = randSeed(size, 0.5);
+      const rows = result.split("\n");
+      assertEquals(rows.length, size.h);
+      for (const row of rows) {
+        assertEquals(row.split(" ").length, size.w);
+      }
+    });
+
+    it("only produces valid seed characters that parse back cleanly", () => {
+      const size = { w: 6, h: 6 };
+      const result = randSeed(size, 0.3);
+      stringToGeneration(result, size.w, size.h);
+    });
+
+    it("a cell is dead when the random draw is below bias", () => {
+      using _randomStub = stub(Math, "random", () => 0.2);
+      const result = randSeed({ w: 2, h: 2 }, 0.5);
+      assertEquals(result, ". .\n. .");
+    });
+
+    it("a cell is alive when the random draw is above bias", () => {
+      using _randomStub = stub(Math, "random", () => 0.8);
+      const result = randSeed({ w: 2, h: 2 }, 0.5);
+      assertEquals(result, "# #\n# #");
+    });
+
+    it("a cell is dead when the random draw equals bias exactly", () => {
+      using _randomStub = stub(Math, "random", () => 0.5);
+      const result = randSeed({ w: 1, h: 1 }, 0.5);
+      assertEquals(result, ".");
+    });
+
+    it("a lower bias raises the chance of a cell being alive", () => {
+      using _randomStub = stub(Math, "random", () => 0.4);
+      const result = randSeed({ w: 1, h: 1 }, 0.1);
+      assertEquals(result, "#");
+    });
+
+    it("a higher bias lowers the chance of a cell being alive", () => {
+      using _randomStub = stub(Math, "random", () => 0.4);
+      const result = randSeed({ w: 1, h: 1 }, 0.9);
+      assertEquals(result, ".");
     });
   });
 });

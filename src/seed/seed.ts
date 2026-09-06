@@ -121,3 +121,28 @@ export function generationToString(
   }
   return res.trim();
 }
+
+/**
+ * Generates a random seed string for a grid of the given size. Each
+ * cell is independently alive when a uniform `[0, 1)` draw exceeds
+ * `bias`, so a lower `bias` yields more alive cells and a higher one
+ * yields more dead cells; the default of `0.5` is an even split.
+ *
+ * @throws If `bias` is not strictly between 0 and 1.
+ */
+export function randSeed(size: GridSize, bias: number = 0.5): string {
+  if (bias <= 0 || bias >= 1) {
+    throw new Error("bias must be larger than zero and less than 1");
+  }
+
+  let res = "";
+  for (let y = 0; y < size.h; y++) {
+    const row: string[] = [];
+    for (let x = 0; x < size.w; x++) {
+      const isAlive = Math.random() > bias;
+      row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
+    }
+    res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
+  }
+  return res.trim();
+}
