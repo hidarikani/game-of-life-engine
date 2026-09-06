@@ -123,14 +123,13 @@ export function generationToString(
 }
 
 /**
- * Generates a random seed string for a grid of the given size. Each
- * cell is independently alive when a uniform `[0, 1)` draw is less than
- * `biasTowardLife`, so a higher `biasTowardLife` yields more alive cells
- * and a lower one yields more dead cells; the default of `0.5` is an
- * even split.
+ * Generates a random seed string for a grid of the given size.
  *
  * @param size Dimensions of the seed to generate.
  * @param biasTowardLife Probability that any given cell starts alive.
+ * A cell is alive if a random `[0, 1)` draw is less than this value, so
+ * higher values yield more alive cells and lower values more dead ones.
+ * Defaults to `0.5` (even split).
  * @throws If `biasTowardLife` is not strictly between 0 and 1.
  */
 export function randomizeSeed(
