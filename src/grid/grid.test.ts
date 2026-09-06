@@ -8,7 +8,25 @@ import { stub } from "@std/testing/mock";
 
 import { Grid } from "./grid.ts";
 import { normalizeSeed, pointToCellKey, randomizeSeed } from "../seed/seed.ts";
-import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
+import { GRID_MODES, PLACEMENT_MODES } from "../constants/constants.ts";
+import {
+  cellOutOfBoundsMessage,
+  cellOutsideGridMessage,
+  gridDoesNotFitMessage,
+  INVALID_BIAS_TOWARD_LIFE_MESSAGE,
+  MIN_GRID_SIZE_MESSAGE,
+  SEED_HEIGHT_MISMATCH_MESSAGE,
+  SEED_INVALID_CHARACTERS_MESSAGE,
+  SEED_WIDTH_MISMATCH_MESSAGE,
+} from "../constants/messages.ts";
+
+/**
+ * Message for a toroidal wrapping case: the cell under test should have
+ * been kept alive by wrapping to the opposite edge, but read as dead.
+ */
+function expectedAliveDueToWrappingMessage({ x, y }: Point): string {
+  return `Expected cell (${x}, ${y}) to be alive due to wrapping, but it was dead.`;
+}
 
 describe("Grid", () => {
   describe("constructor", () => {
@@ -39,7 +57,7 @@ describe("Grid", () => {
         assertThrows(
           () => new Grid({ gridSize }),
           Error,
-          "Grid must be at least 3 cells wide and 3 cells tall",
+          MIN_GRID_SIZE_MESSAGE,
         );
       });
 
@@ -48,19 +66,20 @@ describe("Grid", () => {
         assertThrows(
           () => new Grid({ gridSize }),
           Error,
-          "Grid must be at least 3 cells wide and 3 cells tall",
+          MIN_GRID_SIZE_MESSAGE,
         );
       });
 
       it("should throw when cell y coordinate is out of bounds", () => {
         const gridSize: GridSize = { w: 5, h: 5 };
+        const outOfBoundsCell: Point = { x: 3, y: 5 };
         const liveCells: LiveCells = new Set();
-        liveCells.add(pointToCellKey({ x: 3, y: 5 }));
+        liveCells.add(pointToCellKey(outOfBoundsCell));
 
         assertThrows(
           () => new Grid({ gridSize, liveCells }),
           Error,
-          "Cell at (3, 5) is outside the grid of size (5, 5).",
+          cellOutsideGridMessage(outOfBoundsCell, gridSize),
         );
       });
     });
@@ -122,7 +141,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
-          "Seed contains invalid characters",
+          SEED_INVALID_CHARACTERS_MESSAGE,
         );
       });
 
@@ -137,7 +156,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed: invalidSeed }),
           Error,
-          "Seed contains invalid characters",
+          SEED_INVALID_CHARACTERS_MESSAGE,
         );
       });
 
@@ -151,7 +170,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed }),
           Error,
-          "Grid must be at least 3 cells wide and 3 cells tall",
+          MIN_GRID_SIZE_MESSAGE,
         );
       });
 
@@ -164,7 +183,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed }),
           Error,
-          "Grid must be at least 3 cells wide and 3 cells tall",
+          MIN_GRID_SIZE_MESSAGE,
         );
       });
 
@@ -178,7 +197,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed }),
           Error,
-          "Seed height does not match specified height",
+          SEED_HEIGHT_MISMATCH_MESSAGE,
         );
       });
 
@@ -193,7 +212,7 @@ describe("Grid", () => {
         assertThrows(
           () => Grid.fromString({ gridSize, seed }),
           Error,
-          "Seed width does not match specified width",
+          SEED_WIDTH_MISMATCH_MESSAGE,
         );
       });
     });
@@ -224,7 +243,7 @@ describe("Grid", () => {
       assertThrows(
         () => Grid.fromRandom({ gridSize, biasTowardLife: 0 }),
         Error,
-        "biasTowardLife must be larger than 0 and less than 1",
+        INVALID_BIAS_TOWARD_LIFE_MESSAGE,
       );
     });
 
@@ -233,7 +252,7 @@ describe("Grid", () => {
       assertThrows(
         () => Grid.fromRandom({ gridSize }),
         Error,
-        "Grid must be at least 3 cells wide and 3 cells tall",
+        MIN_GRID_SIZE_MESSAGE,
       );
     });
   });
@@ -274,7 +293,11 @@ describe("Grid", () => {
         assertThrows(
           () => outer.writeGrid({ inner }),
           Error,
-          "Inner grid of size (6, 6) offset by (0, 0) does not fit in outer grid of size (5, 5).",
+          gridDoesNotFitMessage({
+            outer: gridSizeOuter,
+            inner: gridSizeInner,
+            offset: { x: 0, y: 0 },
+          }),
         );
       });
 
@@ -287,7 +310,11 @@ describe("Grid", () => {
         assertThrows(
           () => outer.writeGrid({ inner, offset }),
           Error,
-          "Inner grid of size (5, 5) offset by (6, 6) does not fit in outer grid of size (10, 10).",
+          gridDoesNotFitMessage({
+            outer: gridSizeOuter,
+            inner: gridSizeInner,
+            offset,
+          }),
         );
       });
     });
@@ -438,7 +465,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.readCell({ x: -2, y: 0 }),
           Error,
-          "Cell (-2, 0) is out of bounds",
+          cellOutOfBoundsMessage({ x: -2, y: 0 }),
         );
       });
 
@@ -448,7 +475,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.readCell({ x: width + 1, y: 0 }),
           Error,
-          `Cell (${width + 1}, 0) is out of bounds`,
+          cellOutOfBoundsMessage({ x: width + 1, y: 0 }),
         );
       });
 
@@ -458,7 +485,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.readCell({ x: 0, y: -2 }),
           Error,
-          "Cell (0, -2) is out of bounds",
+          cellOutOfBoundsMessage({ x: 0, y: -2 }),
         );
       });
 
@@ -468,7 +495,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.readCell({ x: 0, y: height + 1 }),
           Error,
-          `Cell (0, ${height + 1}) is out of bounds`,
+          cellOutOfBoundsMessage({ x: 0, y: height + 1 }),
         );
       });
     });
@@ -498,7 +525,10 @@ describe("Grid", () => {
           });
           if (!isAlive) {
             throw new Error(
-              `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+              expectedAliveDueToWrappingMessage({
+                x: rightNeighborX,
+                y: rightNeighborY,
+              }),
             );
           }
         });
@@ -512,7 +542,10 @@ describe("Grid", () => {
           });
           if (!isAlive) {
             throw new Error(
-              `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+              expectedAliveDueToWrappingMessage({
+                x: bottomNeighborX,
+                y: bottomNeighborY,
+              }),
             );
           }
         });
@@ -526,7 +559,10 @@ describe("Grid", () => {
           });
           if (!isAlive) {
             throw new Error(
-              `Expected cell (${bottomRightNeighborX}, ${bottomRightNeighborY}) to be alive due to wrapping, but it was dead.`,
+              expectedAliveDueToWrappingMessage({
+                x: bottomRightNeighborX,
+                y: bottomRightNeighborY,
+              }),
             );
           }
         });
@@ -556,7 +592,10 @@ describe("Grid", () => {
           });
           if (!isAlive) {
             throw new Error(
-              `Expected cell (${rightNeighborX}, ${rightNeighborY}) to be alive due to wrapping, but it was dead.`,
+              expectedAliveDueToWrappingMessage({
+                x: rightNeighborX,
+                y: rightNeighborY,
+              }),
             );
           }
         });
@@ -570,7 +609,10 @@ describe("Grid", () => {
           });
           if (!isAlive) {
             throw new Error(
-              `Expected cell (${bottomNeighborX}, ${bottomNeighborY}) to be alive due to wrapping, but it was dead.`,
+              expectedAliveDueToWrappingMessage({
+                x: bottomNeighborX,
+                y: bottomNeighborY,
+              }),
             );
           }
         });
@@ -586,7 +628,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.writeCell({ x: -2, y: 0 }, true),
           Error,
-          "Cell (-2, 0) is out of bounds",
+          cellOutOfBoundsMessage({ x: -2, y: 0 }),
         );
       });
 
@@ -596,7 +638,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.writeCell({ x: width + 1, y: 0 }, true),
           Error,
-          `Cell (${width + 1}, 0) is out of bounds`,
+          cellOutOfBoundsMessage({ x: width + 1, y: 0 }),
         );
       });
 
@@ -606,7 +648,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.writeCell({ x: 0, y: -2 }, true),
           Error,
-          "Cell (0, -2) is out of bounds",
+          cellOutOfBoundsMessage({ x: 0, y: -2 }),
         );
       });
 
@@ -616,7 +658,7 @@ describe("Grid", () => {
         assertThrows(
           () => grid.writeCell({ x: 0, y: height + 1 }, true),
           Error,
-          `Cell (0, ${height + 1}) is out of bounds`,
+          cellOutOfBoundsMessage({ x: 0, y: height + 1 }),
         );
       });
     });

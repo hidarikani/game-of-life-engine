@@ -4,6 +4,11 @@ import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 
 import {
+  cellOutsideGridMessage,
+  gridDoesNotFitMessage,
+  MIN_GRID_SIZE_MESSAGE,
+} from "../constants/messages.ts";
+import {
   gridContainsCells,
   gridContainsGrid,
   isPointInsideBorder,
@@ -28,14 +33,14 @@ describe("geometry", () => {
     it("width below minimum fails with message", () => {
       assertEquals(validateMinGridSize({ w: 2, h: 3 }), {
         valid: false,
-        message: "Grid must be at least 3 cells wide and 3 cells tall",
+        message: MIN_GRID_SIZE_MESSAGE,
       });
     });
 
     it("height below minimum fails with message", () => {
       assertEquals(validateMinGridSize({ w: 3, h: 2 }), {
         valid: false,
-        message: "Grid must be at least 3 cells wide and 3 cells tall",
+        message: MIN_GRID_SIZE_MESSAGE,
       });
     });
   });
@@ -183,8 +188,11 @@ describe("geometry", () => {
           gridContainsGrid({ outer: { w: 4, h: 10 }, inner: { w: 5, h: 3 } }),
           {
             valid: false,
-            message:
-              "Inner grid of size (5, 3) offset by (0, 0) does not fit in outer grid of size (4, 10).",
+            message: gridDoesNotFitMessage({
+              outer: { w: 4, h: 10 },
+              inner: { w: 5, h: 3 },
+              offset: { x: 0, y: 0 },
+            }),
           },
         );
       });
@@ -194,8 +202,11 @@ describe("geometry", () => {
           gridContainsGrid({ outer: { w: 10, h: 4 }, inner: { w: 3, h: 5 } }),
           {
             valid: false,
-            message:
-              "Inner grid of size (3, 5) offset by (0, 0) does not fit in outer grid of size (10, 4).",
+            message: gridDoesNotFitMessage({
+              outer: { w: 10, h: 4 },
+              inner: { w: 3, h: 5 },
+              offset: { x: 0, y: 0 },
+            }),
           },
         );
       });
@@ -209,8 +220,11 @@ describe("geometry", () => {
           }),
           {
             valid: false,
-            message:
-              "Inner grid of size (5, 5) offset by (6, 0) does not fit in outer grid of size (10, 10).",
+            message: gridDoesNotFitMessage({
+              outer: { w: 10, h: 10 },
+              inner: { w: 5, h: 5 },
+              offset: { x: 6, y: 0 },
+            }),
           },
         );
       });
@@ -224,8 +238,11 @@ describe("geometry", () => {
           }),
           {
             valid: false,
-            message:
-              "Inner grid of size (5, 5) offset by (0, 6) does not fit in outer grid of size (10, 10).",
+            message: gridDoesNotFitMessage({
+              outer: { w: 10, h: 10 },
+              inner: { w: 5, h: 5 },
+              offset: { x: 0, y: 6 },
+            }),
           },
         );
       });
@@ -280,7 +297,7 @@ describe("geometry", () => {
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
             valid: false,
-            message: "Cell at (-1, 2) is outside the grid of size (5, 5).",
+            message: cellOutsideGridMessage({ x: -1, y: 2 }, { w: 5, h: 5 }),
           },
         );
       });
@@ -292,7 +309,7 @@ describe("geometry", () => {
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
             valid: false,
-            message: "Cell at (2, -1) is outside the grid of size (5, 5).",
+            message: cellOutsideGridMessage({ x: 2, y: -1 }, { w: 5, h: 5 }),
           },
         );
       });
@@ -304,7 +321,7 @@ describe("geometry", () => {
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
             valid: false,
-            message: "Cell at (5, 2) is outside the grid of size (5, 5).",
+            message: cellOutsideGridMessage({ x: 5, y: 2 }, { w: 5, h: 5 }),
           },
         );
       });
@@ -316,7 +333,7 @@ describe("geometry", () => {
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
             valid: false,
-            message: "Cell at (2, 5) is outside the grid of size (5, 5).",
+            message: cellOutsideGridMessage({ x: 2, y: 5 }, { w: 5, h: 5 }),
           },
         );
       });
@@ -329,7 +346,7 @@ describe("geometry", () => {
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
             valid: false,
-            message: "Cell at (10, 10) is outside the grid of size (5, 5).",
+            message: cellOutsideGridMessage({ x: 10, y: 10 }, { w: 5, h: 5 }),
           },
         );
       });

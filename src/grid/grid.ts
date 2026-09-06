@@ -24,7 +24,13 @@ import {
   PLACEMENT_MODES,
   SEED_PATTERN,
   SEPARATOR_CHAR,
-} from "../constants.ts";
+} from "../constants/constants.ts";
+import {
+  cellOutOfBoundsMessage,
+  SEED_HEIGHT_MISMATCH_MESSAGE,
+  SEED_INVALID_CHARACTERS_MESSAGE,
+  SEED_WIDTH_MISMATCH_MESSAGE,
+} from "../constants/messages.ts";
 import {
   gridContainsCells,
   gridContainsGrid,
@@ -116,7 +122,7 @@ export class Grid implements IGrid {
         h: this.gridSize.h,
       })
     ) {
-      throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+      throw new Error(cellOutOfBoundsMessage({ x, y }));
     }
 
     if (
@@ -170,7 +176,7 @@ export class Grid implements IGrid {
         h: this.gridSize.h,
       })
     ) {
-      throw new Error(`Cell (${x}, ${y}) is out of bounds`);
+      throw new Error(cellOutOfBoundsMessage({ x, y }));
     }
 
     if (
@@ -281,7 +287,7 @@ export class Grid implements IGrid {
     { gridSize, seed, mode = GRID_MODES.FINITE }: GridOptionsFromString,
   ): IGrid {
     if (!SEED_PATTERN.test(seed)) {
-      throw new Error("Seed contains invalid characters");
+      throw new Error(SEED_INVALID_CHARACTERS_MESSAGE);
     }
 
     const minGridSizeResult = validateMinGridSize(gridSize);
@@ -295,12 +301,12 @@ export class Grid implements IGrid {
     const rows = splitSeed(normalizedSeed);
 
     if (rows.length !== gridSize.h) {
-      throw new Error("Seed height does not match specified height");
+      throw new Error(SEED_HEIGHT_MISMATCH_MESSAGE);
     }
 
     for (const row of rows) {
       if (row.length !== gridSize.w) {
-        throw new Error("Seed width does not match specified width");
+        throw new Error(SEED_WIDTH_MISMATCH_MESSAGE);
       }
     }
 

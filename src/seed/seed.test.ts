@@ -6,6 +6,12 @@ import { describe, it } from "@std/testing/bdd";
 import { stub } from "@std/testing/mock";
 
 import {
+  INVALID_BIAS_TOWARD_LIFE_MESSAGE,
+  SEED_HEIGHT_MISMATCH_MESSAGE,
+  SEED_INVALID_CHARACTERS_MESSAGE,
+  SEED_WIDTH_MISMATCH_MESSAGE,
+} from "../constants/messages.ts";
+import {
   generationToString,
   normalizeSeed,
   randomizeSeed,
@@ -35,7 +41,7 @@ describe("seed", () => {
         assertThrows(
           () => stringToGeneration(invalidSeed, 4, 4),
           Error,
-          "Seed contains invalid characters",
+          SEED_INVALID_CHARACTERS_MESSAGE,
         );
       });
 
@@ -49,7 +55,7 @@ describe("seed", () => {
         assertThrows(
           () => stringToGeneration(invalidSeed, 4, 4),
           Error,
-          "Seed contains invalid characters",
+          SEED_INVALID_CHARACTERS_MESSAGE,
         );
       });
     });
@@ -64,7 +70,7 @@ describe("seed", () => {
       assertThrows(
         () => stringToGeneration(invalidSeed, 4, 5),
         Error,
-        "Seed height does not match specified height",
+        SEED_HEIGHT_MISMATCH_MESSAGE,
       );
     });
 
@@ -78,7 +84,7 @@ describe("seed", () => {
       assertThrows(
         () => stringToGeneration(invalidSeed, 4, 4),
         Error,
-        "Seed width does not match specified width",
+        SEED_WIDTH_MISMATCH_MESSAGE,
       );
     });
 
@@ -156,7 +162,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 0),
           Error,
-          "biasTowardLife must be larger than 0 and less than 1",
+          INVALID_BIAS_TOWARD_LIFE_MESSAGE,
         );
       });
 
@@ -164,7 +170,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 1),
           Error,
-          "biasTowardLife must be larger than 0 and less than 1",
+          INVALID_BIAS_TOWARD_LIFE_MESSAGE,
         );
       });
 
@@ -172,7 +178,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, -0.1),
           Error,
-          "biasTowardLife must be larger than 0 and less than 1",
+          INVALID_BIAS_TOWARD_LIFE_MESSAGE,
         );
       });
 
@@ -180,7 +186,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 1.1),
           Error,
-          "biasTowardLife must be larger than 0 and less than 1",
+          INVALID_BIAS_TOWARD_LIFE_MESSAGE,
         );
       });
     });
