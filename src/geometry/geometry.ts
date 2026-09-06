@@ -3,7 +3,12 @@ import type { Point } from "../types/geometry.ts";
 import type { LiveCells } from "../types/cell.ts";
 import type { GridSize } from "../types/grid.ts";
 
-import { MIN_GRID_SIZE } from "../constants.ts";
+import { MIN_GRID_SIZE } from "../constants/constants.ts";
+import {
+  cellOutsideGridMessage,
+  gridDoesNotFitMessage,
+  MIN_GRID_SIZE_MESSAGE,
+} from "../constants/messages.ts";
 import { cellKeyToPoint } from "../seed/seed.ts";
 
 /**
@@ -12,11 +17,7 @@ import { cellKeyToPoint } from "../seed/seed.ts";
  */
 export function validateMinGridSize(gridSize: GridSize): ValidationResult {
   if (gridSize.w < MIN_GRID_SIZE || gridSize.h < MIN_GRID_SIZE) {
-    return {
-      valid: false,
-      message:
-        `Grid must be at least ${MIN_GRID_SIZE} cells wide and ${MIN_GRID_SIZE} cells tall`,
-    };
+    return { valid: false, message: MIN_GRID_SIZE_MESSAGE };
   }
   return { valid: true };
 }
@@ -122,8 +123,7 @@ export function gridContainsGrid(
 
   return {
     valid: false,
-    message:
-      `Inner grid of size (${inner.w}, ${inner.h}) offset by (${offset.x}, ${offset.y}) does not fit in outer grid of size (${outer.w}, ${outer.h}).`,
+    message: gridDoesNotFitMessage({ outer, inner, offset }),
   };
 }
 
@@ -140,8 +140,7 @@ export function gridContainsCells(
     if (!isPointInsideBorder(point, outer)) {
       return {
         valid: false,
-        message:
-          `Cell at (${point.x}, ${point.y}) is outside the grid of size (${outer.w}, ${outer.h}).`,
+        message: cellOutsideGridMessage(point, outer),
       };
     }
   }

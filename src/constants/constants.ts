@@ -1,4 +1,4 @@
-import type { CellChars } from "./types/cell.ts";
+import type { CellChars } from "../types/cell.ts";
 
 /**
  * Smallest allowed grid dimension. Checking whether a cell lives or dies

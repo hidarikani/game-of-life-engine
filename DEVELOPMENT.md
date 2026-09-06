@@ -16,6 +16,11 @@ Runs on [Deno][deno]. Tested with `2.9.x`.
   folder of the same name
 - Typescript type definitions located in dedicated files under `src/types`, then
   imported into source files that depend on them.
+- Constants located under `src/constants`, then imported into source files that
+  depend on them. Messages carried by thrown errors SHALL be defined in
+  `src/constants/messages.ts` rather than inline at the throw site, so that a
+  message shared by several call sites is written once and tests can assert
+  against the same value the code throws.
 - Generic names, for fields holding utility (helper) functions, SHALL be
   avoided:
   - :x: Bad: `utils.ts`
@@ -30,6 +35,7 @@ Example:
 │   │   ├── grid.test.ts    # Unit tests
 │   │   ├── grid.demo.ts    # Runnable demo (deno run)
 │   │   └── GRID.md         # Docs explaining the runnable demo
+│   ├── constants/          # Shared constants, including thrown error messages
 │   ├── types/              # All types defined under this folder
 │   └── integration/        # Integration tests that test how several classes interact together
 ├── data/                   # YAML and JSON
