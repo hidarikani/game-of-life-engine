@@ -86,14 +86,14 @@ export function stringToGeneration(
     }
   }
 
-  const aliveCells: LiveCells = new Map();
+  const aliveCells: LiveCells = new Set();
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const cellState = rows[y][x];
       if (cellState) {
         const key = pointToCellKey({ x, y });
-        aliveCells.set(key, true);
+        aliveCells.add(key);
       }
     }
   }
@@ -114,7 +114,7 @@ export function generationToString(
     const row: string[] = [];
     for (let x = 0; x < size.w; x++) {
       const key = pointToCellKey({ x, y });
-      const isAlive = generation.get(key) ?? false;
+      const isAlive = generation.has(key);
       row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
     }
     res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;

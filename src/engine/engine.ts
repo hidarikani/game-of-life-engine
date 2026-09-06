@@ -136,14 +136,14 @@ export class Engine implements IEngine {
    * generation when the history exceeds `maxHistory`.
    */
   evolveGrid(): void {
-    const liveCells: LiveCells = new Map();
+    const liveCells: LiveCells = new Set();
 
     for (let y = 0; y < this.gridSize.h; y++) {
       for (let x = 0; x < this.gridSize.w; x++) {
         const nextCell = this.evolveCell({ x, y });
         if (nextCell) {
           const key = pointToCellKey({ x, y });
-          liveCells.set(key, true);
+          liveCells.add(key);
         }
       }
     }

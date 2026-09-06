@@ -20,12 +20,12 @@ describe("Grid", () => {
 
       it("should accept valid liveCells within bounds", () => {
         const gridSize: GridSize = { w: 5, h: 5 };
-        const liveCells: LiveCells = new Map();
+        const liveCells: LiveCells = new Set();
 
         // Add cells within bounds
-        liveCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-        liveCells.set(pointToCellKey({ x: 4, y: 4 }), true);
-        liveCells.set(pointToCellKey({ x: 2, y: 3 }), true);
+        liveCells.add(pointToCellKey({ x: 0, y: 0 }));
+        liveCells.add(pointToCellKey({ x: 4, y: 4 }));
+        liveCells.add(pointToCellKey({ x: 2, y: 3 }));
 
         const grid = new Grid({ gridSize, liveCells });
         assertEquals(grid instanceof Grid, true);
@@ -53,8 +53,8 @@ describe("Grid", () => {
 
       it("should throw when cell y coordinate is out of bounds", () => {
         const gridSize: GridSize = { w: 5, h: 5 };
-        const liveCells: LiveCells = new Map();
-        liveCells.set(pointToCellKey({ x: 3, y: 5 }), true);
+        const liveCells: LiveCells = new Set();
+        liveCells.add(pointToCellKey({ x: 3, y: 5 }));
 
         assertThrows(
           () => new Grid({ gridSize, liveCells }),
@@ -272,8 +272,8 @@ describe("Grid", () => {
       });
 
       it("should clear existing cells in the target region before placing", () => {
-        const innerCells: LiveCells = new Map();
-        innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
+        const innerCells: LiveCells = new Set();
+        innerCells.add(pointToCellKey({ x: 1, y: 0 }));
         const inner = new Grid({
           gridSize: { w: 3, h: 3 },
           liveCells: innerCells,
@@ -294,9 +294,9 @@ describe("Grid", () => {
       });
 
       it("should overwrite with offset", () => {
-        const innerCells: LiveCells = new Map();
-        innerCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-        innerCells.set(pointToCellKey({ x: 1, y: 0 }), true);
+        const innerCells: LiveCells = new Set();
+        innerCells.add(pointToCellKey({ x: 0, y: 0 }));
+        innerCells.add(pointToCellKey({ x: 1, y: 0 }));
         const inner = new Grid({
           gridSize: { w: 3, h: 3 },
           liveCells: innerCells,

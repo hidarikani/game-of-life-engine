@@ -11,4 +11,4 @@ export type CellKey = `${number},${number}`;
  * Sparse storage of a grid's living cells. Only live cells are present;
  * absence of a key means the cell is dead.
  */
-export type LiveCells = Map<CellKey, boolean>;
+export type LiveCells = Set<CellKey>;

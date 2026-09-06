@@ -1,3 +1,5 @@
+import type { LiveCells } from "../types/cell.ts";
+
 import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 
@@ -233,7 +235,7 @@ describe("geometry", () => {
   describe("gridContainsCells", () => {
     describe("returns valid", () => {
       it("empty cells map is valid for any grid", () => {
-        const inner = new Map();
+        const inner: LiveCells = new Set();
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           { valid: true },
@@ -241,8 +243,8 @@ describe("geometry", () => {
       });
 
       it("cell at top-left corner (0,0) is valid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 0, y: 0 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 0, y: 0 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           { valid: true },
@@ -250,8 +252,8 @@ describe("geometry", () => {
       });
 
       it("cell at bottom-right interior corner is valid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 4, y: 4 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 4, y: 4 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           { valid: true },
@@ -259,10 +261,10 @@ describe("geometry", () => {
       });
 
       it("multiple cells all inside grid are valid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 1, y: 1 }), true);
-        inner.set(pointToCellKey({ x: 2, y: 2 }), true);
-        inner.set(pointToCellKey({ x: 3, y: 3 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 1, y: 1 }));
+        inner.add(pointToCellKey({ x: 2, y: 2 }));
+        inner.add(pointToCellKey({ x: 3, y: 3 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           { valid: true },
@@ -272,8 +274,8 @@ describe("geometry", () => {
 
     describe("returns invalid", () => {
       it("cell with negative x is invalid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: -1, y: 2 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: -1, y: 2 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
@@ -284,8 +286,8 @@ describe("geometry", () => {
       });
 
       it("cell with negative y is invalid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 2, y: -1 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 2, y: -1 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
@@ -296,8 +298,8 @@ describe("geometry", () => {
       });
 
       it("cell with x equal to grid width is invalid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 5, y: 2 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 5, y: 2 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
@@ -308,8 +310,8 @@ describe("geometry", () => {
       });
 
       it("cell with y equal to grid height is invalid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 2, y: 5 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 2, y: 5 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
@@ -320,9 +322,9 @@ describe("geometry", () => {
       });
 
       it("one out-of-bounds cell among valid cells is invalid", () => {
-        const inner = new Map();
-        inner.set(pointToCellKey({ x: 1, y: 1 }), true);
-        inner.set(pointToCellKey({ x: 10, y: 10 }), true);
+        const inner: LiveCells = new Set();
+        inner.add(pointToCellKey({ x: 1, y: 1 }));
+        inner.add(pointToCellKey({ x: 10, y: 10 }));
         assertEquals(
           gridContainsCells({ outer: { w: 5, h: 5 }, inner }),
           {
