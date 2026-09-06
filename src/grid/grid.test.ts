@@ -4,6 +4,7 @@ import type { GridSize, IGrid } from "../types/grid.ts";
 
 import { assertEquals, assertThrows } from "@std/assert";
 import { beforeAll, describe, it } from "@std/testing/bdd";
+import { stub } from "@std/testing/mock";
 
 import { Grid } from "./grid.ts";
 import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
@@ -195,6 +196,62 @@ describe("Grid", () => {
           "Seed width does not match specified width",
         );
       });
+    });
+  });
+
+  describe("fromRandom", () => {
+    it("should create a grid of the requested size", () => {
+      const gridSize: GridSize = { w: 4, h: 4 };
+      const grid = Grid.fromRandom({ gridSize });
+      assertEquals(grid.gridSize, gridSize);
+    });
+
+    it("should assign cells according to biasTowardLife", () => {
+      using _randomStub = stub(Math, "random", () => 0.4);
+      const gridSize: GridSize = { w: 3, h: 3 };
+
+      const mostlyAlive = Grid.fromRandom({ gridSize, biasTowardLife: 0.9 });
+      assertEquals(mostlyAlive.population, 9);
+
+      const mostlyDead = Grid.fromRandom({ gridSize, biasTowardLife: 0.1 });
+      assertEquals(mostlyDead.population, 0);
+    });
+
+    it("should default to a biasTowardLife of 0.5 when omitted", () => {
+      using _randomStub = stub(Math, "random", () => 0.4);
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize });
+      assertEquals(grid.population, 9);
+    });
+
+    it("should default to Finite mode", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize });
+      assertEquals(grid.mode, GRID_MODES.FINITE);
+    });
+
+    it("should apply the given mode", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize, mode: GRID_MODES.TOROIDAL });
+      assertEquals(grid.mode, GRID_MODES.TOROIDAL);
+    });
+
+    it("should throw when biasTowardLife is not strictly between 0 and 1", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      assertThrows(
+        () => Grid.fromRandom({ gridSize, biasTowardLife: 0 }),
+        Error,
+        "biasTowardLife must be larger than zero and less than 1",
+      );
+    });
+
+    it("should throw when either dimension is below the minimum grid size", () => {
+      const gridSize: GridSize = { w: 2, h: 3 };
+      assertThrows(
+        () => Grid.fromRandom({ gridSize }),
+        Error,
+        "Grid must be at least 3 cells wide and 3 cells tall",
+      );
     });
   });
 

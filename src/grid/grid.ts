@@ -3,6 +3,7 @@ import type { Point } from "../types/geometry.ts";
 import type {
   GridMode,
   GridOptionsFromLiveCells,
+  GridOptionsFromRandom,
   GridOptionsFromString,
   GridSize,
   IGrid,
@@ -12,6 +13,7 @@ import {
   cellKeyToPoint,
   normalizeSeed,
   pointToCellKey,
+  randomizeSeed,
   splitSeed,
 } from "../seed/seed.ts";
 import {
@@ -315,6 +317,21 @@ export class Grid implements IGrid {
     }
 
     return new Grid({ gridSize, liveCells, mode });
+  }
+
+  /**
+   * Creates a grid of the given size with each cell randomly assigned
+   * alive or dead.
+   *
+   * @throws If `biasTowardLife` is not strictly between 0 and 1, or
+   * either dimension is below the minimum grid size.
+   */
+  static fromRandom(
+    { gridSize, biasTowardLife, mode = GRID_MODES.FINITE }:
+      GridOptionsFromRandom,
+  ): IGrid {
+    const seed = randomizeSeed(gridSize, biasTowardLife);
+    return Grid.fromString({ gridSize, seed, mode });
   }
 
   /**
