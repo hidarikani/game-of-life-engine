@@ -129,6 +129,8 @@ export function generationToString(
  * and a lower one yields more dead cells; the default of `0.5` is an
  * even split.
  *
+ * @param size Dimensions of the seed to generate.
+ * @param biasTowardLife Probability that any given cell starts alive.
  * @throws If `biasTowardLife` is not strictly between 0 and 1.
  */
 export function randomizeSeed(

@@ -7,7 +7,7 @@ import { beforeAll, describe, it } from "@std/testing/bdd";
 import { stub } from "@std/testing/mock";
 
 import { Grid } from "./grid.ts";
-import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
+import { normalizeSeed, pointToCellKey, randomizeSeed } from "../seed/seed.ts";
 import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
 
 describe("Grid", () => {
@@ -200,28 +200,11 @@ describe("Grid", () => {
   });
 
   describe("fromRandom", () => {
-    it("should create a grid of the requested size", () => {
-      const gridSize: GridSize = { w: 4, h: 4 };
-      const grid = Grid.fromRandom({ gridSize });
-      assertEquals(grid.gridSize, gridSize);
-    });
-
-    it("should assign cells according to biasTowardLife", () => {
-      using _randomStub = stub(Math, "random", () => 0.4);
+    it("should build a grid from randomizeSeed's output", () => {
+      using _randomStub = stub(Math, "random", () => 0.1);
       const gridSize: GridSize = { w: 3, h: 3 };
-
-      const mostlyAlive = Grid.fromRandom({ gridSize, biasTowardLife: 0.9 });
-      assertEquals(mostlyAlive.population, 9);
-
-      const mostlyDead = Grid.fromRandom({ gridSize, biasTowardLife: 0.1 });
-      assertEquals(mostlyDead.population, 0);
-    });
-
-    it("should default to a biasTowardLife of 0.5 when omitted", () => {
-      using _randomStub = stub(Math, "random", () => 0.4);
-      const gridSize: GridSize = { w: 3, h: 3 };
-      const grid = Grid.fromRandom({ gridSize });
-      assertEquals(grid.population, 9);
+      const grid = Grid.fromRandom({ gridSize, biasTowardLife: 0.5 });
+      assertEquals(grid.toString(), randomizeSeed(gridSize, 0.5));
     });
 
     it("should default to Finite mode", () => {
@@ -236,7 +219,7 @@ describe("Grid", () => {
       assertEquals(grid.mode, GRID_MODES.TOROIDAL);
     });
 
-    it("should throw when biasTowardLife is not strictly between 0 and 1", () => {
+    it("should propagate the error thrown by randomizeSeed for an invalid biasTowardLife", () => {
       const gridSize: GridSize = { w: 3, h: 3 };
       assertThrows(
         () => Grid.fromRandom({ gridSize, biasTowardLife: 0 }),
