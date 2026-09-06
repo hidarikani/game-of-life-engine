@@ -4,9 +4,10 @@ import type { GridSize, IGrid } from "../types/grid.ts";
 
 import { assertEquals, assertThrows } from "@std/assert";
 import { beforeAll, describe, it } from "@std/testing/bdd";
+import { stub } from "@std/testing/mock";
 
 import { Grid } from "./grid.ts";
-import { normalizeSeed, pointToCellKey } from "../seed/seed.ts";
+import { normalizeSeed, pointToCellKey, randomizeSeed } from "../seed/seed.ts";
 import { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
 
 describe("Grid", () => {
@@ -195,6 +196,45 @@ describe("Grid", () => {
           "Seed width does not match specified width",
         );
       });
+    });
+  });
+
+  describe("fromRandom", () => {
+    it("should build a grid from randomizeSeed's output", () => {
+      using _randomStub = stub(Math, "random", () => 0.1);
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize, biasTowardLife: 0.5 });
+      assertEquals(grid.toString(), randomizeSeed(gridSize, 0.5));
+    });
+
+    it("should default to Finite mode", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize });
+      assertEquals(grid.mode, GRID_MODES.FINITE);
+    });
+
+    it("should apply the given mode", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      const grid = Grid.fromRandom({ gridSize, mode: GRID_MODES.TOROIDAL });
+      assertEquals(grid.mode, GRID_MODES.TOROIDAL);
+    });
+
+    it("should propagate the error thrown by randomizeSeed for an invalid biasTowardLife", () => {
+      const gridSize: GridSize = { w: 3, h: 3 };
+      assertThrows(
+        () => Grid.fromRandom({ gridSize, biasTowardLife: 0 }),
+        Error,
+        "biasTowardLife must be larger than 0 and less than 1",
+      );
+    });
+
+    it("should throw when either dimension is below the minimum grid size", () => {
+      const gridSize: GridSize = { w: 2, h: 3 };
+      assertThrows(
+        () => Grid.fromRandom({ gridSize }),
+        Error,
+        "Grid must be at least 3 cells wide and 3 cells tall",
+      );
     });
   });
 

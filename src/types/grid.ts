@@ -111,3 +111,18 @@ export type GridOptionsFromString = {
   /** Border behavior; defaults to `"Finite"`. */
   mode?: GridMode;
 };
+
+/**
+ * Options for constructing a grid with randomly assigned live cells.
+ */
+export type GridOptionsFromRandom = {
+  /** Dimensions of the new grid. */
+  gridSize: GridSize;
+  /**
+   * Probability that any given cell starts alive. Must be strictly
+   * between 0 and 1; defaults to `0.5`.
+   */
+  biasTowardLife?: number;
+  /** Border behavior; defaults to `"Finite"`. */
+  mode?: GridMode;
+};

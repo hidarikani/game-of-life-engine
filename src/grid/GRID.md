@@ -109,6 +109,20 @@ console.log(grid.population); // 7
 console.log(grid.toString());
 ```
 
+## Grid from random
+
+`Grid.fromRandom` builds a grid of the given size with each cell randomly
+assigned alive or dead. `biasTowardLife` is the probability that any given cell
+starts alive — it must be strictly between 0 and 1, and defaults to `0.5`.
+
+```ts
+import { Grid, GridSize } from "../../mod.ts";
+
+const gridSize: GridSize = { w: 10, h: 10 };
+const grid = Grid.fromRandom({ gridSize, biasTowardLife: 0.3 });
+console.log(grid.toString());
+```
+
 ## Placing one grid inside another
 
 `writeGrid` copies cells from an inner grid into the outer one. The default mode

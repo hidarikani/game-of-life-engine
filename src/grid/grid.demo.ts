@@ -109,6 +109,27 @@ const seedGrid = Grid.fromString({ gridSize: seedGridSize, seed });
 console.log("population:", seedGrid.population);
 console.log(seedGrid.toString());
 
+// --- Grid from random ---------------------------------------------------
+
+section("Grid from random");
+
+const randomGridSize: GridSize = { w: 10, h: 10 };
+const randomGrid = Grid.fromRandom({
+  gridSize: randomGridSize,
+  biasTowardLife: 0.3,
+});
+console.log(randomGrid.toString());
+console.log("population:", randomGrid.population);
+
+try {
+  Grid.fromRandom({ gridSize: randomGridSize, biasTowardLife: 1 });
+} catch (error) {
+  console.log(
+    "biasTowardLife outside (0, 1) throws:",
+    (error as Error).message,
+  );
+}
+
 // --- Placing one grid inside another ------------------------------------
 
 section("Placing one grid inside another: MERGE");
