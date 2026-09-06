@@ -135,8 +135,8 @@ export function gridContainsGrid(
 export function gridContainsCells(
   { outer, inner }: { outer: GridSize; inner: LiveCells },
 ): ValidationResult {
-  for (const key of inner.keys()) {
-    const point = cellKeyToPoint(key);
+  for (const cellKey of inner.values()) {
+    const point = cellKeyToPoint(cellKey);
     if (!isPointInsideBorder(point, outer)) {
       return {
         valid: false,

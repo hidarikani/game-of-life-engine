@@ -126,7 +126,7 @@ describe("seed", () => {
 
   describe("generationToString", () => {
     it("empty generation returns all dead cells", () => {
-      const generation: LiveCells = new Map();
+      const generation: LiveCells = new Set();
       const size: GridSize = { w: 3, h: 3 };
       const result = generationToString(generation, size);
       const expected = ". . .\n. . .\n. . .";

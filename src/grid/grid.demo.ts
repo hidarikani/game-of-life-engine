@@ -85,9 +85,9 @@ try {
 section("Grid with live cells");
 
 const liveCellsGridSize: GridSize = { w: 5, h: 5 };
-const liveCells: LiveCells = new Map();
-liveCells.set(pointToCellKey({ x: 0, y: 0 }), true);
-liveCells.set(pointToCellKey({ x: 4, y: 4 }), true);
+const liveCells: LiveCells = new Set();
+liveCells.add(pointToCellKey({ x: 0, y: 0 }));
+liveCells.add(pointToCellKey({ x: 4, y: 4 }));
 
 const liveCellsGrid = new Grid({ gridSize: liveCellsGridSize, liveCells });
 console.log(liveCellsGrid.toString());

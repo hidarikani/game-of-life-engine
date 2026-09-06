@@ -1,5 +1,5 @@
-import type { Point } from "../types/geometry.ts";
 import type { LiveCells } from "../types/cell.ts";
+import type { Point } from "../types/geometry.ts";
 import type {
   GridMode,
   GridOptionsFromLiveCells,
@@ -77,7 +77,7 @@ export class Grid implements IGrid {
       }
       this.#liveCells = liveCells;
     } else {
-      this.#liveCells = new Map();
+      this.#liveCells = new Set();
     }
 
     this.#mode = mode;
@@ -146,21 +146,13 @@ export class Grid implements IGrid {
 
         const key = pointToCellKey({ x: wrappedX, y: wrappedY });
 
-        if (this.#liveCells.has(key)) {
-          return this.#liveCells.get(key)!;
-        }
-
-        return false;
+        return this.#liveCells.has(key);
       }
     }
 
     const key = pointToCellKey({ x, y });
 
-    if (this.#liveCells.has(key)) {
-      return this.#liveCells.get(key)!;
-    }
-
-    return false;
+    return this.#liveCells.has(key)!;
   }
 
   /**
@@ -209,7 +201,7 @@ export class Grid implements IGrid {
         const key = pointToCellKey({ x: wrappedX, y: wrappedY });
 
         if (value) {
-          this.#liveCells.set(key, true);
+          this.#liveCells.add(key);
         } else {
           this.#liveCells.delete(key);
         }
@@ -221,7 +213,7 @@ export class Grid implements IGrid {
     const key = pointToCellKey({ x, y });
 
     if (value) {
-      this.#liveCells.set(key, true);
+      this.#liveCells.add(key);
     } else {
       this.#liveCells.delete(key);
     }
@@ -271,7 +263,7 @@ export class Grid implements IGrid {
         x: point.x + offset.x,
         y: point.y + offset.y,
       });
-      this.#liveCells.set(offsetKey, true);
+      this.#liveCells.add(offsetKey);
     }
   }
 
@@ -310,14 +302,14 @@ export class Grid implements IGrid {
       }
     }
 
-    const liveCells: LiveCells = new Map();
+    const liveCells: LiveCells = new Set();
 
     for (let y = 0; y < gridSize.h; y++) {
       for (let x = 0; x < gridSize.w; x++) {
         const cellState = rows[y][x];
         if (cellState) {
           const key = pointToCellKey({ x, y });
-          liveCells.set(key, true);
+          liveCells.add(key);
         }
       }
     }
@@ -335,7 +327,7 @@ export class Grid implements IGrid {
       const row: string[] = [];
       for (let x = 0; x < this.#gridSize.w; x++) {
         const key = pointToCellKey({ x, y });
-        const isAlive = this.#liveCells.get(key) ?? false;
+        const isAlive = this.#liveCells.has(key);
         row.push(isAlive ? ALIVE_CHAR : DEAD_CHAR);
       }
       res += row.join(SEPARATOR_CHAR) + NEWLINE_CHAR;
@@ -363,8 +355,8 @@ export class Grid implements IGrid {
       return false;
     }
 
-    for (const [cellKey, value] of this.#liveCells) {
-      if (other.readCell(cellKeyToPoint(cellKey)) !== value) {
+    for (const cellKey of this.#liveCells) {
+      if (!other.readCell(cellKeyToPoint(cellKey))) {
         return false;
       }
     }
