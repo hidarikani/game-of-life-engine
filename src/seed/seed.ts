@@ -138,9 +138,7 @@ export function randomizeSeed(
   biasTowardLife: number = 0.5,
 ): string {
   if (biasTowardLife <= 0 || biasTowardLife >= 1) {
-    throw new Error(
-      "biasTowardLife must be larger than zero and less than 1",
-    );
+    throw new Error("biasTowardLife must be larger than 0 and less than 1");
   }
 
   let res = "";

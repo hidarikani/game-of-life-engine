@@ -156,7 +156,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 0),
           Error,
-          "biasTowardLife must be larger than zero and less than 1",
+          "biasTowardLife must be larger than 0 and less than 1",
         );
       });
 
@@ -164,7 +164,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 1),
           Error,
-          "biasTowardLife must be larger than zero and less than 1",
+          "biasTowardLife must be larger than 0 and less than 1",
         );
       });
 
@@ -172,7 +172,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, -0.1),
           Error,
-          "biasTowardLife must be larger than zero and less than 1",
+          "biasTowardLife must be larger than 0 and less than 1",
         );
       });
 
@@ -180,7 +180,7 @@ describe("seed", () => {
         assertThrows(
           () => randomizeSeed({ w: 3, h: 3 }, 1.1),
           Error,
-          "biasTowardLife must be larger than zero and less than 1",
+          "biasTowardLife must be larger than 0 and less than 1",
         );
       });
     });

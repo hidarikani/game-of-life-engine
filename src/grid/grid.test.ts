@@ -224,7 +224,7 @@ describe("Grid", () => {
       assertThrows(
         () => Grid.fromRandom({ gridSize, biasTowardLife: 0 }),
         Error,
-        "biasTowardLife must be larger than zero and less than 1",
+        "biasTowardLife must be larger than 0 and less than 1",
       );
     });
 
