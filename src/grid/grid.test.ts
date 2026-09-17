@@ -21,8 +21,7 @@ import {
 } from "../constants/messages.ts";
 
 /**
- * Message for a toroidal wrapping case: the cell under test should have
- * been kept alive by wrapping to the opposite edge, but read as dead.
+ * Not exported, and not under `constants/`, because used only to fail certain test cases.
  */
 function expectedAliveDueToWrappingMessage({ x, y }: Point): string {
   return `Expected cell (${x}, ${y}) to be alive due to wrapping, but it was dead.`;
