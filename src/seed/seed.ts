@@ -10,7 +10,13 @@ import {
   NEWLINE_CHAR,
   SEED_PATTERN,
   SEPARATOR_CHAR,
-} from "../constants.ts";
+} from "../constants/constants.ts";
+import {
+  INVALID_BIAS_TOWARD_LIFE_MESSAGE,
+  SEED_HEIGHT_MISMATCH_MESSAGE,
+  SEED_INVALID_CHARACTERS_MESSAGE,
+  SEED_WIDTH_MISMATCH_MESSAGE,
+} from "../constants/messages.ts";
 
 /**
  * Serializes a point as an `"x,y"` string so it can be used as a `Map`
@@ -65,7 +71,7 @@ export function stringToGeneration(
   height: number,
 ): LiveCells {
   if (!SEED_PATTERN.test(seed)) {
-    throw new Error("Seed contains invalid characters");
+    throw new Error(SEED_INVALID_CHARACTERS_MESSAGE);
   }
 
   const normalizedSeed = normalizeSeed(seed);
@@ -77,12 +83,12 @@ export function stringToGeneration(
   );
 
   if (rows.length !== height) {
-    throw new Error("Seed height does not match specified height");
+    throw new Error(SEED_HEIGHT_MISMATCH_MESSAGE);
   }
 
   for (const row of rows) {
     if (row.length !== width) {
-      throw new Error("Seed width does not match specified width");
+      throw new Error(SEED_WIDTH_MISMATCH_MESSAGE);
     }
   }
 
@@ -137,7 +143,7 @@ export function randomizeSeed(
   biasTowardLife: number = 0.5,
 ): string {
   if (biasTowardLife <= 0 || biasTowardLife >= 1) {
-    throw new Error("biasTowardLife must be larger than 0 and less than 1");
+    throw new Error(INVALID_BIAS_TOWARD_LIFE_MESSAGE);
   }
 
   let res = "";

@@ -3,6 +3,7 @@ import type { LiveCells } from "../types/cell.ts";
 import type { GridMode, GridSize, IGrid } from "../types/grid.ts";
 import type { EngineOptions, IEngine } from "../types/engine.ts";
 
+import { maxHistoryTooSmallMessage } from "../constants/messages.ts";
 import { pointToCellKey } from "../seed/seed.ts";
 import { Grid } from "../grid/grid.ts";
 
@@ -25,7 +26,7 @@ export class Engine implements IEngine {
     { firstGeneration, maxHistory = 3 }: EngineOptions,
   ) {
     if (maxHistory < 1) {
-      throw new Error(`maxHistory must be at least 1, got ${maxHistory}`);
+      throw new Error(maxHistoryTooSmallMessage(maxHistory));
     }
     this.#generations = [];
     this.#generations.push(firstGeneration);

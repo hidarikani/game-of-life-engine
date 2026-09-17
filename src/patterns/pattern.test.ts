@@ -3,7 +3,7 @@ import { join } from "@std/path";
 import { beforeAll, describe, it } from "@std/testing/bdd";
 
 import { PatternLib } from "./pattern.ts";
-import { PATTERN_TYPES } from "../constants.ts";
+import { PATTERN_TYPES } from "../constants/constants.ts";
 
 const YAML_FILE_PATH = join(
   import.meta.dirname!,

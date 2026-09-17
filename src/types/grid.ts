@@ -1,4 +1,4 @@
-import type { GRID_MODES, PLACEMENT_MODES } from "../constants.ts";
+import type { GRID_MODES, PLACEMENT_MODES } from "../constants/constants.ts";
 import type { LiveCells } from "./cell.ts";
 import type { Point } from "./geometry.ts";
 

@@ -11,7 +11,8 @@ export * from "./src/engine/engine.ts";
 export * from "./src/patterns/pattern.ts";
 
 // Constants
-export * from "./src/constants.ts";
+export * from "./src/constants/constants.ts";
+export * from "./src/constants/messages.ts";
 
 // Utilities
 export { pointToCellKey } from "./src/seed/seed.ts";

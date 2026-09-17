@@ -3,7 +3,8 @@ import type { GridMode, GridSize } from "../types/grid.ts";
 import { assertEquals, assertThrows } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 
-import { GRID_MODES } from "../constants.ts";
+import { GRID_MODES } from "../constants/constants.ts";
+import { maxHistoryTooSmallMessage } from "../constants/messages.ts";
 import { Engine } from "./engine.ts";
 import { normalizeSeed } from "../seed/seed.ts";
 import { Grid } from "../grid/grid.ts";
@@ -25,7 +26,7 @@ describe("Engine", () => {
       assertThrows(
         () => new Engine({ firstGeneration, maxHistory: 0 }),
         Error,
-        "maxHistory must be at least 1",
+        maxHistoryTooSmallMessage(0),
       );
     });
 
